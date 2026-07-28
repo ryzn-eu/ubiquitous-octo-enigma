@@ -57,118 +57,125 @@
         :root {
             --primary: #2563EB; --primary-dark: #1E40AF; --secondary: #0F172A;
             --accent: #22C55E; --success: #22C55E; --warning: #F59E0B; --danger: #EF4444;
-            --bg: #F1F5F9; --card: #FFFFFF; --text: #0F172A; --text-light: #64748B;
-            --border: #E2E8F0; --sidebar-w: 280px; --shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.05);
-            --sys-font: 'Inter', sans-serif;
+            --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A; --text-light: #64748B;
+            --border: #E2E8F0; --sidebar-w: 280px; --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --sys-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --radius-lg: 16px; --radius-md: 12px; --radius-sm: 8px;
         }
 
         body.hw-mode {
-            --bg: #03060a; --card: rgba(10, 15, 25, 0.95); --text: #b8f2ff; --text-light: #4a758c;
+            --bg: #03060a; --card: rgba(10, 15, 25, 0.85); --text: #b8f2ff; --text-light: #4a758c;
             --border: rgba(0, 229, 255, 0.2); --primary: #00e5ff; --secondary: #0a1018;
-            --sys-font: 'Rajdhani', sans-serif; background: radial-gradient(circle at top right, #09121f, var(--bg));
+            --sys-font: 'Rajdhani', monospace, sans-serif; background: radial-gradient(circle at top right, #09121f, var(--bg));
         }
         body.hw-mode .sidebar { background: #020406; border-right-color: var(--border); }
-        body.hw-mode .topbar { background: #020406; border-bottom-color: var(--border); }
+        body.hw-mode .topbar { background: rgba(2, 4, 6, 0.95); border-bottom-color: var(--border); }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--sys-font); -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .login-box { background: var(--card); padding: 28px 20px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
-        .login-tabs { display: flex; margin-bottom: 20px; border-radius: 10px; overflow: hidden; background: #F8FAFC; padding: 4px; border: 1px solid var(--border); }
-        .login-tabs button { flex: 1; padding: 10px; border: none; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); border-radius: 8px; font-size: 13px; transition: all 0.2s ease; }
-        .login-tabs button.active { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
-        .login-box input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid var(--border); border-radius: 12px; outline: none; background: var(--bg); color: var(--text); font-size: 14px; }
-        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 12px; font-size: 15px; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        /* Login Overlay Mobile First */
+        #login-overlay { position: fixed; inset: 0; background: #0F172A; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .login-box { background: white; padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .login-tabs { display: flex; margin-bottom: 20px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
+        .login-tabs button { flex: 1; padding: 12px; border: none; font-weight: 600; cursor: pointer; background: #f1f5f9; color: #64748B; font-size: 14px; }
+        .login-tabs button.active { background: var(--primary); color: white; }
+        .login-box input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid var(--border); border-radius: var(--radius-sm); outline: none; font-size: 15px; }
+        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; margin-top: 12px; font-size: 15px; }
 
-        .sidebar { width: var(--sidebar-w); background: #0B1120; border-right: 1px solid #1E293B; display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; color: #FFFFFF; position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 5px 0 25px rgba(0,0,0,0.3); }
-        .sidebar.open { transform: translateX(0); }
+        /* Sidebar & Navigation Header Mobile-First Optimized */
+        .sidebar { position: fixed; top: 0; bottom: 0; left: -280px; width: var(--sidebar-w); background: #0B1120; border-right: 1px solid #1E293B; display: flex; flex-direction: column; z-index: 1001; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #FFFFFF; }
+        .sidebar.open { transform: translateX(280px); }
         .logo { height: 64px; display: flex; align-items: center; padding: 0 20px; gap: 12px; border-bottom: 1px solid #1E293B; flex-shrink: 0; }
         .logo i { font-size: 26px; color: var(--primary); }
-        .nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
-        .nav-link { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 10px; color: #94A3B8; text-decoration: none; font-weight: 500; cursor: pointer; font-size: 14px; transition: all 0.2s; }
-        .nav-link:hover { background: rgba(255, 255, 255, 0.05); color: #FFFFFF; }
-        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .nav-link { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); color: #94A3B8; text-decoration: none; font-weight: 500; cursor: pointer; font-size: 14px; }
+        .nav-link:active, .nav-link.active { background: var(--primary); color: white; }
 
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; width: 100%; background: var(--bg); }
-        .topbar { height: 64px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .view { display: none; padding: 16px; overflow-y: auto; height: calc(100vh - 64px); animation: fadeIn 0.2s ease; width: 100%; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); }
+        .sidebar-overlay.active { display: block; }
+
+        /* Main Container Layout */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; width: 100%; }
+        .topbar { height: 64px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10; flex-shrink: 0; backdrop-filter: blur(8px); }
+        .mobile-menu-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; border-radius: var(--radius-sm); }
+        
+        .view { display: none; padding: 16px; overflow-y: auto; height: calc(100vh - 64px); -webkit-overflow-scrolling: touch; animation: fadeIn 0.2s ease-in-out; }
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* UI Grid & Touch-Optimized Responsive Cards */
         .grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow); overflow-x: auto; margin-bottom: 16px; }
-        .card-title { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .card-value { font-size: 24px; font-weight: 700; color: var(--text); }
+        .card { background: var(--card); border-radius: var(--radius-md); border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
+        .card-title { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .card-value { font-size: 24px; font-weight: 800; color: var(--text); }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; min-width: 580px; }
-        th { text-align: left; padding: 10px 12px; color: var(--text-light); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; font-weight: 600; letter-spacing: 0.5px; }
+        /* Mobile Horizontal Scroll Tables */
+        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 8px; border-radius: var(--radius-sm); }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { text-align: left; padding: 10px 12px; color: var(--text-light); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; background: rgba(0,0,0,0.01); }
         td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); white-space: nowrap; }
         
-        .action-btns button { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; margin-right: 4px; font-size: 12px; font-weight: 500; }
-        .btn-edit { background: var(--warning); color: #fff; }
-        .btn-del { background: var(--danger); color: #fff; }
+        /* Touch Action Buttons */
+        .action-btns button { padding: 8px 12px; border: none; border-radius: var(--radius-sm); cursor: pointer; margin-right: 4px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-edit { background: var(--warning); color: #fff;}
+        .btn-del { background: var(--danger); color: #fff;}
         .btn-validate { background: var(--accent); color: #fff; }
 
-        .btn { padding: 12px 18px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(37,99,235,0.2); transition: transform 0.1s active; }
-        .btn:active { transform: scale(0.98); }
-        .input { width: 100%; padding: 12px; margin: 6px 0 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 14px; }
-        .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; letter-spacing: 0.3px; }
+        .btn { padding: 12px 18px; border-radius: var(--radius-sm); border: none; font-weight: 600; font-size: 14px; cursor: pointer; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; width: auto; }
+        .input { width: 100%; padding: 12px; margin: 4px 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 14px; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; text-transform: uppercase; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); z-index: 10000; align-items: flex-end; justify-content: center; padding: 0; }
+        /* Full Screen Responsive Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: flex-end; justify-content: center; padding: 0; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--card); width: 100%; max-height: 85vh; overflow-y: auto; border-radius: 24px 24px 0 0; padding: 24px 20px; border-top: 1px solid var(--border); color: var(--text); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -10px 25px rgba(0,0,0,0.1); }
-        .modal-content-lg { max-height: 90vh; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-content { background: var(--card); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px; border: 1px solid var(--border); color: var(--text); box-shadow: 0 -10px 25px rgba(0,0,0,0.15); }
+        .modal-content-lg { max-width: 100%; }
 
-        .ai-chat { display: flex; flex-direction: column; height: 400px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg); overflow: hidden; }
-        .ai-msgs { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 90%; padding: 12px 14px; border-radius: 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .msg.bot { background: var(--card); border: 1px solid var(--border); align-self: flex-start; }
+        /* Mobile AI Chat Section */
+        .ai-chat { display: flex; flex-direction: column; height: 60vh; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); }
+        .ai-msgs { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 90%; padding: 10px 14px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.4; }
+        .msg.bot { background: white; border: 1px solid var(--border); align-self: flex-start; }
         .msg.user { background: var(--primary); color: white; align-self: flex-end; }
-        .ai-input { display: flex; padding: 12px; border-top: 1px solid var(--border); background: var(--card); gap: 8px; }
-        .ai-input input { flex: 1; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 0; outline: none; }
+        .ai-input { display: flex; padding: 10px; border-top: 1px solid var(--border); background: var(--card); gap: 8px; }
+        .ai-input input { flex: 1; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; outline: none; font-size: 14px; }
 
-        .hw-panel { border: 1px solid var(--primary); padding: 16px; background: rgba(0,0,0,0.6); border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,229,255,0.05); }
-        .hw-title { color: var(--primary); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(0,229,255,0.3); padding-bottom: 6px; margin-bottom: 12px; font-weight: 700; letter-spacing: 0.5px; }
-        .terminal { background: #010204; color: #00ff66; font-family: monospace; padding: 12px; height: 160px; overflow-y: auto; border: 1px solid #1a2b3c; border-radius: 8px; font-size: 12px; }
+        .hw-panel { border: 1px solid var(--primary); padding: 12px; background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); box-shadow: inset 0 0 20px rgba(0,229,255,0.05); }
+        .hw-title { color: var(--primary); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(0,229,255,0.3); padding-bottom: 4px; margin-bottom: 8px; }
+        .terminal { background: #010204; color: #00ff66; font-family: monospace; padding: 8px; height: 140px; overflow-y: auto; border: 1px solid #1a2b3c; font-size: 11px; }
 
-        .mobile-menu-btn { display: flex; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; padding: 4px; align-items: center; justify-content: center; }
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(2px); }
-        .sidebar-overlay.active { display: block; }
+        tr.clickable-row:active { background-color: rgba(37, 99, 235, 0.1); }
         
-        tr.clickable-row:hover { background-color: rgba(37, 99, 235, 0.05); cursor: pointer; }
-        
-        .detail-group { margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+        .detail-group { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
         .detail-group:last-child { border-bottom: none; }
-        .detail-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
-        .detail-value { font-size: 14px; color: var(--text); font-weight: 500; }
+        .detail-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .detail-value { font-size: 13px; color: var(--text); font-weight: 500; }
         
-        .cloud-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 140px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .cloud-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
-        .cloud-icon { font-size: 38px; margin-bottom: 8px; }
+        /* Touch Optimized Cloud Grid */
+        .cloud-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 140px; }
+        .cloud-item:active { transform: scale(0.98); border-color: var(--primary); }
+        .cloud-icon { font-size: 38px; margin-bottom: 6px; }
         .cloud-folder-icon { color: #F59E0B; }
         .cloud-file-icon { color: var(--primary); }
-        .cloud-title { font-size: 13px; font-weight: 600; color: var(--text); word-break: break-all; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .cloud-title { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-all; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .cloud-meta { font-size: 10px; color: var(--text-light); margin-top: 4px; }
-        .cloud-action-btn { position: absolute; top: 8px; right: 8px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 10; }
-        .cloud-action-btn:hover { background: var(--danger); color: white; }
-        
+        .cloud-action-btn { position: absolute; top: 8px; right: 8px; background: rgba(239, 68, 68, 0.15); color: var(--danger); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-size: 14px; }
+
+        /* Media Queries for Tablet and Desktop Scaling */
         @media (min-width: 769px) {
-            .sidebar { transform: translateX(0); position: relative; width: var(--sidebar-w); height: 100vh; box-shadow: none; }
-            .sidebar-overlay { display: none !important; }
-            .mobile-menu-btn { display: none !important; }
-            .main { width: calc(100% - var(--sidebar-w)); }
-            .view { padding: 28px 32px; height: calc(100vh - 64px); }
+            .sidebar { left: 0; }
+            .sidebar.open { transform: none; }
+            .main { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); }
+            .mobile-menu-btn { display: none; }
+            .grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px; }
+            .form-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
             .topbar { padding: 0 32px; height: 70px; }
-            .grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px; }
-            .form-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .view { padding: 32px; height: calc(100vh - 70px); }
             .modal { align-items: center; padding: 15px; }
-            .modal-content { max-width: 650px; border-radius: 16px; padding: 30px; max-height: 90vh; }
-            .card { padding: 24px; margin-bottom: 24px; }
-            .ai-chat { height: 500px; }
+            .modal-content { border-radius: var(--radius-lg); max-width: 650px; max-height: 90vh; }
+            .modal-content-lg { max-width: 900px; }
         }
     </style>
 </head>
@@ -176,12 +183,12 @@
 
     <div id="login-overlay">
         <div class="login-box">
-            <h2 style="color: var(--primary); margin-bottom: 16px; font-size: 22px;"><i class="ph-fill ph-shield-check"></i> Horizon Global</h2>
+            <h2 style="color: var(--primary); margin-bottom: 20px;"><i class="ph-fill ph-shield-check"></i> Horizon Global</h2>
             <div class="login-tabs">
                 <button id="btn-tab-admin" class="active" onclick="switchLoginMode('admin')">Admin</button>
                 <button id="btn-tab-staff" onclick="switchLoginMode('staff')">Staff</button>
             </div>
-            <p id="login-desc" style="font-size: 12px; color: var(--text-light); margin-bottom: 16px; line-height: 1.4;">Accesso Riservato Direzione (direzione@horizonglobal.com)</p>
+            <p id="login-desc" style="font-size: 13px; color: #666; margin-bottom: 20px;">Accesso Riservato Direzione (direzione@horizonglobal.com)</p>
             <input type="text" id="login-user" placeholder="Email Utente">
             <input type="password" id="login-pass" placeholder="Password Firebase">
             <button id="btn-login-action" class="btn-login" onclick="attemptLogin('admin')">Effettua Login</button>
@@ -196,17 +203,17 @@
             <span style="font-weight: 800; font-size: 15px; letter-spacing: 0.5px;">HORIZON OS v8</span>
         </div>
         <nav class="nav">
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 8px 0 4px 10px; font-weight: 700;">Workspace</div>
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 10px 0 5px 10px;">Workspace</div>
             <a class="nav-link active admin-only" onclick="nav('dash', this)"><span><i class="ph ph-chart-pie"></i> Dashboard Globale</span></a>
             <a class="nav-link admin-only" onclick="nav('aziende', this)"><span><i class="ph ph-buildings"></i> Gruppo & Aziende</span></a>
             <a class="nav-link admin-only" onclick="nav('divs', this)"><span><i class="ph ph-tree-structure"></i> Divisioni Interne</span></a>
             
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 16px 0 4px 10px; font-weight: 700;">Ricezione Esterna Sito</div>
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Ricezione Esterna Sito</div>
             <a class="nav-link admin-only" onclick="nav('richieste-servizi', this)"><span><i class="ph ph-briefcase"></i> Servizi Horizon</span></a>
             <a class="nav-link" onclick="nav('clienti-crm', this)"><span><i class="ph ph-users-three"></i> Clienti Registrati (CRM)</span> <i class="ph-fill ph-circle" style="color:var(--accent); font-size:8px;"></i></a>
             <a class="nav-link admin-only" onclick="nav('candidature', this)"><span><i class="ph ph-user-list"></i> Candidature Staff</span></a>
             
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 16px 0 4px 10px; font-weight: 700;">Gestione & Operatività</div>
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Gestione & Operatività</div>
             <a class="nav-link" id="menu-staff-link" onclick="nav('staff', this)"><span><i class="ph ph-users"></i> Organico HR</span></a>
             <a class="nav-link admin-only" onclick="nav('payrolls', this)"><span><i class="ph ph-money"></i> Paghe & Stipendi</span></a>
             <a class="nav-link admin-only" onclick="nav('badges', this)"><span><i class="ph ph-identification-card"></i> Gestione Badge App</span></a>
@@ -218,22 +225,22 @@
             <a class="nav-link" onclick="nav('cloud', this)"><span><i class="ph ph-cloud"></i> Archivio Cloud</span> <i class="ph-fill ph-circle" style="color:var(--primary); font-size:8px;"></i></a>
             <a class="nav-link" onclick="nav('tasks', this)"><span><i class="ph ph-check-square"></i> Task & Ticket</span></a>
 
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 16px 0 4px 10px; font-weight: 700;">Ecosistema Esterno</div>
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Ecosistema Esterno</div>
             <a class="nav-link admin-only" onclick="nav('horizon-id', this)"><span><i class="ph ph-identification-badge"></i> Horizon ID (Utenti)</span></a>
             <a class="nav-link" onclick="nav('chat-supporto', this)"><span><i class="ph ph-chats-teardrop"></i> Supporto Chat (Live)</span> <i class="ph-fill ph-circle" style="color:#0A84FF; font-size:8px;"></i></a>
 
             <div id="nav-group-hw" style="display:none;">
-                <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 16px 0 4px 10px; font-weight: 700;">Infrastruttura & AI</div>
+                <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Infrastruttura & AI</div>
                 <a class="nav-link admin-only" onclick="nav('ai', this)"><span><i class="ph ph-sparkle"></i> AI Predittiva</span> <span style="font-size:10px; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">BETA</span></a>
                 <a class="nav-link" id="nav-macchina" style="display:none;" onclick="nav('macchina', this)"><span><i class="ph ph-cpu"></i> Grado mAf</span> <i class="ph ph-warning-circle" style="color:var(--danger)"></i></a>
                 <a class="nav-link" id="nav-eolo" style="display:none;" onclick="nav('eolo', this)"><span><i class="ph ph-broadcast"></i> Eolo fFk9</span></a>
             </div>
             
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 16px 0 4px 10px; font-weight: 700;">Sistema</div>
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Sistema</div>
             <a class="nav-link admin-only" onclick="nav('settings', this)"><span><i class="ph ph-gear"></i> Settings Globali</span></a>
 
             <div style="flex-grow: 1;"></div>
-            <a class="nav-link" onclick="esciDalSistema()" style="color: var(--danger); border-top: 1px solid #1E293B; border-radius: 0; padding-top: 14px; margin-top: auto;">
+            <a class="nav-link" onclick="esciDalSistema()" style="color: var(--danger); border-top: 1px solid #1E293B; border-radius: 0; padding-top: 15px; margin-top: auto;">
                 <span><i class="ph ph-sign-out"></i> Esci dal Sistema</span>
             </a>
         </nav>
@@ -241,289 +248,321 @@
 
     <main class="main">
         <header class="topbar">
-            <div style="font-weight: 600; display:flex; align-items:center; font-size: 16px; gap: 10px;">
+            <div style="font-weight: 600; display:flex; align-items:center; font-size: 16px; gap: 8px;">
                 <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
                 <span id="page-title">Dashboard Globale</span>
             </div>
-            <div class="topbar-right-panel" style="display: flex; align-items: center; gap: 12px;">
+            <div class="topbar-right-panel" style="display: flex; align-items: center; gap: 10px;">
                 <div style="position: relative;" class="admin-only">
-                    <button onclick="toggleNotifiche()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text); position:relative; display:flex; align-items:center;">
+                    <button onclick="toggleNotifiche()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text); position:relative; margin-top: 3px;">
                         <i class="ph ph-bell"></i>
-                        <span id="bell-badge" style="display:none; position:absolute; top:-2px; right:-4px; background:var(--danger); color:white; font-size:9px; width:15px; height:15px; border-radius:50%; align-items:center; justify-content:center; font-weight:bold;">0</span>
+                        <span id="bell-badge" style="display:none; position:absolute; top:-2px; right:-4px; background:var(--danger); color:white; font-size:10px; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center; font-weight:bold;">0</span>
                     </button>
-                    <div id="notif-panel" style="display:none; position:absolute; top:40px; right:0; width:300px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:14px; z-index:100; max-height:380px; overflow-y:auto; padding:14px;">
-                        <h4 style="font-size:13px; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:10px; color:var(--danger); display:flex; align-items:center; gap:6px;"><i class="ph-fill ph-shield-warning"></i> Avvisi Sicurezza</h4>
-                        <div id="notif-list" style="font-size:12px; color:var(--text-light);">Nessun allarme registrato.</div>
+                    <div id="notif-panel" style="display:none; position:absolute; top:40px; right:0; width:280px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:12px; z-index:100; max-height:300px; overflow-y:auto; padding:12px;">
+                        <h4 style="font-size:13px; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:10px; color:var(--danger);"><i class="ph-fill ph-shield-warning"></i> Avvisi Sicurezza</h4>
+                        <div id="notif-list" style="font-size:11px; color:var(--text-light);">Nessun allarme registrato.</div>
                     </div>
                 </div>
                 <div style="text-align: right; line-height: 1.2;">
                     <div style="font-size: 12px; font-weight: 700;" id="current-user-name">...</div>
                     <div style="font-size: 10px; color: var(--text-light);" id="current-user-role">...</div>
                 </div>
-                <div id="current-user-avatar" style="width: 34px; height: 34px; border-radius: 10px; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;">DG</div>
+                <div id="current-user-avatar" style="width: 34px; height: 34px; border-radius: 8px; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0;">DG</div>
             </div>
         </header>
 
         <section id="view-dash" class="view active admin-only">
             <div class="grid" id="dash-summary"></div>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                <div class="card"><div class="card-title">Distribuzione Budget</div><div style="position: relative; height: 240px; width: 100%;"><canvas id="budgetDoughnutChart"></canvas></div></div>
-                <div class="card"><div class="card-title">Trend Storico Budget</div><div style="position: relative; height: 240px; width: 100%;"><canvas id="budgetHistoryChart"></canvas></div></div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="card"><div class="card-title">Distribuzione Budget</div><div style="position: relative; height: 220px; width: 100%;"><canvas id="budgetDoughnutChart"></canvas></div></div>
+                <div class="card"><div class="card-title">Trend Storico Budget</div><div style="position: relative; height: 220px; width: 100%;"><canvas id="budgetHistoryChart"></canvas></div></div>
             </div>
             <div class="card">
                 <div class="card-title">Performance Entità Globali</div>
-                <table id="table-dash-stats">
-                    <thead><tr><th>Azienda / Divisione</th><th>Capitale Sociale</th><th>Progetti Attivi</th><th>Efficienza (%)</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-dash-stats">
+                        <thead><tr><th>Azienda / Divisione</th><th>Capitale Sociale</th><th>Progetti Attivi</th><th>Efficienza (%)</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-richieste-servizi" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Ricezione Richieste Servizi</h2>
-                    <p style="font-size: 11px; color: var(--text-light);">Form di contatto e richiesta servizi dal sito web.</p>
+                    <h2>Ricezione Richieste Servizi</h2>
+                    <p style="font-size: 12px; color: var(--text-light);">Form di contatto e richiesta servizi compilati dal sito web istituzionale.</p>
                 </div>
             </div>
             <div class="card">
-                <table id="table-richieste-servizi">
-                    <thead><tr><th>Data Richiesta</th><th>Richiedente</th><th>Rag. Sociale / P.IVA</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-richieste-servizi">
+                        <thead><tr><th>Data Richiesta</th><th>Richiedente</th><th>Rag. Sociale / P.IVA</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-clienti-crm" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Clienti Registrati (Horizon ID)</h2>
-                    <p style="font-size: 11px; color: var(--text-light);">Schede utente sincrone e AuraCredit.</p>
+                    <h2>Clienti Registrati (Horizon ID)</h2>
+                    <p style="font-size: 12px; color: var(--text-light);">Schede utente sincrone, storico servizi associati tramite CF e gestione scalabilità AuraCredit.</p>
                 </div>
-                <div style="width: 100%;">
-                    <input type="text" id="crm-search-input" class="input" style="margin:0;" placeholder="Cerca Nome, P.IVA/CF, Email..." onkeyup="filterCrmTable()">
+                <div style="flex: 1; min-width: 100%;">
+                    <input type="text" id="crm-search-input" class="input" style="margin:0;" placeholder="Cerca per Nome, Rag. Sociale, P.IVA/CF o Email..." onkeyup="filterCrmTable()">
                 </div>
             </div>
             <div class="card">
-                <table id="table-clienti-crm">
-                    <thead><tr><th>Anagrafica Cliente</th><th>CF / P.IVA</th><th>Email</th><th>Saldo AuraCredit</th><th>Pratiche Servizi</th><th>Azioni CRM</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-clienti-crm">
+                        <thead><tr><th>Anagrafica Cliente</th><th>CF / P.IVA</th><th>Email</th><th>Saldo AuraCredit</th><th>Pratiche Servizi</th><th>Azioni CRM</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-candidature" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Ricezione Candidature HR</h2>
-                    <p style="font-size: 11px; color: var(--text-light);">CV e candidature spontanee dal sito web.</p>
+                    <h2>Ricezione Candidature HR</h2>
+                    <p style="font-size: 12px; color: var(--text-light);">CV e candidature spontanee inviate dal sito web.</p>
                 </div>
             </div>
             <div class="card">
-                <table id="table-candidature">
-                    <thead><tr><th>Data</th><th>Candidato</th><th>Posizione</th><th>Recapito</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-candidature">
+                        <thead><tr><th>Data</th><th>Candidato</th><th>Posizione</th><th>Recapito</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-ordini" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Ordini Servizi Horizon</h2>
-                    <p style="font-size: 11px; color: var(--text-light);">In sync con App Cliente (Horizon ID).</p>
+                    <h2>Ordini Servizi Horizon</h2>
+                    <p style="font-size: 12px; color: var(--text-light);">Inserimento ordini personalizzati in sync con App Cliente (Horizon ID).</p>
                 </div>
-                <div style="display:flex; gap:8px; width:100%; flex-wrap:wrap;">
-                    <button class="btn admin-only" style="background:var(--secondary); flex:1; font-size:12px; padding:10px;" onclick="openModal('modal-servizio')"><i class="ph ph-list-plus"></i> Catalogo</button>
-                    <button class="btn admin-only" style="flex:1; font-size:12px; padding:10px;" onclick="apriNuovoOrdine()"><i class="ph ph-plus"></i> Nuovo Ordine</button>
+                <div style="display:flex; gap:8px; width: 100%;">
+                    <button class="btn admin-only" style="background:var(--secondary); flex: 1;" onclick="openModal('modal-servizio')"><i class="ph ph-list-plus"></i> Catalogo</button>
+                    <button class="btn admin-only" style="flex: 1;" onclick="apriNuovoOrdine()"><i class="ph ph-plus"></i> Ordine</button>
                 </div>
             </div>
             <div class="card">
-                <table id="table-ordini">
-                    <thead><tr><th>Data</th><th>Cliente (Horizon ID)</th><th>Servizio</th><th>Importo</th><th>Stato Attuale</th><th>Azioni Admin</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-ordini">
+                        <thead><tr><th>Data</th><th>Cliente (Horizon ID)</th><th>Servizio</th><th>Importo</th><th>Stato Attuale</th><th>Azioni Admin</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-horizon-id" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Verifica Utenti Horizon ID</h2>
-                    <p style="font-size: 11px; color: var(--text-light);">Connesso a `horizon-id-core`.</p>
+                    <h2>Verifica Utenti Horizon ID</h2>
+                    <p style="font-size: 12px; color: var(--text-light);">Connesso a `horizon-id-core`.</p>
                 </div>
             </div>
             
-            <h3 style="margin-bottom: 8px; color: var(--warning); font-size: 14px;"><i class="ph-fill ph-clock"></i> Richieste In Attesa / Mancanti</h3>
+            <h3 style="margin-bottom: 10px; color: var(--warning); font-size: 15px;"><i class="ph-fill ph-clock"></i> Richieste In Attesa / Mancanti</h3>
             <div class="card" style="margin-bottom: 20px;">
-                <table id="table-horizon-pending">
-                    <thead><tr><th>Utente / Rag. Sociale</th><th>P.IVA / CF</th><th>Email</th><th>Registrazione</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-horizon-pending">
+                        <thead><tr><th>Utente / Rag. Sociale</th><th>P.IVA / CF</th><th>Email</th><th>Registrazione</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
 
-            <h3 style="margin-bottom: 8px; color: var(--success); font-size: 14px;"><i class="ph-fill ph-check-circle"></i> Utenti Attivi e Verificati</h3>
+            <h3 style="margin-bottom: 10px; color: var(--success); font-size: 15px;"><i class="ph-fill ph-check-circle"></i> Utenti Attivi e Verificati</h3>
             <div class="card">
-                <table id="table-horizon-active">
-                    <thead><tr><th>Utente / Rag. Sociale</th><th>P.IVA / CF</th><th>Email</th><th>Registrazione</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-horizon-active">
+                        <thead><tr><th>Utente / Rag. Sociale</th><th>P.IVA / CF</th><th>Email</th><th>Registrazione</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-chat-supporto" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Supporto Tecnico Chat (Horizon ID)</h2>
-                    <p style="font-size: 11px; color: var(--text-light);">Risposta in tempo reale per gli utenti dell'App.</p>
+                    <h2>Supporto Tecnico Chat (Horizon ID)</h2>
+                    <p style="font-size: 12px; color: var(--text-light);">Infrastruttura di risposta in tempo reale con crittografia client per gli utenti dell'App.</p>
                 </div>
             </div>
             <div class="card">
-                <table id="table-chat-supporto">
-                    <thead><tr><th>Utente Horizon ID</th><th>P.IVA / CF</th><th>Ultimo Messaggio</th><th>Data / Ora</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-chat-supporto">
+                        <thead><tr><th>Utente Horizon ID</th><th>P.IVA / CF</th><th>Ultimo Messaggio</th><th>Data / Ora</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-aziende" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Gruppo Societario</h2>
-                <button class="btn admin-only" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-azienda')"><i class="ph ph-plus"></i> Nuova</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2>Gruppo Societario</h2>
+                <button class="btn admin-only" onclick="openModal('modal-azienda')"><i class="ph ph-plus"></i> Nuova Azienda</button>
             </div>
             <div class="card">
-                <table id="table-aziende">
-                    <thead><tr><th>Azienda</th><th>Capitale Nominale</th><th>Progetti</th><th>Efficienza</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-aziende">
+                        <thead><tr><th>Azienda</th><th>Capitale Nominale</th><th>Progetti</th><th>Efficienza</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-divs" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Gestione Divisioni</h2>
-                <button class="btn admin-only" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-div')"><i class="ph ph-plus"></i> Nuova</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2>Gestione Divisioni</h2>
+                <button class="btn admin-only" onclick="openModal('modal-div')"><i class="ph ph-plus"></i> Nuova Divisione</button>
             </div>
             <div class="card">
-                <table id="table-divs">
-                    <thead><tr><th>Divisione</th><th>Azienda Madre</th><th>Budget</th><th>Efficienza</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-divs">
+                        <thead><tr><th>Divisione</th><th>Azienda Madre</th><th>Budget</th><th>Efficienza</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-badges" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Gestione Codici Badge</h2>
-                <button class="btn admin-only" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-badge')"><i class="ph ph-plus"></i> Genera</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2>Gestione Codici Badge</h2>
+                <button class="btn admin-only" onclick="openModal('modal-badge')"><i class="ph ph-plus"></i> Genera Badge</button>
             </div>
             <div class="card">
-                <table id="table-badges">
-                    <thead><tr><th>Dipendente</th><th>Codice Segreto (PIN)</th><th>Data Creazione</th><th>ID Dispositivo Ass.</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-badges">
+                        <thead><tr><th>Dipendente</th><th>Codice Segreto (PIN)</th><th>Data Creazione</th><th>ID Dispositivo Ass.</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-payrolls" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Gestione Paghe e Stipendi</h2>
-                <button class="btn admin-only" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-payroll')"><i class="ph ph-plus"></i> Emetti</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2>Gestione Paghe e Stipendi</h2>
+                <button class="btn admin-only" onclick="openModal('modal-payroll')"><i class="ph ph-plus"></i> Busta Paga</button>
             </div>
             <div class="card">
-                <table id="table-payrolls">
-                    <thead><tr><th>Periodo</th><th>Dipendente</th><th>Importo</th><th>IBAN Bonifico</th><th>Stato</th><th>Documento PDF</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-payrolls">
+                        <thead><tr><th>Periodo</th><th>Dipendente</th><th>Importo</th><th>IBAN Bonifico</th><th>Stato</th><th>Documento PDF</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-staff" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 id="staff-page-title" style="font-size: 18px;">Gestione Organico HR Globale</h2>
-                    <p id="staff-page-desc" style="font-size: 11px; color: var(--text-light);">Gestione completa dipendenti e dati fiscali/bancari.</p>
+                    <h2 id="staff-page-title">Gestione Organico HR Globale</h2>
+                    <p id="staff-page-desc" style="font-size: 12px; color: var(--text-light);">Gestione completa dei dipendenti e dei dati fiscali/bancari.</p>
                 </div>
-                <button class="btn admin-only" id="btn-new-staff" style="width:100%; font-size:12px; padding:10px;" onclick="openModal('modal-staff')"><i class="ph ph-plus"></i> Nuovo Dipendente</button>
+                <button class="btn admin-only" id="btn-new-staff" onclick="openModal('modal-staff')"><i class="ph ph-plus"></i> Dipendente</button>
             </div>
             <div class="card admin-only" id="staff-admin-view">
-                <table id="table-staff">
-                    <thead><tr><th>Nome</th><th>Ruolo</th><th>Azienda</th><th>Efficienza</th><th>Accesso Macchinari</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-staff">
+                        <thead><tr><th>Nome</th><th>Ruolo</th><th>Azienda</th><th>Efficienza</th><th>Accesso Macchinari</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             <div id="staff-user-view" style="display:none; width: 100%;"></div>
         </section>
 
         <section id="view-timbrature" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 id="timbrature-page-title" style="font-size: 18px;">Log Ingressi e Timbrature</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2 id="timbrature-page-title">Log Ingressi e Timbrature</h2>
                 <div class="admin-only" style="display:flex; gap:8px;">
-                    <button class="btn" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-timbratura')"><i class="ph ph-plus"></i> Forzatura</button>
+                    <button class="btn" onclick="openModal('modal-timbratura')"><i class="ph ph-plus"></i> Forzatura</button>
                 </div>
             </div>
             <div class="card">
-                <table id="table-timbrature">
-                    <thead><tr><th>Timestamp</th><th>Dipendente</th><th>Azienda/Div</th><th>Tipo</th><th>Dispositivo/Geo</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-timbrature">
+                        <thead><tr><th>Timestamp</th><th>Dipendente</th><th>Azienda/Div</th><th>Tipo</th><th>Dispositivo/Geo</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-docs" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Amministrazione & Fatture</h2>
-                <button class="btn admin-only" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-doc')"><i class="ph ph-plus"></i> Inserisci</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2>Amministrazione, Fatture & Uploads</h2>
+                <button class="btn admin-only" onclick="openModal('modal-doc')"><i class="ph ph-plus"></i> Inserisci Doc</button>
             </div>
             <div class="grid admin-only" id="finance-summary"></div>
             <div class="card">
-                <table id="table-docs">
-                    <thead><tr><th>Data</th><th>Descrizione</th><th>Azienda Rif.</th><th>Importo</th><th>Tipo</th><th>File / Download</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-docs">
+                        <thead><tr><th>Data</th><th>Descrizione</th><th>Azienda Rif.</th><th>Importo</th><th>Tipo</th><th>File / Download</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
         
         <section id="view-cloud" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-direction: column; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="font-size: 18px;">Archivio Cloud Condiviso</h2>
-                    <div id="cloud-breadcrumb" style="font-size: 12px; color: var(--primary); font-weight: 500; margin-top:4px; cursor:pointer;">
+                    <h2>Archivio Cloud Condiviso</h2>
+                    <div id="cloud-breadcrumb" style="font-size: 13px; color: var(--primary); font-weight: 500; margin-top:5px; cursor:pointer;">
                         <span onclick="openCloudFolder(null)"><i class="ph-fill ph-house"></i> Root Principale</span> <span id="cloud-breadcrumb-active"></span>
                     </div>
                 </div>
-                <div class="admin-only" style="display:flex; gap:8px; width:100%;">
-                    <button class="btn" id="btn-cloud-folder" style="flex:1; font-size:12px; padding:10px;" onclick="openModal('modal-cloud-folder')"><i class="ph ph-folder-plus"></i> Cartella</button>
-                    <button class="btn" id="btn-cloud-upload" style="flex:1; font-size:12px; padding:10px; display:none;" onclick="openModal('modal-cloud-file')"><i class="ph ph-upload-simple"></i> Carica File</button>
+                <div class="admin-only" style="display:flex; gap:8px; width: 100%;">
+                    <button class="btn" id="btn-cloud-folder" style="flex: 1;" onclick="openModal('modal-cloud-folder')"><i class="ph ph-folder-plus"></i> Cartella</button>
+                    <button class="btn" id="btn-cloud-upload" style="display:none; flex: 1;" onclick="openModal('modal-cloud-file')"><i class="ph ph-upload-simple"></i> Upload</button>
                 </div>
             </div>
             <div id="cloud-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;"></div>
         </section>
 
         <section id="view-tasks" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Task & Ticketing</h2>
-                <button class="btn admin-only" style="font-size: 12px; padding: 10px;" onclick="openModal('modal-task')"><i class="ph ph-plus"></i> Nuovo</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
+                <h2>Gestione Task & Ticketing</h2>
+                <button class="btn admin-only" onclick="openModal('modal-task')"><i class="ph ph-plus"></i> Nuovo Task</button>
             </div>
             <div class="card">
-                <table id="table-tasks">
-                    <thead><tr><th>Titolo Task</th><th>Assegnato a</th><th>Priorità</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="table-tasks">
+                        <thead><tr><th>Titolo Task</th><th>Assegnato a</th><th>Priorità</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-ai" class="view admin-only">
             <div class="grid">
                 <div style="grid-column: 1 / -1;">
-                    <h2 style="font-size: 18px; margin-bottom: 12px;">Assistente Analitico Globale (Gemini)</h2>
+                    <h2>Assistente Analitico Globale (Gemini Integration)</h2>
                     <div class="ai-chat">
                         <div class="ai-msgs" id="chat-box">
                             <div class="msg bot"><strong>Gemini AI:</strong> Ciao Admin. Sono connesso. Come posso aiutarti?</div>
                         </div>
                         <div class="ai-input admin-only">
                             <input type="text" id="ai-text" placeholder="Scrivi una richiesta...">
-                            <button class="btn" style="padding: 10px 14px;" onclick="sendAiPrompt()"><i class="ph ph-paper-plane-right"></i></button>
+                            <button class="btn" onclick="sendAiPrompt()"><i class="ph ph-paper-plane-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -538,7 +577,7 @@
                 <div class="hw-panel">
                     <div class="hw-title">Console Grado B (Root Access)</div>
                     <div class="terminal" id="grado-terminal">[SYS] Accesso effettuato al Mainframe Centrale.<br></div>
-                    <button class="btn admin-only" style="width:100%; margin-top:12px; background:#00e5ff; color:#000; font-size: 13px;" onclick="printGradoB()">Esegui Override Diagnostica</button>
+                    <button class="btn admin-only" style="width:100%; margin-top:10px; background:#00e5ff; color:#000;" onclick="printGradoB()">Esegui Override Diagnostica</button>
                 </div>
             </div>
         </section>
@@ -549,19 +588,19 @@
                 <div class="hw-panel" style="text-align:center;">
                     <div class="hw-title">Potenza Trasmissione (TX)</div>
                     <div style="font-size: 32px; font-family: monospace; color:#00e5ff; font-weight:bold;" id="eolo-pwr">14.2 kW</div>
-                    <input type="range" min="10" max="50" value="14" style="width:100%; margin-top:14px;" class="admin-only" oninput="document.getElementById('eolo-pwr').innerText = this.value + '.2 kW'">
+                    <input type="range" min="10" max="50" value="14" style="width:100%; margin-top:15px;" class="admin-only" oninput="document.getElementById('eolo-pwr').innerText = this.value + '.2 kW'">
                 </div>
             </div>
         </section>
 
         <section id="view-settings" class="view admin-only">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="font-size: 18px;">Settings Globali ERP</h2>
+                <h2>Settings Globali ERP</h2>
             </div>
             <div class="card" style="max-width: 100%;">
                 <label style="font-size:12px; font-weight:600; display:block;">Nome Azienda</label>
                 <input type="text" class="input" value="Horizon Global ERP" disabled>
-                <button class="btn" style="margin-top: 12px; width:100%;" onclick="alert('Salvate.')">Salva Impostazioni</button>
+                <button class="btn" style="margin-top: 10px; width: 100%;" onclick="alert('Salvate.')">Salva Impostazioni</button>
             </div>
         </section>
 
@@ -569,83 +608,85 @@
 
     <div id="modal-crm-user" class="modal">
         <div class="modal-content modal-content-lg">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px; flex-wrap: wrap; gap: 8px;">
                 <div>
                     <h3 id="crm-modal-name" style="font-size:18px; color:var(--text);">Nome Cliente</h3>
-                    <p style="font-size:11px; color:var(--text-light); margin-top:2px; word-break:break-all;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
+                    <p style="font-size:11px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
                 </div>
-                <div style="text-align:right; flex-shrink: 0;">
-                    <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
+                <div style="text-align:right;">
+                    <span style="font-size:10px; color:var(--text-light); uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
                     <span id="crm-modal-credit" style="font-size:20px; font-weight:800; color:var(--accent);">€ 0.00</span>
                 </div>
             </div>
             <input type="hidden" id="crm-target-uid">
             <input type="hidden" id="crm-target-piva">
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h4 style="font-size:13px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi e Pratiche</h4>
-                <button class="btn" style="padding:6px 10px; font-size:11px;" onclick="openModalServizioManuale()"><i class="ph ph-plus"></i> Manuale</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h4 style="font-size:13px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi e Pratiche in Sincronia</h4>
+                <button class="btn" style="padding:6px 10px; font-size:11px; min-height: initial;" onclick="openModalServizioManuale()"><i class="ph ph-plus"></i> Manuale</button>
             </div>
             
-            <div class="card" style="padding:12px; margin-bottom:20px; max-height:220px; overflow-y:auto;">
-                <table style="margin-top:0;">
-                    <thead><tr><th>ID</th><th>Servizio Richiesto</th><th>Data Invio</th><th>Stato</th><th>Gestisci</th></tr></thead>
-                    <tbody id="crm-services-tbody"></tbody>
-                </table>
+            <div class="card" style="padding:10px; margin-bottom:16px; max-height:200px; overflow-y:auto;">
+                <div class="table-wrapper">
+                    <table style="margin-top:0;">
+                        <thead><tr><th>ID</th><th>Servizio Richiesto</th><th>Data Invio</th><th>Stato</th><th>Gestisci</th></tr></thead>
+                        <tbody id="crm-services-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:16px; border-radius:14px; margin-bottom:16px;">
-                <h4 style="color:var(--accent); margin-bottom:10px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
-                <p style="font-size:11px; color:var(--text-light); margin-bottom:10px; line-height: 1.4;">L'importo verrà sottratto dal saldo AuraCredit sull'App Horizon ID.</p>
-                <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:14px; border-radius:12px; margin-bottom:16px;">
+                <h4 style="color:var(--accent); margin-bottom:8px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
+                <p style="font-size:11px; color:var(--text-light); margin-bottom:10px;">Compila il modulo per addebitare il cliente. L'importo verrà sottratto dal saldo AuraCredit sull'App Horizon ID e salvato nello storico contabile del gestionale.</p>
+                <div style="display:grid; grid-template-columns: 1fr; gap:8px;">
                     <div>
-                        <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">Descrizione / Modulo</label>
-                        <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Es. Rinnovo Modulo ERP">
+                        <label style="font-size:10px; font-weight:bold; display:block; margin-bottom:2px;">Descrizione / Modulo Addebitato</label>
+                        <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Es. Rinnovo Modulo ERP Enterprise">
                     </div>
                     <div>
-                        <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">Importo (€)</label>
+                        <label style="font-size:10px; font-weight:bold; display:block; margin-bottom:2px;">Importo da Scalare (€)</label>
                         <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Es. 150">
                     </div>
                 </div>
-                <div style="text-align:right; margin-top:12px;">
-                    <button class="btn" style="background:var(--accent); width:100%; font-size:13px;" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito & Fattura</button>
+                <div style="text-align:right; margin-top:10px;">
+                    <button class="btn" style="background:var(--accent); width: 100%;" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito & Fattura</button>
                 </div>
             </div>
 
             <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
+                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
             </div>
         </div>
     </div>
 
     <div id="modal-crm-add-service" class="modal">
-        <div class="modal-content" style="max-width:100%;">
-            <h3 style="margin-bottom:8px; font-size: 18px;">Inserimento Servizio Manuale</h3>
-            <p style="font-size:11px; color:var(--text-light); margin-bottom:14px;">La pratica verrà associata all'anagrafica del cliente.</p>
-            <label style="font-size:12px; font-weight:600; display:block;">Servizio / Modulo da Attivare</label>
-            <input type="text" id="crm-add-serv-title" class="input" placeholder="Es. Connettività Orion FWA">
-            <label style="font-size:12px; font-weight:600; display:block;">Tipologia Contratto</label>
+        <div class="modal-content" style="max-width:500px;">
+            <h3 style="margin-bottom:8px;">Inserimento Servizio Manuale</h3>
+            <p style="font-size:11px; color:var(--text-light); margin-bottom:12px;">La pratica verrà creata sul database globale e associata automaticamente all'anagrafica del cliente.</p>
+            <label style="font-size:11px; font-weight:600; display:block;">Servizio / Modulo da Attivare</label>
+            <input type="text" id="crm-add-serv-title" class="input" placeholder="Es. Connettività Orion FWA o Sito Web Custom">
+            <label style="font-size:11px; font-weight:600; display:block;">Tipologia Contratto</label>
             <select id="crm-add-serv-type" class="input">
                 <option value="Azienda">Azienda (B2B Corporate)</option>
                 <option value="Privato">Privato / Cittadino (B2C)</option>
             </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Stato Iniziale Pratica</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Stato Iniziale Pratica</label>
             <select id="crm-add-serv-status" class="input">
                 <option value="raccolta">In Raccolta / Nuova</option>
                 <option value="in corso">In Lavorazione / In Corso</option>
                 <option value="approvata">Approvata / Attiva</option>
             </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Note / Specifiche Tecniche</label>
-            <textarea id="crm-add-serv-notes" class="input" style="min-height:70px;" placeholder="Dettagli aggiuntivi..."></textarea>
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-crm-add-service')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveCrmManualService()">Crea</button>
+            <label style="font-size:11px; font-weight:600; display:block;">Note / Specifiche Tecniche</label>
+            <textarea id="crm-add-serv-notes" class="input" style="min-height:60px;" placeholder="Dettagli aggiuntivi per i tecnici..."></textarea>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-crm-add-service')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveCrmManualService()">Crea Pratica</button>
             </div>
         </div>
     </div>
 
     <div id="modal-chat-reply" class="modal">
-        <div class="modal-content" style="max-width:100%;">
+        <div class="modal-content" style="max-width:600px;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
                 <div>
                     <h3 style="font-size:15px;">Chat Live: <span id="chat-modal-user" style="color:var(--primary);"></span></h3>
@@ -656,24 +697,24 @@
             <input type="hidden" id="chat-target-uid">
             <div id="chat-modal-messages" style="height:280px; overflow-y:auto; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
             <div style="display:flex; gap:8px;">
-                <input type="text" id="chat-modal-input" class="input" style="margin:0; flex:1;" placeholder="Scrivi una risposta..." onkeypress="if(event.key==='Enter') sendStaffChatMessage()">
-                <button class="btn" style="padding: 10px 14px;" onclick="sendStaffChatMessage()"><i class="ph ph-paper-plane-right"></i></button>
+                <input type="text" id="chat-modal-input" class="input" style="margin:0; flex:1;" placeholder="Scrivi una risposta allo staff..." onkeypress="if(event.key==='Enter') sendStaffChatMessage()">
+                <button class="btn" onclick="sendStaffChatMessage()"><i class="ph ph-paper-plane-right"></i></button>
             </div>
             <div style="display:flex; justify-content:flex-end; margin-top:12px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%;" onclick="closeModal('modal-chat-reply')">Chiudi Chat</button>
+                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-chat-reply')">Chiudi Chat</button>
             </div>
         </div>
     </div>
 
     <div id="modal-dettaglio-servizio" class="modal">
         <div class="modal-content modal-content-lg">
-            <h3 style="font-size: 18px;">Scheda Dettaglio: Servizio <span id="ds-id" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettaglio-servizio-content" style="margin-top: 12px; margin-bottom: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); padding: 14px;"></div>
-            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 14px; border-radius: 12px; border: 1px solid var(--primary); margin-bottom: 16px;">
+            <h3>Scheda Dettaglio: Richiesta Servizio <span id="ds-id" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
+            <div id="dettaglio-servizio-content" style="margin-top: 12px; margin-bottom: 16px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 14px;"></div>
+            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
                 <h4 style="color:var(--primary); margin-bottom:8px; font-size: 13px;"><i class="ph ph-arrows-clockwise"></i> Gestione Stato Richiesta</h4>
                 <input type="hidden" id="ds-target-id">
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <select id="ds-stato-select" class="input" style="margin:0;">
+                <div style="display:flex; gap:8px; align-items:center; flex-direction: column;">
+                    <select id="ds-stato-select" class="input" style="margin:0; width: 100%;">
                         <option value="Nuova">Nuova (Da valutare)</option>
                         <option value="raccolta">In Raccolta / Pratica Aperta</option>
                         <option value="in corso">In Lavorazione / In Corso</option>
@@ -681,24 +722,24 @@
                         <option value="approvata">Approvata / Attiva</option>
                         <option value="rifiutata">Rifiutata / Chiusa</option>
                     </select>
-                    <button class="btn" style="width:100%; font-size:13px;" onclick="updateStatoServizio()"><i class="ph ph-check-circle"></i> Aggiorna Stato</button>
+                    <button class="btn" style="width: 100%;" onclick="updateStatoServizio()"><i class="ph ph-check-circle"></i> Aggiorna Stato</button>
                 </div>
             </div>
-            <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%;" onclick="closeModal('modal-dettaglio-servizio')">Chiudi Scheda</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 16px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-dettaglio-servizio')">Chiudi Scheda</button>
             </div>
         </div>
     </div>
 
     <div id="modal-dettaglio-candidatura" class="modal">
         <div class="modal-content modal-content-lg">
-            <h3 style="font-size: 18px;">Scheda Profilo Candidato <span id="dc-id" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettaglio-candidatura-content" style="margin-top: 12px; margin-bottom: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); padding: 14px;"></div>
-            <div class="admin-only" style="background: rgba(34, 197, 94, 0.05); padding: 14px; border-radius: 12px; border: 1px solid var(--success); margin-bottom: 16px;">
+            <h3>Scheda Profilo Candidato <span id="dc-id" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
+            <div id="dettaglio-candidatura-content" style="margin-top: 12px; margin-bottom: 16px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 14px;"></div>
+            <div class="admin-only" style="background: rgba(34, 197, 94, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--success);">
                 <h4 style="color:var(--success); margin-bottom:8px; font-size: 13px;"><i class="ph ph-arrows-clockwise"></i> Iter di Selezione HR</h4>
                 <input type="hidden" id="dc-target-id">
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <select id="dc-stato-select" class="input" style="margin:0;">
+                <div style="display:flex; gap:8px; align-items:center; flex-direction: column;">
+                    <select id="dc-stato-select" class="input" style="margin:0; width: 100%;">
                         <option value="In Attesa">In Attesa (Da visionare)</option>
                         <option value="In Valutazione">In Valutazione (CV screening)</option>
                         <option value="Colloquio Fissato">Colloquio Fissato</option>
@@ -706,100 +747,101 @@
                         <option value="Assunto">Assunto (Converti in Dipendente)</option>
                         <option value="Scartato">Scartato</option>
                     </select>
-                    <button class="btn" style="background:var(--success); width:100%; font-size:13px;" onclick="updateStatoCandidatura()"><i class="ph ph-check-circle"></i> Aggiorna Iter</button>
+                    <button class="btn" style="background:var(--success); width: 100%;" onclick="updateStatoCandidatura()"><i class="ph ph-check-circle"></i> Aggiorna Iter</button>
                 </div>
             </div>
-            <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%;" onclick="closeModal('modal-dettaglio-candidatura')">Chiudi Scheda</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 16px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-dettaglio-candidatura')">Chiudi Scheda</button>
             </div>
         </div>
     </div>
 
     <div id="modal-servizio" class="modal">
         <div class="modal-content">
-            <h3 style="font-size: 18px;">Nuovo Servizio a Catalogo</h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 14px;">Aggiungi manualmente i servizi al database.</p>
+            <h3>Nuovo Servizio a Catalogo</h3>
+            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">Aggiungi manualmente i servizi al database per renderli disponibili in base al target.</p>
             <input type="hidden" id="servizio-id">
-            <label style="font-size:12px; font-weight:600; display:block;">Nome Servizio</label>
-            <input type="text" id="servizio-nome" class="input" placeholder="Es. Sviluppo Gestionale...">
-            <label style="font-size:12px; font-weight:600; display:block;">Destinato a (Target Cliente)</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Nome Servizio</label>
+            <input type="text" id="servizio-nome" class="input" placeholder="Es. Sviluppo Gestionale, Consulenza Fiscale...">
+            <label style="font-size:11px; font-weight:600; display:block;">Destinato a (Target Cliente)</label>
             <select id="servizio-target" class="input">
                 <option value="Aziende">Solo Aziende (B2B)</option>
                 <option value="Cittadini">Solo Cittadini / Privati (B2C)</option>
                 <option value="Entrambi">Entrambi (B2B & B2C)</option>
             </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Descrizione Dettagliata</label>
-            <textarea id="servizio-desc" class="input" placeholder="Descrivi i dettagli..." style="min-height:70px;"></textarea>
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-servizio')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveServizio()">Salva</button>
+            <label style="font-size:11px; font-weight:600; display:block;">Descrizione Dettagliata e Requisiti Modulo</label>
+            <textarea id="servizio-desc" class="input" placeholder="Descrivi i dettagli che servono per questo servizio..." style="min-height:70px;"></textarea>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-servizio')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveServizio()">Salva Catalogo</button>
             </div>
         </div>
     </div>
 
     <div id="modal-ordine" class="modal">
-        <div class="modal-content" style="max-width: 100%;">
-            <h3 id="ordine-modal-title" style="font-size: 18px;">Nuovo Ordine Horizon</h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 14px;">Modulo adattivo per inserimento ordini.</p>
+        <div class="modal-content" style="max-width: 700px;">
+            <h3 id="ordine-modal-title">Nuovo Ordine Horizon</h3>
+            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">Modulo adattivo per inserimento ordini (registrazione simultanea su ERP e App Horizon ID)</p>
             <input type="hidden" id="ordine-id">
-            <label style="font-size:12px; font-weight:600; display:block;">Target Inserimento</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Target Inserimento</label>
             <select id="ordine-tipo-cliente" class="input" onchange="aggiornaModuloOrdine()">
                 <option value="Azienda">Richiesta per Azienda (B2B)</option>
                 <option value="Privato">Richiesta per Cittadino / Privato (B2C)</option>
             </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Cliente App (Horizon ID)</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Cliente App (Horizon ID Associato)</label>
             <select id="ordine-cliente" class="input"></select>
-            <label style="font-size:12px; font-weight:600; display:block;">Servizio Richiesto</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Servizio Richiesto (Dal Catalogo Firebase)</label>
             <select id="ordine-servizio" class="input"></select>
-            <div id="campi-azienda" style="display:flex; flex-direction:column; gap:8px; background:rgba(37,99,235,0.05); padding:12px; border-radius:12px; border:1px solid rgba(37,99,235,0.2); margin-bottom:14px;">
-                <div><label style="font-size:11px; font-weight:bold;">Ragione Sociale</label><input type="text" id="ordine-ragione" class="input" style="margin:4px 0 0;" placeholder="Ragione Sociale SPA"></div>
-                <div><label style="font-size:11px; font-weight:bold;">Partita IVA</label><input type="text" id="ordine-piva" class="input" style="margin:4px 0 0;" placeholder="P.IVA"></div>
-                <div><label style="font-size:11px; font-weight:bold;">Codice Univoco SDI</label><input type="text" id="ordine-sdi" class="input" style="margin:4px 0 0;" placeholder="SDI"></div>
+            <div id="campi-azienda" style="display:flex; gap:8px; flex-direction:column; background:rgba(37,99,235,0.05); padding:10px; border-radius:8px; border:1px solid rgba(37,99,235,0.2); margin-bottom:12px;">
+                <div><label style="font-size:10px; font-weight:bold;">Ragione Sociale</label><input type="text" id="ordine-ragione" class="input" style="margin-bottom:0;" placeholder="Ragione Sociale SPA"></div>
+                <div><label style="font-size:10px; font-weight:bold;">Partita IVA</label><input type="text" id="ordine-piva" class="input" style="margin-bottom:0;" placeholder="P.IVA"></div>
+                <div><label style="font-size:10px; font-weight:bold;">Codice Univoco SDI</label><input type="text" id="ordine-sdi" class="input" style="margin-bottom:0;" placeholder="SDI a 7 caratteri"></div>
             </div>
-            <div id="campi-privato" style="display:none; flex-direction:column; gap:8px; background:rgba(34,197,94,0.05); padding:12px; border-radius:12px; border:1px solid rgba(34,197,94,0.2); margin-bottom:14px;">
-                <div><label style="font-size:11px; font-weight:bold;">Nome e Cognome</label><input type="text" id="ordine-nome-cognome" class="input" style="margin:4px 0 0;" placeholder="Nome e Cognome"></div>
-                <div><label style="font-size:11px; font-weight:bold;">Codice Fiscale</label><input type="text" id="ordine-cf" class="input" style="margin:4px 0 0;" placeholder="Codice Fiscale"></div>
+            <div id="campi-privato" style="display:none; gap:8px; flex-direction:column; background:rgba(34,197,94,0.05); padding:10px; border-radius:8px; border:1px solid rgba(34,197,94,0.2); margin-bottom:12px;">
+                <div><label style="font-size:10px; font-weight:bold;">Nome e Cognome Completo</label><input type="text" id="ordine-nome-cognome" class="input" style="margin-bottom:0;" placeholder="Nome e Cognome"></div>
+                <div><label style="font-size:10px; font-weight:bold;">Codice Fiscale</label><input type="text" id="ordine-cf" class="input" style="margin-bottom:0;" placeholder="16 Caratteri"></div>
             </div>
-            <label style="font-size:12px; font-weight:600; display:block;">Note Specifiche</label>
-            <textarea id="ordine-note" class="input" placeholder="Inserisci note o requisiti..." style="min-height:60px;"></textarea>
-            <label style="font-size:12px; font-weight:600; display:block;">Importo Concordato (€)</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Dettagli Specifici e Moduli Richiesta</label>
+            <textarea id="ordine-note" class="input" placeholder="Inserisci note, requisiti tecnici o file allegati virtuali..." style="min-height:50px;"></textarea>
+            <label style="font-size:11px; font-weight:600; display:block;">Importo Concordato (€)</label>
             <input type="number" id="ordine-importo" class="input" placeholder="Es. 1500">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-ordine')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveOrdine()">Registra</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 12px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-ordine')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveOrdine()">Registra Ordine</button>
             </div>
         </div>
     </div>
 
     <div id="modal-ordine-dettagli" class="modal">
-        <div class="modal-content" style="max-width: 100%;">
-            <h3 style="font-size: 18px;">Scheda Avanzamento <span id="dettagli-id-testo" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettagli-ordine-content" style="margin-top: 12px; margin-bottom: 16px; padding: 14px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); font-size:13px; line-height: 1.5;"></div>
-            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 14px; border-radius: 12px; border: 1px solid var(--primary); margin-bottom: 16px;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3>Scheda Avanzamento Ordine <span id="dettagli-id-testo" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
+            <div id="dettagli-ordine-content" style="margin-top: 12px; margin-bottom: 16px; padding: 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); font-size:13px; line-height: 1.5;"></div>
+            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
                 <h4 style="color:var(--primary); margin-bottom:8px; font-size: 13px;"><i class="ph ph-arrows-clockwise"></i> Gestione Stato Lavorazione</h4>
                 <input type="hidden" id="dettagli-ordine-id">
                 <input type="hidden" id="dettagli-cliente-id">
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <select id="dettagli-stato-select" class="input" style="margin:0;">
+                <div style="display:flex; gap:8px; align-items:center; flex-direction: column;">
+                    <select id="dettagli-stato-select" class="input" style="margin:0; width: 100%;">
                         <option value="Richiesto">Richiesto</option>
                         <option value="In Lavorazione">In Lavorazione</option>
                         <option value="In Attivazione">In Attivazione</option>
                         <option value="Attivo">Attivo</option>
                         <option value="Annullato">Annullato</option>
                     </select>
-                    <button class="btn" style="width:100%; font-size:13px;" onclick="updateOrdineStato()"><i class="ph ph-check-circle"></i> Sincronizza Stato</button>
+                    <button class="btn" style="width: 100%;" onclick="updateOrdineStato()"><i class="ph ph-check-circle"></i> Sincronizza Stato</button>
                 </div>
+                <p style="font-size:10px; color:var(--text-light); margin-top:8px;"><i class="ph-fill ph-info"></i> L'aggiornamento aggiornerà in Real-Time sia Horizon Global (ERP) che Horizon ID Core (App Cliente).</p>
             </div>
-            <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%;" onclick="closeModal('modal-ordine-dettagli')">Chiudi Scheda</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 16px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-ordine-dettagli')">Chiudi Scheda</button>
             </div>
         </div>
     </div>
 
     <div id="modal-verify-id" class="modal">
-        <div class="modal-content" style="max-width: 100%;">
-            <h3 style="font-size: 18px; margin-bottom: 4px;">Verifica Documenti: <span id="verify-user-name" style="color:var(--primary);"></span></h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 14px;">Dato Fiscale: <strong id="verify-user-piva" style="color:var(--text);"></strong></p>
+        <div class="modal-content" style="max-width: 900px;">
+            <h3>Verifica Documenti & Biometria: <span id="verify-user-name" style="color:var(--primary);"></span></h3>
+            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">Dato Fiscale: <strong id="verify-user-piva" style="color:var(--text);"></strong></p>
             <input type="hidden" id="verify-user-uid">
             
             <div style="display:grid; grid-template-columns: 1fr; gap:12px; margin-bottom: 16px;">
@@ -816,23 +858,23 @@
                     </div>
                 </div>
                 <div style="background:rgba(37, 99, 235, 0.05); padding:10px; border-radius:12px; border:1px solid rgba(37, 99, 235, 0.2);">
-                    <label style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--primary); display:block; margin-bottom:6px;"><i class="ph-fill ph-video-camera"></i> 3. Biometria Volto</label>
+                    <label style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--primary); display:block; margin-bottom:6px;"><i class="ph-fill ph-video-camera"></i> 3. Biometria Volto (Video)</label>
                     <div style="width:100%; height:160px; display:flex; align-items:center; justify-content:center; background:#000; border-radius:8px; overflow:hidden;">
                         <video id="verify-video" controls style="width:100%; height:100%; object-fit:cover;"></video>
                     </div>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <button class="btn" style="background:var(--success); color:white; width:100%; font-size:13px;" onclick="approveHorizonId()">Approva & Attiva</button>
-                <button class="btn" style="background:var(--danger); color:white; width:100%; font-size:13px;" onclick="rejectHorizonId()">Rifiuta Identità</button>
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%; font-size:13px;" onclick="closeModal('modal-verify-id')">Annulla</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px; flex-direction: column;">
+                <button class="btn" style="background:var(--success); color:white;" onclick="approveHorizonId()">Approva & Attiva</button>
+                <button class="btn" style="background:var(--danger); color:white;" onclick="rejectHorizonId()">Rifiuta Identità</button>
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-verify-id')">Annulla</button>
             </div>
         </div>
     </div>
 
     <div id="modal-payroll" class="modal">
         <div class="modal-content">
-            <h3 style="font-size: 18px; margin-bottom: 12px;">Busta Paga</h3>
+            <h3>Busta Paga</h3>
             <input type="hidden" id="pay-id">
             <select id="pay-staff" class="input"></select>
             <input type="month" id="pay-month" class="input">
@@ -841,166 +883,176 @@
                 <option>In Elaborazione</option>
                 <option>Bonifico Emesso</option>
             </select>
-            <label style="font-size:12px; font-weight:600; display:block;">File Busta Paga (PDF/Img)</label>
+            <label style="font-size:11px; font-weight:600; display:block;">File Busta Paga (PDF/Img)</label>
             <input type="file" id="pay-file" class="input" accept=".pdf,image/*">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-payroll')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="savePayroll()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-payroll')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="savePayroll()">Salva Documento</button>
             </div>
         </div>
     </div>
     
     <div id="modal-doc" class="modal">
         <div class="modal-content">
-            <h3 id="doc-modal-title" style="font-size: 18px; margin-bottom: 12px;">Documento / Fattura</h3>
+            <h3 id="doc-modal-title">Documento / Fattura</h3>
             <input type="hidden" id="doc-id">
             <input type="text" id="doc-title" class="input" placeholder="Titolo/Descrizione Documento">
             <input type="number" id="doc-amount" class="input" placeholder="Importo Transazione">
             <select id="doc-type" class="input"><option value="entrata">Incasso</option><option value="uscita">Spesa</option></select>
             <select id="doc-company" class="input"></select>
-            <label style="font-size:12px; font-weight:600; display:block;">Carica File (PDF/Img)</label>
+            <label style="font-size:11px; font-weight:600; display:block;">Carica File Fattura/Doc (PDF/Img)</label>
             <input type="file" id="doc-file-upload" class="input" accept=".pdf,image/*">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-doc')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveDocument()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-doc')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveDocument()">Salva Fattura</button>
             </div>
         </div>
     </div>
 
     <div id="modal-badge" class="modal">
         <div class="modal-content">
-            <h3 style="font-size: 18px; margin-bottom: 12px;">Codice App Badge</h3>
+            <h3>Codice App Badge</h3>
             <select id="badge-staff" class="input"></select>
             <input type="text" id="badge-code" class="input" placeholder="PIN Segreto (Es. 4482)">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-badge')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveBadge()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-badge')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveBadge()">Salva e Assegna</button>
             </div>
         </div>
     </div>
     
     <div id="modal-staff" class="modal">
         <div class="modal-content">
-            <h3 id="staff-modal-title" style="font-size: 18px; margin-bottom: 12px;">Gestione Dipendente HR</h3>
+            <h3 id="staff-modal-title">Gestione Dipendente HR</h3>
             <input type="hidden" id="staff-id">
-            <input type="text" id="staff-name" class="input" placeholder="Nome Completo">
-            <input type="text" id="staff-role" class="input" placeholder="Ruolo Aziendale">
-            <select id="staff-company" class="input" onchange="populateDivisionsForStaff()"></select>
-            <select id="staff-div" class="input"></select>
-            <input type="number" id="staff-eff" class="input" placeholder="Efficienza %">
-            <select id="staff-machine" class="input">
-                <option>Nessuno</option>
-                <option>Grado mAf</option>
-                <option>Eolo fFk9</option>
-                <option>Entrambe</option>
-            </select>
-            <input type="text" id="staff-cf" class="input" placeholder="Codice Fiscale">
-            <input type="text" id="staff-ci" class="input" placeholder="Num. Carta Identità">
-            <input type="text" id="staff-ts" class="input" placeholder="Num. Tessera Sanitaria">
+            <div style="display:flex; gap:8px; flex-direction:column;">
+                <input type="text" id="staff-name" class="input" placeholder="Nome Completo">
+                <input type="text" id="staff-role" class="input" placeholder="Ruolo Aziendale">
+            </div>
+            <div style="display:flex; gap:8px; flex-direction:column;">
+                <select id="staff-company" class="input" onchange="populateDivisionsForStaff()"></select>
+                <select id="staff-div" class="input"></select>
+            </div>
+            <div style="display:flex; gap:8px; flex-direction:column;">
+                <input type="number" id="staff-eff" class="input" placeholder="Efficienza %">
+                <select id="staff-machine" class="input">
+                    <option>Nessuno</option>
+                    <option>Grado mAf</option>
+                    <option>Eolo fFk9</option>
+                    <option>Entrambe</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:8px; flex-direction:column;">
+                <input type="text" id="staff-cf" class="input" placeholder="Codice Fiscale">
+                <input type="text" id="staff-ci" class="input" placeholder="Num. Carta Identità">
+                <input type="text" id="staff-ts" class="input" placeholder="Num. Tessera Sanitaria">
+            </div>
             <input type="text" id="staff-indirizzo" class="input" placeholder="Indirizzo Residenza">
-            <input type="date" id="staff-dataNascita" class="input">
-            <input type="text" id="staff-luogoNascita" class="input" placeholder="Luogo Nascita">
+            <div style="display:flex; gap:8px; flex-direction:column;">
+                <input type="date" id="staff-dataNascita" class="input">
+                <input type="text" id="staff-luogoNascita" class="input" placeholder="Luogo Nascita">
+            </div>
             <input type="text" id="staff-iban" class="input" placeholder="IBAN Bancario">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-staff')">Chiudi</button>
-                <button id="btn-save-staff" class="btn admin-only" style="flex:1;" onclick="saveStaff()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-staff')">Chiudi</button>
+                <button id="btn-save-staff" class="btn admin-only" style="flex: 1;" onclick="saveStaff()">Salva Profilo</button>
             </div>
         </div>
     </div>
     
     <div id="modal-azienda" class="modal">
         <div class="modal-content">
-            <h3 id="azienda-modal-title" style="font-size: 18px; margin-bottom: 12px;">Nuova Azienda Gruppo</h3>
+            <h3 id="azienda-modal-title">Nuova Azienda Gruppo</h3>
             <input type="hidden" id="azienda-id">
             <input type="text" id="azienda-name" class="input" placeholder="Ragione Sociale">
             <input type="number" id="azienda-cap" class="input" placeholder="Capitale Versato (€)">
             <input type="number" id="azienda-proj" class="input" placeholder="Progetti Attivi">
             <input type="number" id="azienda-eff" class="input" placeholder="Efficienza %">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-azienda')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveAzienda()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-azienda')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveAzienda()">Salva Azienda</button>
             </div>
         </div>
     </div>
     
     <div id="modal-div" class="modal">
         <div class="modal-content">
-            <h3 id="div-modal-title" style="font-size: 18px; margin-bottom: 12px;">Nuova Divisione HQ</h3>
+            <h3 id="div-modal-title">Nuova Divisione HQ</h3>
             <input type="hidden" id="div-id">
             <input type="text" id="div-name" class="input" placeholder="Nome Divisione">
             <select id="div-company" class="input"></select>
             <input type="number" id="div-budget" class="input" placeholder="Budget Assegnato (€)">
             <input type="number" id="div-eff" class="input" placeholder="Efficienza %">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-div')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveDivision()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-div')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveDivision()">Salva Divisione</button>
             </div>
         </div>
     </div>
     
     <div id="modal-task" class="modal">
         <div class="modal-content">
-            <h3 id="task-modal-title" style="font-size: 18px; margin-bottom: 12px;">Nuova Task</h3>
+            <h3 id="task-modal-title">Nuova Task</h3>
             <input type="hidden" id="task-id">
             <input type="text" id="task-title" class="input" placeholder="Descrizione Attività">
             <select id="task-staff" class="input"></select>
             <select id="task-prio" class="input"><option>Bassa</option><option>Media</option><option>Alta</option></select>
             <select id="task-status" class="input"><option>Da Iniziare</option><option>In Lavorazione</option><option>Completato</option></select>
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-task')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveTask()">Salva</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-task')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveTask()">Salva Task</button>
             </div>
         </div>
     </div>
     
     <div id="modal-timbratura" class="modal">
         <div class="modal-content">
-            <h3 style="font-size: 18px; margin-bottom: 12px;">Forza Timbratura</h3>
+            <h3>Forza Timbratura</h3>
             <select id="timb-staff" class="input"></select>
             <select id="timb-type" class="input"><option>Ingresso</option><option>Uscita</option></select>
             <input type="datetime-local" id="timb-time" class="input">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-timbratura')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveTimbratura()">Forza</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-timbratura')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveTimbratura()">Forza Inserimento</button>
             </div>
         </div>
     </div>
 
     <div id="modal-cloud-folder" class="modal">
-        <div class="modal-content" style="max-width: 100%;">
-            <h3 style="font-size: 18px; margin-bottom: 12px;">Nuova Cartella Cloud</h3>
-            <label style="font-size:12px; font-weight:600; display:block;">Nome Cartella</label>
+        <div class="modal-content" style="max-width: 400px;">
+            <h3>Nuova Cartella Cloud</h3>
+            <label style="font-size:11px; font-weight:600; display:block;">Nome Cartella</label>
             <input type="text" id="cloud-folder-name" class="input" placeholder="Es. Contratti 2024">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-cloud-folder')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveCloudFolder()">Crea</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-cloud-folder')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveCloudFolder()">Crea Cartella</button>
             </div>
         </div>
     </div>
 
     <div id="modal-cloud-file" class="modal">
-        <div class="modal-content" style="max-width: 100%;">
-            <h3 style="font-size: 18px; margin-bottom: 8px;">Carica Documento in Cloud</h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 14px;">I file saranno archiviati in Cloudinary.</p>
-            <label style="font-size:12px; font-weight:600; display:block;">Nome File / Descrizione</label>
-            <input type="text" id="cloud-file-name" class="input" placeholder="Es. Visura Camerale">
-            <label style="font-size:12px; font-weight:600; display:block;">Seleziona File</label>
+        <div class="modal-content" style="max-width: 500px;">
+            <h3>Carica Documento in Cloud</h3>
+            <p style="font-size: 10px; color: var(--text-light); margin-bottom: 12px;">I file saranno archiviati fisicamente in Cloudinary (cartella "Fatture") e sincronizzati con il gestionale.</p>
+            <label style="font-size:11px; font-weight:600; display:block;">Nome File / Descrizione</label>
+            <input type="text" id="cloud-file-name" class="input" placeholder="Es. Visura Camerale Horizon Srl">
+            <label style="font-size:11px; font-weight:600; display:block;">Seleziona File (PDF/Immagine/Doc)</label>
             <input type="file" id="cloud-file-upload" class="input">
-            <div style="display:flex; gap:10px; margin-top: 10px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex:1;" onclick="closeModal('modal-cloud-file')">Annulla</button>
-                <button class="btn" style="flex:1;" onclick="saveCloudFile()">Upload</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-cloud-file')">Annulla</button>
+                <button class="btn" style="flex: 1;" onclick="saveCloudFile()">Avvia Upload</button>
             </div>
         </div>
     </div>
     <!-- MODALE CRM DEFINITIVO -->
     <div id="modal-crm-user" class="modal">
         <div class="modal-content modal-content-lg">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px; flex-wrap: wrap; gap: 8px;">
                 <div>
                     <h3 id="crm-modal-name" style="font-size:18px; color:var(--text);">Nome Cliente</h3>
-                    <p style="font-size:11px; color:var(--text-light); margin-top:2px; word-break:break-all;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
+                    <p style="font-size:11px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
                 </div>
-                <div style="text-align:right; flex-shrink: 0;">
+                <div style="text-align:right;">
                     <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
                     <span id="crm-modal-credit" style="font-size:20px; font-weight:800; color:var(--accent);">€ 0.00</span>
                 </div>
@@ -1008,31 +1060,33 @@
             <input type="hidden" id="crm-target-uid">
             <input type="hidden" id="crm-target-piva">
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <h4 style="font-size:13px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi e Pratiche</h4>
-                <button class="btn" style="padding:6px 10px; font-size:11px;" onclick="openModal('modal-crm-add-service')"><i class="ph ph-plus"></i> Aggiungi Manuale</button>
+                <button class="btn" style="padding:6px 10px; font-size:11px; min-height: initial;" onclick="openModal('modal-crm-add-service')"><i class="ph ph-plus"></i> Manuale</button>
             </div>
             
-            <div class="card" style="padding:12px; margin-bottom:20px; max-height:220px; overflow-y:auto;">
-                <table style="margin-top:0;">
-                    <thead><tr><th>ID</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
-                    <tbody id="crm-services-tbody"></tbody>
-                </table>
+            <div class="card" style="padding:10px; margin-bottom:16px; max-height:200px; overflow-y:auto;">
+                <div class="table-wrapper">
+                    <table style="margin-top:0;">
+                        <thead><tr><th>ID</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
+                        <tbody id="crm-services-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:16px; border-radius:14px; margin-bottom:16px;">
+            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:14px; border-radius:12px; margin-bottom:16px;">
                 <h4 style="color:var(--accent); margin-bottom:10px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
-                <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+                <div style="display:grid; grid-template-columns: 1fr; gap:8px;">
                     <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Descrizione">
                     <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Importo (€)">
                 </div>
-                <div style="text-align:right; margin-top:12px;">
-                    <button class="btn" style="background:var(--accent); width:100%; font-size:13px;" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito</button>
+                <div style="text-align:right; margin-top:10px;">
+                    <button class="btn" style="background:var(--accent); width: 100%;" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito</button>
                 </div>
             </div>
 
             <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width:100%;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
+                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
             </div>
         </div>
     </div>
@@ -1425,10 +1479,10 @@
                         ${btnDel}
                         <i class="ph-fill ph-folder cloud-icon cloud-folder-icon"></i>
                         <div class="cloud-title">${f.name}</div>
-                        <div class="cloud-meta">${fileCount} Elementi</div>
+                        <div class="cloud-meta">${fileCount} Elementi archiviati</div>
                     </div>`;
                 }).join('');
-                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 30px; color:var(--text-light);">Archivio vuoto.</div>';
+                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-light);">Archivio vuoto. Nessuna cartella presente.</div>';
             } else {
                 const currentFolderData = state.cloud_folders.find(f => f.id == currentCloudFolder);
                 const folderName = currentFolderData ? currentFolderData.name : 'Cartella';
@@ -1445,11 +1499,11 @@
                         ${btnDel}
                         <i class="ph-fill ph-file-text cloud-icon cloud-file-icon"></i>
                         <div class="cloud-title">${f.name}</div>
-                        <div class="cloud-meta">${f.date}</div>
-                        <div style="margin-top:6px; font-size:10px; background:#e2e8f0; padding:2px 6px; border-radius:10px; color:var(--text);">Apri</div>
+                        <div class="cloud-meta">Data: ${f.date}<br>By: ${f.uploadedBy}</div>
+                        <div style="margin-top:10px; font-size:11px; background:#e2e8f0; padding:4px 8px; border-radius:12px; color:var(--text);">Clicca per aprire</div>
                     </div>`;
                 }).join('');
-                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 30px; color:var(--text-light);">Cartella vuota.</div>';
+                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-light);">Cartella vuota. Nessun documento caricato in questa sezione.</div>';
             }
         }
 
@@ -1468,37 +1522,44 @@
                 <div class="detail-group">
                     <span class="detail-label">Informazioni Generali</span>
                     <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Data:</small><br><strong>${new Date(req.dataInvio).toLocaleString()}</strong></div>
-                        <div><small style="color:var(--text-light)">Servizio:</small><br><strong style="color:var(--primary); font-size:15px;">${req.tipoServizio || req.servizioAcquistato || req.servizio || 'Indefinito'}</strong></div>
-                        <div><small style="color:var(--text-light)">Target:</small><br><strong>${req.tipo}</strong></div>
+                        <div><small style="color:var(--text-light)">Data Richiesta:</small><br><strong>${new Date(req.dataInvio).toLocaleString()}</strong></div>
+                        <div><small style="color:var(--text-light)">Servizio Richiesto:</small><br><strong style="color:var(--primary); font-size:16px;">${req.tipoServizio || req.servizioAcquistato || req.servizio || 'Indefinito'}</strong></div>
+                        <div><small style="color:var(--text-light)">Tipologia Cliente:</small><br><strong>${req.tipo}</strong></div>
                     </div>
                 </div>
 
                 <div class="detail-group">
-                    <span class="detail-label">Referente & Contatti</span>
+                    <span class="detail-label">Dati Referente & Contatti</span>
                     <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Nome:</small><br><strong>${req.nome} ${req.cognome}</strong></div>
+                        <div><small style="color:var(--text-light)">Nominativo:</small><br><strong>${req.nome} ${req.cognome}</strong></div>
                         <div><small style="color:var(--text-light)">Email:</small><br><strong><a href="mailto:${req.email}">${req.email}</a></strong></div>
-                        <div><small style="color:var(--text-light)">Tel:</small><br><strong><a href="tel:${req.telefono}">${req.telefono}</a></strong></div>
+                        <div><small style="color:var(--text-light)">Telefono / Cellulare:</small><br><strong><a href="tel:${req.telefono}">${req.telefono}</a></strong></div>
                     </div>
                 </div>
 
                 <div class="detail-group">
-                    <span class="detail-label">Dati Fiscali</span>
+                    <span class="detail-label">Dati Fiscali / Fatturazione</span>
                     <div class="form-grid">
                         ${isAz ? `
                             <div style="grid-column: 1/-1;"><small style="color:var(--text-light)">Ragione Sociale:</small><br><strong>${req.ragioneSociale}</strong></div>
-                            <div><small style="color:var(--text-light)">P.IVA:</small><br><strong>${req.piva}</strong></div>
-                            <div><small style="color:var(--text-light)">SDI:</small><br><strong style="font-family:monospace">${req.sdi}</strong></div>
+                            <div><small style="color:var(--text-light)">Partita IVA:</small><br><strong>${req.piva}</strong></div>
+                            <div><small style="color:var(--text-light)">Codice Fiscale (Aziendale):</small><br><strong>${req.cfAzienda || '-'}</strong></div>
+                            <div><small style="color:var(--text-light)">Codice Univoco SDI:</small><br><strong style="font-family:monospace">${req.sdi}</strong></div>
+                            <div><small style="color:var(--text-light)">Indirizzo PEC:</small><br><strong>${req.pec}</strong></div>
                         ` : `
-                            <div><small style="color:var(--text-light)">CF:</small><br><strong style="font-family:monospace">${req.cfPrivato}</strong></div>
+                            <div><small style="color:var(--text-light)">Codice Fiscale (Privato):</small><br><strong style="font-family:monospace">${req.cfPrivato}</strong></div>
                         `}
                     </div>
                 </div>
 
+                <div class="detail-group">
+                    <span class="detail-label">Indirizzo (Sede Legale / Residenza)</span>
+                    <div class="detail-value">${req.via || '-'}, ${req.cap || ''} - ${req.citta || ''} (${req.prov || ''}) - ${req.nazione || 'Italia'}</div>
+                </div>
+
                 <div class="detail-group" style="border-bottom:none; padding-bottom:0;">
-                    <span class="detail-label">Messaggio</span>
-                    <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; line-height:1.5; white-space:pre-wrap;">${req.dettagli || 'Nessun dettaglio.'}</div>
+                    <span class="detail-label">Dettagli / Messaggio Richiesta</span>
+                    <div style="background:#f1f5f9; padding:15px; border-radius:8px; font-size:13px; line-height:1.6; white-space:pre-wrap;">${req.dettagli || 'Nessun dettaglio aggiuntivo.'}</div>
                 </div>
             `;
 
@@ -1513,7 +1574,7 @@
             if(req) {
                 req.stato = nuovoStato;
                 await saveToFirebase('richieste_servizi', req);
-                alert("Stato aggiornato correttamente.");
+                alert("Stato della richiesta aggiornato correttamente.");
                 closeModal('modal-dettaglio-servizio');
             }
         }
@@ -1530,81 +1591,4 @@
             let eta = '-';
             if(c.dataNascita) {
                 const diff = Date.now() - new Date(c.dataNascita).getTime();
-                eta = Math.abs(new Date(diff).getUTCFullYear() - 1970);
-            }
-
-            let html = `
-                <div style="margin-bottom:12px;">
-                    <h2 style="margin:0; font-size:16px; color:var(--text);">${c.nome} ${c.cognome}</h2>
-                    <span style="font-size:13px; color:var(--primary); font-weight:600;">Posizione: ${c.posizione}</span>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Anagrafica</span>
-                    <div class="form-grid">
-                        <div><small style="color:var(--text-light)">CF:</small><br><strong style="font-family:monospace;">${c.cf}</strong></div>
-                        <div><small style="color:var(--text-light)">Nascita:</small><br><strong>${c.dataNascita ? new Date(c.dataNascita).toLocaleDateString() : '-'} (${eta}a)</strong></div>
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Recapiti</span>
-                    <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Email:</small><br><strong><a href="mailto:${c.email}">${c.email}</a></strong></div>
-                        <div><small style="color:var(--text-light)">Tel:</small><br><strong><a href="tel:${c.telefono}">${c.telefono}</a></strong></div>
-                    </div>
-                </div>
-
-                <div class="detail-group" style="border-bottom:none; padding-bottom:0;">
-                    <span class="detail-label">Note</span>
-                    <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; line-height:1.5; white-space:pre-wrap;">${c.note || 'Nessuna nota.'}</div>
-                </div>
-            `;
-
-            document.getElementById('dettaglio-candidatura-content').innerHTML = html;
-            openModal('modal-dettaglio-candidatura');
-        }
-
-        window.updateStatoCandidatura = async function() {
-            const id = document.getElementById('dc-target-id').value;
-            const nuovoStato = document.getElementById('dc-stato-select').value;
-            const c = state.candidature.find(x => x.id == id);
-            if(c) {
-                c.stato = nuovoStato;
-                await saveToFirebase('candidature', c);
-                alert("Iter HR aggiornato.");
-                closeModal('modal-dettaglio-candidatura');
-            }
-        }
-
-        // --- VERIFICA HORIZON ID ---
-        window.verifyHorizonUser = function(uid) {
-            const user = state.horizonUsers.find(u => u.uid === uid);
-            if(!user) return;
-
-            document.getElementById('verify-user-uid').value = user.uid;
-            document.getElementById('verify-user-name').innerText = user.nome || user.ragioneSociale || 'Utente';
-            document.getElementById('verify-user-piva').innerText = user.piva || user.piva_cf || user.cf || 'N/A';
-
-            const imgFronte = document.getElementById('verify-img-fronte');
-            const imgRetro = document.getElementById('verify-img-retro');
-            const videoBio = document.getElementById('verify-video');
-
-            let fronteUrl = (user.kyc_docs && user.kyc_docs.fronte) ? user.kyc_docs.fronte : (user.docFronteUrl || 'https://via.placeholder.com/400x250.png?text=Fronte');
-            let retroUrl = (user.kyc_docs && user.kyc_docs.retro) ? user.kyc_docs.retro : (user.docRetroUrl || 'https://via.placeholder.com/400x250.png?text=Retro');
-            let videoUrl = (user.kyc_docs && user.kyc_docs.video) ? user.kyc_docs.video : (user.videoBiometriaUrl || '');
-
-            imgFronte.src = fronteUrl;
-            imgRetro.src = retroUrl;
-            videoBio.src = videoUrl; 
-            
-            openModal('modal-verify-id');
-        }
-
-        window.approveHorizonId = async function() {
-            const uid = document.getElementById('verify-user-uid').value;
-            if(!uid) return;
-            if(!confirm("Confermi di voler APPROVARE questo utente?")) return;
-
-            try {
-                if(window.dbHorizonId && window
+                eta = Math.abs(
