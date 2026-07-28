@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Horizon Global ERP</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, child, onValue, remove, update, push } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJjhL9-d-2QMKDYviV7KfYhUOHWDAoasU",
+            authDomain: "horizongls.firebaseapp.com",
+            databaseURL: "https://horizongls-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "horizongls",
+            storageBucket: "horizongls.firebasestorage.app",
+            messagingSenderId: "611544552805",
+            appId: "1:611544552805:web:88fb0e35e59fb5bf543d8c"
+        };
+        
+        const horizonIdConfig = {
+            apiKey: "AIzaSyD8_itwMJwjLSftJaFJ6ztQN-B6WSBORoo",
+            authDomain: "horizon-id-core.firebaseapp.com",
+            databaseURL: "https://horizon-id-core-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "horizon-id-core",
+            storageBucket: "horizon-id-core.firebasestorage.app",
+            messagingSenderId: "366693750800",
+            appId: "1:366693750800:web:20b54d0d2180d30fa7d295"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const appHorizonId = initializeApp(horizonIdConfig, "horizonIdApp"); 
+        
+        window.auth = getAuth(app);
+        window.authHorizonId = getAuth(appHorizonId); 
+        window.db = getDatabase(app); 
+        window.dbHorizonId = getDatabase(appHorizonId); 
+        window.storage = getStorage(app);
+
+        window.rtdb = { ref, set, get, child, onValue, remove, update, push };
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+    </script>
+
+    <style>
+        /* === MOBILE FIRST CSS ARCHITECTURE === */
+        :root {
+            --primary: #2563EB; --primary-dark: #1E40AF; --secondary: #0F172A;
+            --accent: #22C55E; --success: #22C55E; --warning: #F59E0B; --danger: #EF4444;
+            --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A; --text-light: #64748B;
+            --border: #E2E8F0; --sidebar-w: 260px; --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --sys-font: 'Inter', sans-serif;
+        }
+
+        body.hw-mode {
+            --bg: #03060a; --card: rgba(10, 15, 25, 0.85); --text: #b8f2ff; --text-light: #4a758c;
+            --border: rgba(0, 229, 255, 0.2); --primary: #00e5ff; --secondary: #0a1018;
+            --sys-font: 'Rajdhani', sans-serif; background: radial-gradient(circle at top right, #09121f, var(--bg));
+        }
+        body.hw-mode .sidebar { background: #020406; border-right-color: var(--border); }
+        body.hw-mode .topbar { background: #020406; border-bottom-color: var(--border); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--sys-font); transition: background 0.3s, color 0.3s; }
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+
+        /* Login */
+        #login-overlay { position: fixed; inset: 0; background: #0F172A; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: white; padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .login-tabs { display: flex; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+        .login-tabs button { flex: 1; padding: 10px; border: none; font-weight: bold; cursor: pointer; background: #f1f5f9; color: #64748B; font-size: 13px; }
+        .login-tabs button.active { background: var(--primary); color: white; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 14px; }
+        .btn-login { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        /* Layout Principale (Mobile First) */
+        .sidebar { position: fixed; left: -300px; top: 0; bottom: 0; width: 280px; background: #0B1120; border-right: 1px solid #1E293B; display: flex; flex-direction: column; z-index: 1001; overflow-y: auto; color: #FFFFFF; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+        .sidebar.open { left: 0; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(2px); }
+        .sidebar-overlay.active { display: block; }
+        
+        .logo { height: 60px; display: flex; align-items: center; padding: 0 20px; gap: 12px; border-bottom: 1px solid #1E293B; flex-shrink: 0; }
+        .logo i { font-size: 24px; color: var(--primary); }
+        .nav { flex: 1; padding: 15px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;}
+        .nav-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 8px; color: #94A3B8; text-decoration: none; font-weight: 500; cursor: pointer; font-size: 13px; }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.05); color: #FFFFFF; }
+        .nav-link.active { background: var(--primary); color: white; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; width: 100%; }
+        .topbar { height: 60px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10; flex-shrink: 0; }
+        
+        .mobile-menu-btn { display: block; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; padding: 0; margin-right: 12px; }
+        #page-title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .topbar-right-panel { display: flex; align-items: center; gap: 10px; }
+        #current-user-name, #current-user-role { display: none; }
+        #current-user-avatar { width: 32px; height: 32px; border-radius: 8px; font-size: 12px; }
+
+        .view { display: none; padding: 16px; overflow-y: auto; overflow-x: hidden; height: calc(100vh - 60px); animation: fadeIn 0.3s ease; width: 100%; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Griglie e Card per Mobile */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow); overflow-x: hidden; }
+        .card-title { font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .card-value { font-size: 22px; font-weight: 700; color: var(--text); }
+        
+        /* Tabelle Responsive (Scroll orizzontale) */
+        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 10px 12px; color: var(--text-light); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 12px 12px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); white-space: nowrap; }
+        tr.clickable-row:hover { background-color: rgba(37, 99, 235, 0.05); cursor: pointer; }
+        
+        /* UI Elements */
+        .btn { padding: 8px 14px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; }
+        .action-btns button { padding: 6px 10px; border:none; border-radius: 4px; cursor:pointer; margin-right:5px; font-size: 11px; margin-bottom: 4px; }
+        .btn-edit { background: var(--warning); color: #fff;}
+        .btn-del { background: var(--danger); color: #fff;}
+        .btn-validate { background: var(--accent); color: #fff; }
+
+        .input { width: 100%; padding: 10px; margin: 5px 0 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 13px; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; display: inline-block; }
+
+        /* Modali Mobile First */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: flex-end; justify-content: center; padding: 0; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 16px 16px 0 0; padding: 20px; border-top: 1px solid var(--border); color: var(--text); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* Componenti Vari */
+        .ai-chat { display: flex; flex-direction: column; height: 400px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+        .ai-msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.4; }
+        .msg.bot { background: white; border: 1px solid var(--border); align-self: flex-start; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; }
+        .ai-input { display: flex; padding: 10px; border-top: 1px solid var(--border); background: var(--card); }
+        
+        .cloud-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 140px;}
+        .cloud-icon { font-size: 36px; margin-bottom: 8px; }
+        .cloud-folder-icon { color: #F59E0B; }
+        .cloud-file-icon { color: var(--primary); }
+        .cloud-title { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-all; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .cloud-action-btn { position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 10; }
+
+        /* Lista Widget Homepage */
+        .widget-list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .widget-list-item:last-child { border-bottom: none; }
+        .w-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+        .w-subtitle { font-size: 11px; color: var(--text-light); }
+
+        /* === DESKTOP MEDIA QUERY (min-width: 768px) === */
+        @media (min-width: 768px) {
+            body { font-size: 14px; }
+            .sidebar { position: relative; left: 0; width: var(--sidebar-w); box-shadow: none; overflow-y: auto; }
+            .sidebar-overlay { display: none !important; }
+            .logo { height: 70px; padding: 0 24px; }
+            .nav { padding: 20px 12px; }
+            .nav-link { font-size: 14px; padding: 10px 16px; }
+            .topbar { padding: 0 32px; height: 70px; }
+            .mobile-menu-btn { display: none; }
+            #page-title { font-size: 18px; }
+            #current-user-name, #current-user-role { display: block; }
+            #current-user-avatar { width: 38px; height: 38px; }
+            .view { padding: 32px; height: calc(100vh - 70px); }
+            .grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px; }
+            .form-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .card { padding: 24px; border-radius: 16px; }
+            .btn { font-size: 14px; padding: 10px 20px; }
+            .input { font-size: 14px; padding: 12px; }
+            .modal { align-items: center; padding: 15px; }
+            .modal-content { max-width: 650px; border-radius: 16px; padding: 30px; border: 1px solid var(--border); animation: none; }
+            .modal-content-lg { max-width: 900px; }
+            th { padding: 12px 16px; font-size: 11px; }
+            td { padding: 14px 16px; font-size: 14px; }
+            .cloud-item { height: 160px; padding: 20px; }
+            .cloud-icon { font-size: 48px; }
+            .cloud-action-btn { opacity: 0; }
+            .cloud-item:hover .cloud-action-btn { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2 style="color: var(--primary); margin-bottom: 20px;"><i class="ph-fill ph-shield-check"></i> Horizon Global</h2>
+            <div class="login-tabs">
+                <button id="btn-tab-admin" class="active" onclick="switchLoginMode('admin')">Admin</button>
+                <button id="btn-tab-staff" onclick="switchLoginMode('staff')">Staff</button>
+            </div>
+            <p id="login-desc" style="font-size: 12px; color: #666; margin-bottom: 20px;">Accesso Riservato Direzione</p>
+            <input type="text" id="login-user" placeholder="Email Utente">
+            <input type="password" id="login-pass" placeholder="Password Firebase">
+            <button id="btn-login-action" class="btn-login" onclick="attemptLogin('admin')">Effettua Login</button>
+        </div>
+    </div>
+
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="ph-fill ph-globe-hemisphere-east"></i>
+            <span style="font-weight: 800; font-size: 15px; letter-spacing: 0.5px;">HORIZON OS v8</span>
+        </div>
+        <nav class="nav">
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 10px 0 5px 10px;">Workspace</div>
+            <a class="nav-link active admin-only" onclick="nav('dash', this)"><span><i class="ph ph-squares-four"></i> Widget Dashboard</span></a>
+            <a class="nav-link admin-only" onclick="nav('appuntamenti', this)"><span><i class="ph ph-calendar-check"></i> Appuntamenti </span> <i class="ph-fill ph-circle" style="color:var(--accent); font-size:8px;"></i></a>
+            <a class="nav-link admin-only" onclick="nav('aziende', this)"><span><i class="ph ph-buildings"></i> Gruppo & Aziende</span></a>
+            <a class="nav-link admin-only" onclick="nav('divs', this)"><span><i class="ph ph-tree-structure"></i> Divisioni Interne</span></a>
+            
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 15px 0 5px 10px;">Ricezione Esterna Sito</div>
+            <a class="nav-link admin-only" onclick="nav('richieste-servizi', this)"><span><i class="ph ph-briefcase"></i> Servizi Horizon</span></a>
+            <a class="nav-link" onclick="nav('clienti-crm', this)"><span><i class="ph ph-users-three"></i> Clienti Registrati (CRM)</span></a>
+            <a class="nav-link admin-only" onclick="nav('candidature', this)"><span><i class="ph ph-user-list"></i> Candidature Staff</span></a>
+            
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 15px 0 5px 10px;">Gestione & Operatività</div>
+            <a class="nav-link" id="menu-staff-link" onclick="nav('staff', this)"><span><i class="ph ph-users"></i> Organico HR</span></a>
+            <a class="nav-link admin-only" onclick="nav('payrolls', this)"><span><i class="ph ph-money"></i> Paghe & Stipendi</span></a>
+            <a class="nav-link admin-only" onclick="nav('badges', this)"><span><i class="ph ph-identification-card"></i> Gestione Badge App</span></a>
+            <a class="nav-link" onclick="nav('timbrature', this)"><span><i class="ph ph-clock"></i> Timbrature & Presenze</span></a>
+            
+            <a class="nav-link" onclick="nav('ordini', this)"><span><i class="ph ph-shopping-cart"></i> Ordini & Servizi</span></a>
+            
+            <a class="nav-link" onclick="nav('docs', this)"><span><i class="ph ph-files"></i> Documenti & Finanza</span></a>
+            <a class="nav-link" onclick="nav('cloud', this)"><span><i class="ph ph-cloud"></i> Archivio Cloud</span></a>
+            <a class="nav-link" onclick="nav('tasks', this)"><span><i class="ph ph-check-square"></i> Task & Ticket</span></a>
+
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 15px 0 5px 10px;">Ecosistema Esterno</div>
+            <a class="nav-link admin-only" onclick="nav('horizon-id', this)"><span><i class="ph ph-identification-badge"></i> Horizon ID (Utenti)</span></a>
+            <a class="nav-link" onclick="nav('chat-supporto', this)"><span><i class="ph ph-chats-teardrop"></i> Supporto Chat (Live)</span></a>
+
+            <div id="nav-group-hw" style="display:none;">
+                <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 15px 0 5px 10px;">Infrastruttura & AI</div>
+                <a class="nav-link admin-only" onclick="nav('ai', this)"><span><i class="ph ph-sparkle"></i> AI Predittiva</span></a>
+                <a class="nav-link" id="nav-macchina" style="display:none;" onclick="nav('macchina', this)"><span><i class="ph ph-cpu"></i> Grado mAf</span></a>
+                <a class="nav-link" id="nav-eolo" style="display:none;" onclick="nav('eolo', this)"><span><i class="ph ph-broadcast"></i> Eolo fFk9</span></a>
+            </div>
+            
+            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 15px 0 5px 10px;">Sistema</div>
+            <a class="nav-link admin-only" onclick="nav('settings', this)"><span><i class="ph ph-gear"></i> Settings Globali</span></a>
+
+            <div style="flex-grow: 1;"></div>
+            <a class="nav-link" onclick="esciDalSistema()" style="color: var(--danger); border-top: 1px solid #1E293B; border-radius: 0; padding-top: 15px; margin-top: 20px;">
+                <span><i class="ph ph-sign-out"></i> Esci dal Sistema</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div style="display:flex; align-items:center;">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
+                <span id="page-title">Widget Dashboard</span>
+            </div>
+            <div class="topbar-right-panel">
+                <div style="position: relative;" class="admin-only">
+                    <button onclick="toggleNotifiche()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text); position:relative; margin-top: 3px;">
+                        <i class="ph ph-bell"></i>
+                        <span id="bell-badge" style="display:none; position:absolute; top:-2px; right:-4px; background:var(--danger); color:white; font-size:9px; width:14px; height:14px; border-radius:50%; align-items:center; justify-content:center; font-weight:bold;">0</span>
+                    </button>
+                    <div id="notif-panel" style="display:none; position:absolute; top:40px; right:0; width:300px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:12px; z-index:100; max-height:400px; overflow-y:auto; padding:15px;">
+                        <h4 style="font-size:13px; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px; color:var(--danger);">Avvisi Sicurezza</h4>
+                        <div id="notif-list" style="font-size:12px; color:var(--text-light);">Nessun allarme.</div>
+                    </div>
+                </div>
+                <div style="text-align: right; line-height: 1.2;">
+                    <div style="font-size: 13px; font-weight: 700;" id="current-user-name">...</div>
+                    <div style="font-size: 11px; color: var(--text-light);" id="current-user-role">...</div>
+                </div>
+                <div id="current-user-avatar" style="background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">DG</div>
+            </div>
+        </header>
+
+        <section id="view-dash" class="view active admin-only">
+            
+            <div class="grid" style="gap: 16px;">
+                <div class="card">
+                    <div class="card-title"><i class="ph-fill ph-calendar-check" style="color:var(--primary); font-size:16px;"></i> Prossimi Appuntamenti</div>
+                    <div id="widget-appuntamenti"></div>
+                    <button class="btn" style="width:100%; margin-top:10px; background: #f1f5f9; color:var(--text);" onclick="nav('appuntamenti', document.querySelector('.nav-link:nth-child(2)'))">Vedi Calendario Completo</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title"><i class="ph-fill ph-briefcase" style="color:var(--warning); font-size:16px;"></i> Nuove Richieste dal Sito</div>
+                    <div id="widget-richieste"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><i class="ph-fill ph-chat-circle-dots" style="color:#0A84FF; font-size:16px;"></i> Supporto Live (Horizon ID)</div>
+                    <div id="widget-chat"></div>
+                </div>
+            </div>
+
+            <div class="grid" id="dash-summary" style="margin-top:20px;"></div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card"><div class="card-title">Distribuzione Budget</div><div style="position: relative; height: 220px; width: 100%;"><canvas id="budgetDoughnutChart"></canvas></div></div>
+                <div class="card"><div class="card-title">Trend Storico Budget</div><div style="position: relative; height: 220px; width: 100%;"><canvas id="budgetHistoryChart"></canvas></div></div>
+            </div>
+        </section>
+
+        <section id="view-appuntamenti" class="view admin-only">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                <h2 style="font-size: 18px;">Calendario Appuntamenti</h2>
+                <button class="btn admin-only" onclick="openModal('modal-appuntamento')"><i class="ph ph-plus"></i> Fissa Appuntamento</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-appuntamenti">
+                        <thead><tr><th>Data / Ora</th><th>Oggetto</th><th>Cliente</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-richieste-servizi" class="view admin-only">
+            <div style="margin-bottom:16px;">
+                <h2 style="font-size:18px;">Ricezione Richieste Servizi</h2>
+                <p style="font-size:12px; color:var(--text-light);">Form di contatto e richiesta servizi dal sito web.</p>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-richieste-servizi">
+                        <thead><tr><th>Data</th><th>Richiedente</th><th>Rag. Sociale/P.IVA</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-clienti-crm" class="view">
+            <div style="margin-bottom:16px; display:flex; flex-direction:column; gap:10px;">
+                <div>
+                    <h2 style="font-size:18px;">Clienti Registrati (CRM)</h2>
+                </div>
+                <input type="text" id="crm-search-input" class="input" style="margin:0;" placeholder="Cerca per Nome, P.IVA o Email..." onkeyup="filterCrmTable()">
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-clienti-crm">
+                        <thead><tr><th>Cliente</th><th>CF / P.IVA</th><th>Email</th><th>AuraCredit</th><th>Pratiche</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-candidature" class="view admin-only">
+            <div style="margin-bottom:16px;">
+                <h2 style="font-size:18px;">Candidature HR</h2>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-candidature">
+                        <thead><tr><th>Data</th><th>Candidato</th><th>Posizione</th><th>Recapito</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-ordini" class="view">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                <h2 style="font-size:18px;">Ordini Servizi</h2>
+                <div style="display:flex; gap:10px; width:100%; overflow-x:auto; padding-bottom:5px;">
+                    <button class="btn admin-only" style="background:var(--secondary); white-space:nowrap;" onclick="openModal('modal-servizio')"><i class="ph ph-list-plus"></i> Catalogo</button>
+                    <button class="btn admin-only" style="white-space:nowrap;" onclick="apriNuovoOrdine()"><i class="ph ph-plus"></i> Nuovo Ordine</button>
+                </div>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-ordini">
+                        <thead><tr><th>Data</th><th>Cliente</th><th>Servizio</th><th>Importo</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-horizon-id" class="view admin-only">
+            <h2 style="font-size:18px; margin-bottom:16px;">Verifica Utenti Horizon ID</h2>
+            <h3 style="margin-bottom:10px; color:var(--warning); font-size:14px;"><i class="ph-fill ph-clock"></i> In Attesa</h3>
+            <div class="card" style="padding:0; margin-bottom: 20px;">
+                <div class="table-wrapper">
+                    <table id="table-horizon-pending">
+                        <thead><tr><th>Utente</th><th>P.IVA / CF</th><th>Email</th><th>Reg.</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <h3 style="margin-bottom:10px; color:var(--success); font-size:14px;"><i class="ph-fill ph-check-circle"></i> Attivi</h3>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-horizon-active">
+                        <thead><tr><th>Utente</th><th>P.IVA / CF</th><th>Email</th><th>Reg.</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-chat-supporto" class="view">
+            <h2 style="font-size:18px; margin-bottom:16px;">Supporto Chat Live</h2>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="table-chat-supporto">
+                        <thead><tr><th>Utente</th><th>P.IVA / CF</th><th>Ultimo Msg</th><th>Data/Ora</th><th>Azioni</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-aziende" class="view admin-only">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Aziende</h2>
+                <button class="btn admin-only" onclick="openModal('modal-azienda')"><i class="ph ph-plus"></i> Nuova</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-aziende"><thead><tr><th>Azienda</th><th>Capitale</th><th>Progetti</th><th>Eff.</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-divs" class="view admin-only">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Divisioni</h2>
+                <button class="btn admin-only" onclick="openModal('modal-div')"><i class="ph ph-plus"></i> Nuova</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-divs"><thead><tr><th>Divisione</th><th>Azienda</th><th>Budget</th><th>Eff.</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-badges" class="view admin-only">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Badge App</h2>
+                <button class="btn admin-only" onclick="openModal('modal-badge')"><i class="ph ph-plus"></i> Genera</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-badges"><thead><tr><th>Dipendente</th><th>PIN</th><th>Data</th><th>Dispositivo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-payrolls" class="view admin-only">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Buste Paga</h2>
+                <button class="btn admin-only" onclick="openModal('modal-payroll')"><i class="ph ph-plus"></i> Emetti</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-payrolls"><thead><tr><th>Mese</th><th>Dipendente</th><th>Importo</th><th>IBAN</th><th>Stato</th><th>Doc</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-staff" class="view">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 id="staff-page-title" style="font-size:18px;">Organico HR</h2>
+                <button class="btn admin-only" id="btn-new-staff" onclick="openModal('modal-staff')"><i class="ph ph-plus"></i> Nuovo</button>
+            </div>
+            <div class="card admin-only" id="staff-admin-view" style="padding:0;">
+                <div class="table-wrapper"><table id="table-staff"><thead><tr><th>Nome</th><th>Ruolo</th><th>Azienda</th><th>Eff.</th><th>Macchine</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+            <div id="staff-user-view" style="display:none; width: 100%;"></div>
+        </section>
+
+        <section id="view-timbrature" class="view">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 id="timbrature-page-title" style="font-size:18px;">Timbrature</h2>
+                <button class="btn admin-only" onclick="openModal('modal-timbratura')"><i class="ph ph-plus"></i> Forza</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-timbrature"><thead><tr><th>Data/Ora</th><th>Dipendente</th><th>Azienda</th><th>Tipo</th><th>Dispositivo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-docs" class="view">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Finanza & Doc</h2>
+                <button class="btn admin-only" onclick="openModal('modal-doc')"><i class="ph ph-plus"></i> Inserisci</button>
+            </div>
+            <div class="grid admin-only" id="finance-summary" style="grid-template-columns: 1fr 1fr; gap:10px;"></div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-docs"><thead><tr><th>Data</th><th>Descrizione</th><th>Azienda</th><th>Importo</th><th>Tipo</th><th>File</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-cloud" class="view">
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Archivio Cloud</h2>
+                <div id="cloud-breadcrumb" style="font-size:12px; color:var(--primary); font-weight:500; cursor:pointer;">
+                    <span onclick="openCloudFolder(null)"><i class="ph-fill ph-house"></i> Root</span> <span id="cloud-breadcrumb-active"></span>
+                </div>
+                <div class="admin-only" style="display:flex; gap:10px; overflow-x:auto;">
+                    <button class="btn" id="btn-cloud-folder" onclick="openModal('modal-cloud-folder')"><i class="ph ph-folder-plus"></i> Cartella</button>
+                    <button class="btn" id="btn-cloud-upload" onclick="openModal('modal-cloud-file')" style="display:none;"><i class="ph ph-upload-simple"></i> Carica File</button>
+                </div>
+            </div>
+            <div id="cloud-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;"></div>
+        </section>
+
+        <section id="view-tasks" class="view">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:18px;">Task</h2>
+                <button class="btn admin-only" onclick="openModal('modal-task')"><i class="ph ph-plus"></i> Nuovo</button>
+            </div>
+            <div class="card" style="padding:0;">
+                <div class="table-wrapper"><table id="table-tasks"><thead><tr><th>Titolo</th><th>Assegnato</th><th>Prio</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="view-ai" class="view admin-only">
+            <h2 style="font-size:18px; margin-bottom:16px;">Assistente AI (Gemini)</h2>
+            <div class="ai-chat">
+                <div class="ai-msgs" id="chat-box">
+                    <div class="msg bot"><strong>Gemini AI:</strong> Ciao Admin. Sono connesso in modalità mobile. Come posso aiutarti?</div>
+                </div>
+                <div class="ai-input admin-only">
+                    <input type="text" id="ai-text" class="input" style="margin:0; border:none; padding:8px;" placeholder="Scrivi richiesta...">
+                    <button class="btn" onclick="sendAiPrompt()"><i class="ph ph-paper-plane-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-macchina" class="view">
+            <h2 style="color: var(--primary); font-family: 'Rajdhani'; font-size:18px; margin-bottom:16px;">TERMINALE Grado mAf</h2>
+            <div class="hw-panel">
+                <div class="hw-title">Console Grado B</div>
+                <div class="terminal" id="grado-terminal" style="height:200px;">[SYS] Mainframe Centrale OK.<br></div>
+                <button class="btn admin-only" style="width:100%; margin-top:10px; background:#00e5ff; color:#000;" onclick="printGradoB()">Esegui Override</button>
+            </div>
+        </section>
+
+        <section id="view-eolo" class="view">
+            <h2 style="color: var(--primary); font-family: 'Rajdhani'; font-size:18px; margin-bottom:16px;">TELEMETRIA EOLO fFk9</h2>
+            <div class="hw-panel" style="text-align:center;">
+                <div class="hw-title">Potenza TX</div>
+                <div style="font-size: 32px; font-family: monospace; color:#00e5ff; font-weight:bold;" id="eolo-pwr">14.2 kW</div>
+                <input type="range" min="10" max="50" value="14" style="width:100%; margin-top:15px;" class="admin-only" oninput="document.getElementById('eolo-pwr').innerText = this.value + '.2 kW'">
+            </div>
+        </section>
+
+        <section id="view-settings" class="view admin-only">
+            <h2 style="font-size:18px; margin-bottom:16px;">Settings Globali</h2>
+            <div class="card">
+                <label style="font-size:12px; font-weight:600; display:block;">Nome Azienda</label>
+                <input type="text" class="input" value="Horizon Global ERP" disabled>
+                <button class="btn" style="width:100%; margin-top:10px;" onclick="alert('Salvate.')">Salva</button>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="modal-appuntamento" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; font-size:16px;">Nuovo Appuntamento</h3>
+            <input type="hidden" id="app-id">
+            <label style="font-size:11px; font-weight:bold;">Oggetto Appuntamento</label>
+            <input type="text" id="app-titolo" class="input" placeholder="Es. Call conoscitiva">
+            
+            <label style="font-size:11px; font-weight:bold;">Data e Ora</label>
+            <input type="datetime-local" id="app-data" class="input">
+            
+            <label style="font-size:11px; font-weight:bold;">Cliente (Horizon ID)</label>
+            <select id="app-cliente" class="input"></select>
+            
+            <label style="font-size:11px; font-weight:bold;">Note Aggiuntive</label>
+            <textarea id="app-note" class="input" style="min-height:60px;" placeholder="Dettagli..."></textarea>
+            
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-appuntamento')">Annulla</button>
+                <button class="btn" onclick="saveAppuntamento()">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-crm-user" class="modal">
+        <div class="modal-content modal-content-lg">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                <div>
+                    <h3 id="crm-modal-name" style="font-size:16px; color:var(--text);">Nome Cliente</h3>
+                    <p style="font-size:11px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva"></strong></p>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; display:block; font-weight:bold;">AuraCredit</span>
+                    <span id="crm-modal-credit" style="font-size:18px; font-weight:800; color:var(--accent);">€ 0.00</span>
+                </div>
+            </div>
+            <input type="hidden" id="crm-target-uid">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="font-size:13px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi</h4>
+                <button class="btn" style="padding:4px 8px; font-size:11px;" onclick="openModal('modal-crm-add-service')"><i class="ph ph-plus"></i> Agg. Manuale</button>
+            </div>
+            
+            <div class="table-wrapper" style="margin-bottom:15px; max-height:200px; overflow-y:auto; border:1px solid var(--border); border-radius:8px;">
+                <table style="margin-top:0; min-width: 400px;">
+                    <thead><tr><th>ID</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
+                    <tbody id="crm-services-tbody"></tbody>
+                </table>
+            </div>
+
+            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:15px; border-radius:12px; margin-bottom:15px;">
+                <h4 style="color:var(--accent); margin-bottom:10px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Addebita</h4>
+                <div class="form-grid">
+                    <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Descrizione">
+                    <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Importo (€)">
+                </div>
+                <button class="btn" style="width:100%; margin-top:10px; background:var(--accent);" onclick="scalaAuraCredit()">Esegui Addebito</button>
+            </div>
+            <button class="btn" style="width:100%; background:#e2e8f0; color:#333;" onclick="closeModal('modal-crm-user')">Chiudi</button>
+        </div>
+    </div>
+    
+    <div id="modal-crm-add-service" class="modal">
+        <div class="modal-content">
+            <h3>Servizio Manuale</h3>
+            <input type="text" id="crm-add-serv-title" class="input" placeholder="Servizio/Modulo">
+            <select id="crm-add-serv-type" class="input"><option value="Azienda">Azienda (B2B)</option><option value="Privato">Privato (B2C)</option></select>
+            <select id="crm-add-serv-status" class="input"><option value="raccolta">In Raccolta</option><option value="in corso">In Lavorazione</option><option value="approvata">Attiva</option></select>
+            <textarea id="crm-add-serv-notes" class="input" placeholder="Note..."></textarea>
+            <div style="display:flex; justify-content:flex-end; gap:10px;"><button class="btn" onclick="closeModal('modal-crm-add-service')">Annulla</button><button class="btn" onclick="saveCrmManualService()">Crea</button></div>
+        </div>
+    </div>
+    
+    <script>
+        let userRoleMode = 'admin';
+        function switchLoginMode(mode) {
+            userRoleMode = mode;
+            const btnA = document.getElementById('btn-tab-admin');
+            const btnS = document.getElementById('btn-tab-staff');
+            const desc = document.getElementById('login-desc');
+            if(btnA) btnA.className = mode === 'admin' ? 'active' : '';
+            if(btnS) btnS.className = mode === 'staff' ? 'active' : '';
+            if(desc) desc.innerText = mode === 'admin' ? 'Accesso Riservato Direzione' : 'Accesso Operativo Staff';
+        }
+
+        function toggleNotifiche() {
+            const panel = document.getElementById('notif-panel');
+            if(panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        window.uploadToCloudinary = async function(file, folderName) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'horizon_docs');
+            if(folderName) formData.append('folder', folderName);
+            const res = await fetch(`https://api.cloudinary.com/v1_1/dxblnwvuq/auto/upload`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.error) throw new Error(data.error.message);
+            return data.secure_url;
+        }
+
+        let state = {
+            companies: [], divisions: [], staff: [], time_entries: [], documents: [], tasks: [], badges: [], payrolls: [], security_alerts: [], budget_history: [], ordini: [],
+            horizonUsers: [], servizi: [], richieste_servizi: [], candidature: [], appuntamenti: [], /* <-- AGGIUNTO APPUNTAMENTI */
+            cloud_folders: [], cloud_files: [], chats: {}
+        };
+
+        let currentCloudFolder = null; 
+        let doughnutChartInst = null;
+        let lineChartInst = null;
+
+        function renderCharts() {
+            const dashEl = document.getElementById('view-dash');
+            if(!dashEl || !dashEl.classList.contains('active')) return;
+            const divNames = state.divisions.map(d => d.name);
+            const divBudgets = state.divisions.map(d => d.budget);
+            const cD = document.getElementById('budgetDoughnutChart');
+            if(cD) {
+                const ctxD = cD.getContext('2d');
+                if(doughnutChartInst) doughnutChartInst.destroy();
+                doughnutChartInst = new Chart(ctxD, { type: 'doughnut', data: { labels: divNames.length ? divNames : ['Nessuna'], datasets: [{ data: divBudgets.length ? divBudgets : [1], backgroundColor: ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+            }
+            const cH = document.getElementById('budgetHistoryChart');
+            if(cH) {
+                const ctxL = cH.getContext('2d');
+                if(lineChartInst) lineChartInst.destroy();
+                let historyLabels = []; let historyData = [];
+                if (state.budget_history && state.budget_history.length > 0) {
+                    let sortedHistory = [...state.budget_history].sort((a, b) => a.id - b.id);
+                    historyLabels = sortedHistory.map(h => h.date.split(' ')[0]); historyData = sortedHistory.map(h => h.total);
+                } else {
+                    let currentTotal = state.divisions.reduce((acc, d) => acc + d.budget, 0);
+                    historyLabels = [new Date().toLocaleDateString('it-IT')]; historyData = [currentTotal];
+                }
+                lineChartInst = new Chart(ctxL, { type: 'line', data: { labels: historyLabels, datasets: [{ label: 'Budget (€)', data: historyData, borderColor: '#2563EB', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } } });
+            }
+        }
+
+        async function saveToFirebase(collectionName, item) {
+            if (window.rtdb && window.db) {
+                try {
+                    const docId = item.id.toString();
+                    await window.rtdb.set(window.rtdb.ref(window.db, `${collectionName}/${docId}`), JSON.parse(JSON.stringify(item)));
+                } catch (e) { alert("Errore Salvataggio DB: " + e.message); }
+            }
+        }
+
+        window.deleteData = async function(collectionName, id) {
+            if(!confirm("Sicuro di voler eliminare questo elemento?")) return;
+            if (window.rtdb && window.db) {
+                try { 
+                    await window.rtdb.remove(window.rtdb.ref(window.db, `${collectionName}/${id}`)); 
+                } catch (e) { alert("Errore: " + e.message); }
+            }
+        }
+
+        async function syncConFirebase() {
+            if (!window.db || !window.rtdb) return;
+            try {
+                const collections = ['companies', 'divisions', 'staff', 'time_entries', 'documents', 'tasks', 'badges', 'payrolls', 'security_alerts', 'budget_history', 'ordini', 'servizi', 'richieste_servizi', 'candidature', 'appuntamenti', 'cloud_folders', 'cloud_files'];
+                const loadPromises = collections.map(async (coll) => {
+                    const snap = await window.rtdb.get(window.rtdb.ref(window.db, coll));
+                    let arr = []; if (snap.exists()) { snap.forEach((c) => { arr.push(c.val()); }); }
+                    state[coll] = arr;
+                });
+                await Promise.all(loadPromises);
+                
+                collections.forEach(coll => {
+                    window.rtdb.onValue(window.rtdb.ref(window.db, coll), (snap) => {
+                        let arr = []; if (snap.exists()) { snap.forEach((c) => { arr.push(c.val()); }); }
+                        state[coll] = arr;
+                        const lo = document.getElementById('login-overlay');
+                        if(lo && lo.style.display === 'none') renderAll();
+                    });
+                });
+
+                if(window.dbHorizonId) {
+                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'users'), (snap) => {
+                        let arr = []; if (snap.exists()) { snap.forEach((c) => { arr.push(c.val()); }); }
+                        state.horizonUsers = arr; populateSelects(); 
+                        const lo = document.getElementById('login-overlay');
+                        if(lo && lo.style.display === 'none') renderAll();
+                    });
+                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'chats'), (snap) => {
+                        state.chats = snap.exists() ? snap.val() : {};
+                        const lo = document.getElementById('login-overlay');
+                        if(lo && lo.style.display === 'none') renderAll();
+                    });
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        const getCompanyName = (id) => { const c = state.companies.find(x => x.id == id); return c ? c.name : 'N/A'; };
+        const getStaffName = (id) => { const s = state.staff.find(x => x.id == id); return s ? s.name : 'Sconosciuto'; };
+
+        window.addEventListener('DOMContentLoaded', () => {
+             window.onAuthStateChanged(window.auth, async (user) => {
+                 const lo = document.getElementById('login-overlay');
+                 if (user) {
+                     const userEmail = user.email.toLowerCase();
+                     applyUserRole(userEmail);
+                     if(lo) lo.style.display = 'none';
+                     await syncConFirebase(); 
+                     const stL = document.getElementById('menu-staff-link');
+                     if(window.userRole === 'staff' && stL) nav('staff', stL);
+                     else renderAll();
+                 } else {
+                     if(lo) lo.style.display = 'flex';
+                 }
+             });
+        });
+
+        window.attemptLogin = async function(roleAttempt) {
+            const u = document.getElementById('login-user').value; 
+            const p = document.getElementById('login-pass').value;
+            const btn = document.getElementById('btn-login-action');
+            btn.innerText = "Accesso...";
+            try {
+                const result = await window.signInWithEmailAndPassword(window.auth, u, p);
+                const userEmail = result.user.email.toLowerCase();
+                if (roleAttempt === 'admin' && userEmail !== 'direzione@horizonglobal.com') {
+                    alert("Accesso negato. Riprova da Staff."); await window.signOut(window.auth); btn.innerText = "Effettua Login"; return;
+                }
+                if (userEmail === 'direzione@horizonglobal.com' && window.authHorizonId) {
+                    try { await window.signInWithEmailAndPassword(window.authHorizonId, u, p); } catch (e) { console.error(e); }
+                }
+            } catch (error) { alert("Credenziali errate."); btn.innerText = "Effettua Login"; }
+        }
+
+        window.esciDalSistema = async function() {
+            if(confirm("Sei sicuro di voler uscire?")) { await window.signOut(window.auth); if(window.authHorizonId) await window.signOut(window.authHorizonId); window.location.reload(); }
+        }
+
+        function applyUserRole(userEmail) {
+            window.currentUserEmail = userEmail;
+            const isAdmin = (userEmail === 'direzione@horizonglobal.com');
+            window.userRole = isAdmin ? 'admin' : 'staff';
+            const nEl = document.getElementById('current-user-name'); const rEl = document.getElementById('current-user-role');
+            if(nEl) nEl.innerText = isAdmin ? "Direzione Generale" : userEmail;
+            if(rEl) rEl.innerText = isAdmin ? "Root Admin" : "Staff Operativo";
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+        }
+
+        window.nav = function(id, element) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const target = document.getElementById('view-'+id);
+            if(target) target.classList.add('active');
+            if(element) {
+                element.classList.add('active');
+                const pt = document.getElementById('page-title');
+                if(pt) pt.innerText = element.innerText;
+            }
+            if(id === 'dash') setTimeout(renderCharts, 50);
+            if(window.innerWidth <= 768) toggleSidebar();
+        }
+
+        window.toggleSidebar = function() {
+            const sb = document.getElementById('sidebar');
+            const sbo = document.getElementById('sidebar-overlay');
+            if(sb) sb.classList.toggle('open');
+            if(sbo) sbo.classList.toggle('active');
+        }
+
+        window.openModal = function(id) { const m = document.getElementById(id); if(m) m.classList.add('active'); populateSelects(); }
+        window.closeModal = function(id) { const m = document.getElementById(id); if(m) { m.classList.remove('active'); } }
+
+        function populateSelects() {
+            const horizonOpts = state.horizonUsers.map(u => `<option value="${u.uid}">${u.nome || u.ragioneSociale}</option>`).join('');
+            const appCli = document.getElementById('app-cliente');
+            if(appCli) appCli.innerHTML = horizonOpts || '<option value="">Nessun cliente</option>';
+        }
+        
+        /* GESTIONE APPUNTAMENTI */
+        window.saveAppuntamento = async function() {
+            const elId = document.getElementById('app-id'); const idField = elId ? elId.value : null;
+            const appData = {
+                id: idField ? parseInt(idField) : Date.now(),
+                titolo: document.getElementById('app-titolo').value,
+                data: document.getElementById('app-data').value,
+                clienteId: document.getElementById('app-cliente').value,
+                note: document.getElementById('app-note').value,
+                stato: 'In Programma'
+            };
+            if(!appData.titolo || !appData.data) return alert("Titolo e data sono obbligatori.");
+            await saveToFirebase('appuntamenti', appData);
+            closeModal('modal-appuntamento');
+        }
+
+        /* GESTIONE CRM / SERVIZI MANUALE - FUNZIONI DI BASE */
+        window.scalaAuraCredit = async function() {
+            const uid = document.getElementById('crm-target-uid').value;
+            const amount = parseFloat(document.getElementById('crm-inv-amount').value);
+            if(!uid || isNaN(amount) || amount <= 0) return alert("Importo non valido.");
+            const user = state.horizonUsers.find(u => u.uid === uid);
+            const currentCredit = parseFloat(user.auraCredit || 0);
+            if(amount > currentCredit) return alert("Credito insufficiente.");
+            try {
+                await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), { auraCredit: (currentCredit - amount).toFixed(2) });
+                await window.rtdb.push(window.rtdb.ref(window.db, 'documents'), { title: `Addebito CRM`, amount: amount, type: 'entrata', date: new Date().toISOString().split('T')[0] });
+                alert("Addebito eseguito!"); closeModal('modal-crm-user');
+            } catch (e) { alert("Errore: " + e.message); }
+        };
+
+        window.openCrmUserModal = function(uid) {
+            const user = state.horizonUsers.find(u => u.uid === uid);
+            if(!user) return;
+            document.getElementById('crm-target-uid').value = user.uid;
+            document.getElementById('crm-modal-name').innerText = user.ragioneSociale || user.nome;
+            document.getElementById('crm-modal-piva').innerText = user.piva || user.cf || '';
+            document.getElementById('crm-modal-credit').innerText = `€ ${parseFloat(user.auraCredit || 0).toFixed(2)}`;
+            openModal('modal-crm-user');
+        }
+
+        /* MOTORE DI RENDER GLOBALE */
+        window.renderAll = function() {
+            const isAdmin = window.userRole === 'admin';
+            
+            // RENDERING HOMEPAGE WIDGETS
+            const wAppuntamenti = document.getElementById('widget-appuntamenti');
+            if(wAppuntamenti) {
+                let futureApps = (state.appuntamenti || []).filter(a => new Date(a.data) >= new Date()).sort((a,b)=>new Date(a.data)-new Date(b.data)).slice(0, 3);
+                wAppuntamenti.innerHTML = futureApps.map(a => {
+                    let c = state.horizonUsers.find(u=>u.uid === a.clienteId);
+                    let n = c ? (c.nome || c.ragioneSociale) : 'Cliente Sconosciuto';
+                    let d = new Date(a.data).toLocaleString([], {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+                    return `<div class="widget-list-item"><div style="flex:1;"><div class="w-title">${a.titolo}</div><div class="w-subtitle">${n} - ${d}</div></div></div>`;
+                }).join('') || '<div class="w-subtitle" style="padding:10px 0;">Nessun appuntamento in programma.</div>';
+            }
+
+            const wRichieste = document.getElementById('widget-richieste');
+            if(wRichieste) {
+                let penReq = (state.richieste_servizi || []).filter(r => r.stato === 'Nuova' || r.stato === 'raccolta').sort((a,b)=>new Date(b.dataInvio)-new Date(a.dataInvio)).slice(0, 3);
+                wRichieste.innerHTML = penReq.map(r => `<div class="widget-list-item"><div style="flex:1;"><div class="w-title">${r.tipoServizio || r.servizio || 'Servizio'}</div><div class="w-subtitle">${r.nome} - ${new Date(r.dataInvio).toLocaleDateString()}</div></div><span class="badge" style="background:var(--warning); color:white;">Nuova</span></div>`).join('') || '<div class="w-subtitle" style="padding:10px 0;">Nessuna nuova richiesta.</div>';
+            }
+
+            const wChat = document.getElementById('widget-chat');
+            if(wChat) {
+                let uids = Object.keys(state.chats || {}).slice(0, 3);
+                wChat.innerHTML = uids.map(uid => {
+                    let u = state.horizonUsers.find(x => x.uid === uid) || {nome:'Utente'};
+                    return `<div class="widget-list-item" onclick="nav('chat-supporto', document.querySelector('.nav-link:nth-child(10)'))"><div style="flex:1;"><div class="w-title">${u.nome || u.ragioneSociale}</div><div class="w-subtitle">Conversazione attiva</div></div><i class="ph-fill ph-caret-right" style="color:var(--text-light)"></i></div>`;
+                }).join('') || '<div class="w-subtitle" style="padding:10px 0;">Nessuna chat attiva.</div>';
+            }
+
+            // TABELLA APPUNTAMENTI COMPLETA
+            const tApp = document.getElementById('table-appuntamenti');
+            if(tApp && tApp.querySelector('tbody')) {
+                tApp.querySelector('tbody').innerHTML = (state.appuntamenti || []).sort((a,b)=>new Date(b.data)-new Date(a.data)).map(a => {
+                    let c = state.horizonUsers.find(u=>u.uid === a.clienteId);
+                    return `<tr><td>${new Date(a.data).toLocaleString([],{day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})}</td><td><b>${a.titolo}</b></td><td>${c ? c.nome||c.ragioneSociale : '-'}</td><td><span class="badge" style="background:var(--primary); color:white;">${a.stato}</span></td><td><button class="btn-del" onclick="deleteData('appuntamenti', ${a.id})">Del</button></td></tr>`;
+                }).join('') || '<tr><td colspan="5" style="text-align:center;">Nessun appuntamento.</td></tr>';
+            }
+
+            // CRM TABLE
+            const tCrm = document.getElementById('table-clienti-crm');
+            if(tCrm && tCrm.querySelector('tbody')) {
+                tCrm.querySelector('tbody').innerHTML = (state.horizonUsers || []).map(u => `<tr class="clickable-row" onclick="openCrmUserModal('${u.uid}')"><td><b>${u.nome||u.ragioneSociale||'Cliente'}</b></td><td>${u.piva||u.cf||'-'}</td><td>${u.email||'-'}</td><td><strong style="color:var(--accent)">€ ${parseFloat(u.auraCredit||0).toFixed(2)}</strong></td><td><span class="badge" style="background:var(--primary); color:white;">Apri</span></td><td><button class="btn" style="font-size:11px; padding:6px; background:var(--secondary);" onclick="openCrmUserModal('${u.uid}')">Gestisci</button></td></tr>`).join('');
+            }
+
+            renderCharts();
+        }
+    </script>
+</body>
+</html>
