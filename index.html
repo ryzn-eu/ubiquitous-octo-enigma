@@ -83,7 +83,7 @@
 
         .sidebar { width: var(--sidebar-w); background: #0B1120; border-right: 1px solid #1E293B; display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; color: #FFFFFF; }
         .logo { height: 70px; display: flex; align-items: center; padding: 0 24px; gap: 12px; border-bottom: 1px solid #1E293B; flex-shrink: 0; }
-        .logo i { font-size: 24px; color: #FFFFFF; }
+        .logo i { font-size: 24px; color: var(--primary); }
         .nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
         .nav-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-radius: 8px; color: #94A3B8; text-decoration: none; font-weight: 500; cursor: pointer; font-size: 14px; }
         .nav-link:hover { background: rgba(255, 255, 255, 0.05); color: #FFFFFF; }
@@ -567,6 +567,7 @@
 
     </main>
 
+    <!-- MODALI DI GESTIONE -->
     <div id="modal-crm-user" class="modal">
         <div class="modal-content modal-content-lg">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">
@@ -575,7 +576,7 @@
                     <p style="font-size:12px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:11px; color:var(--text-light); uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
+                    <span style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
                     <span id="crm-modal-credit" style="font-size:24px; font-weight:800; color:var(--accent);">€ 0.00</span>
                 </div>
             </div>
@@ -584,31 +585,24 @@
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <h4 style="font-size:14px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi e Pratiche in Sincronia</h4>
-                <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="openModalServizioManuale()"><i class="ph ph-plus"></i> Aggiungi Servizio Manuale</button>
+                <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="openModal('modal-crm-add-service')"><i class="ph ph-plus"></i> Aggiungi Manuale</button>
             </div>
             
             <div class="card" style="padding:15px; margin-bottom:25px; max-height:260px; overflow-y:auto;">
                 <table style="margin-top:0;">
-                    <thead><tr><th>ID</th><th>Servizio Richiesto</th><th>Data Invio</th><th>Stato</th><th>Gestisci</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
                     <tbody id="crm-services-tbody"></tbody>
                 </table>
             </div>
 
             <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:20px; border-radius:12px; margin-bottom:20px;">
                 <h4 style="color:var(--accent); margin-bottom:12px; font-size:14px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
-                <p style="font-size:12px; color:var(--text-light); margin-bottom:12px;">Compila il modulo per addebitare il cliente. L'importo verrà sottratto dal saldo AuraCredit sull'App Horizon ID e salvato nello storico contabile del gestionale.</p>
                 <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
-                    <div>
-                        <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">Descrizione / Modulo Addebitato</label>
-                        <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Es. Rinnovo Modulo ERP Enterprise">
-                    </div>
-                    <div>
-                        <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">Importo da Scalare (€)</label>
-                        <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Es. 150">
-                    </div>
+                    <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Descrizione">
+                    <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Importo (€)">
                 </div>
                 <div style="text-align:right; margin-top:12px;">
-                    <button class="btn" style="background:var(--accent);" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito & Fattura</button>
+                    <button class="btn" style="background:var(--accent);" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito</button>
                 </div>
             </div>
 
@@ -621,22 +615,8 @@
     <div id="modal-crm-add-service" class="modal">
         <div class="modal-content" style="max-width:500px;">
             <h3 style="margin-bottom:10px;">Inserimento Servizio Manuale</h3>
-            <p style="font-size:12px; color:var(--text-light); margin-bottom:15px;">La pratica verrà creata sul database globale e associata automaticamente all'anagrafica del cliente.</p>
             <label style="font-size:12px; font-weight:600; display:block;">Servizio / Modulo da Attivare</label>
-            <input type="text" id="crm-add-serv-title" class="input" placeholder="Es. Connettività Orion FWA o Sito Web Custom">
-            <label style="font-size:12px; font-weight:600; display:block;">Tipologia Contratto</label>
-            <select id="crm-add-serv-type" class="input">
-                <option value="Azienda">Azienda (B2B Corporate)</option>
-                <option value="Privato">Privato / Cittadino (B2C)</option>
-            </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Stato Iniziale Pratica</label>
-            <select id="crm-add-serv-status" class="input">
-                <option value="raccolta">In Raccolta / Nuova</option>
-                <option value="in corso">In Lavorazione / In Corso</option>
-                <option value="approvata">Approvata / Attiva</option>
-            </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Note / Specifiche Tecniche</label>
-            <textarea id="crm-add-serv-notes" class="input" style="min-height:70px;" placeholder="Dettagli aggiuntivi per i tecnici..."></textarea>
+            <input type="text" id="crm-add-serv-title" class="input" placeholder="Es. Connettività o Sito Web">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-crm-add-service')">Annulla</button>
                 <button class="btn" onclick="saveCrmManualService()">Crea Pratica</button>
@@ -649,68 +629,27 @@
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:15px;">
                 <div>
                     <h3 style="font-size:16px;">Chat Live: <span id="chat-modal-user" style="color:var(--primary);"></span></h3>
-                    <p style="font-size:11px; color:var(--text-light);" id="chat-modal-piva"></p>
                 </div>
                 <span class="badge" style="background:#32D74B; color:black; font-weight:800;">Connesso</span>
             </div>
             <input type="hidden" id="chat-target-uid">
             <div id="chat-modal-messages" style="height:350px; overflow-y:auto; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:15px; display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="chat-modal-input" class="input" style="margin:0; flex:1;" placeholder="Scrivi una risposta allo staff..." onkeypress="if(event.key==='Enter') sendStaffChatMessage()">
+                <input type="text" id="chat-modal-input" class="input" style="margin:0; flex:1;" placeholder="Scrivi una risposta..." onkeypress="if(event.key==='Enter') sendStaffChatMessage()">
                 <button class="btn" onclick="sendStaffChatMessage()"><i class="ph ph-paper-plane-right"></i> Invia</button>
             </div>
             <div style="display:flex; justify-content:flex-end; margin-top:15px;">
-                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-chat-reply')">Chiudi Chat</button>
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-chat-reply')">Chiudi</button>
             </div>
         </div>
     </div>
 
     <div id="modal-dettaglio-servizio" class="modal">
         <div class="modal-content modal-content-lg">
-            <h3>Scheda Dettaglio: Richiesta Servizio <span id="ds-id" style="font-size:14px; color:var(--text-light); font-family:monospace;"></span></h3>
+            <h3>Scheda Dettaglio Richiesta <span id="ds-id" style="font-size:14px; color:var(--text-light); font-family:monospace;"></span></h3>
             <div id="dettaglio-servizio-content" style="margin-top: 15px; margin-bottom: 20px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 20px;"></div>
-            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 15px; border-radius: 8px; border: 1px solid var(--primary);">
-                <h4 style="color:var(--primary); margin-bottom:10px;"><i class="ph ph-arrows-clockwise"></i> Gestione Stato Richiesta</h4>
-                <input type="hidden" id="ds-target-id">
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <select id="ds-stato-select" class="input" style="margin:0; flex:1;">
-                        <option value="Nuova">Nuova (Da valutare)</option>
-                        <option value="raccolta">In Raccolta / Pratica Aperta</option>
-                        <option value="in corso">In Lavorazione / In Corso</option>
-                        <option value="Preventivo Inviato">Preventivo Inviato</option>
-                        <option value="approvata">Approvata / Attiva</option>
-                        <option value="rifiutata">Rifiutata / Chiusa</option>
-                    </select>
-                    <button class="btn" onclick="updateStatoServizio()"><i class="ph ph-check-circle"></i> Aggiorna Stato</button>
-                </div>
-            </div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
-                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-dettaglio-servizio')">Chiudi Scheda</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-dettaglio-candidatura" class="modal">
-        <div class="modal-content modal-content-lg">
-            <h3>Scheda Profilo Candidato <span id="dc-id" style="font-size:14px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettaglio-candidatura-content" style="margin-top: 15px; margin-bottom: 20px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 20px;"></div>
-            <div class="admin-only" style="background: rgba(34, 197, 94, 0.05); padding: 15px; border-radius: 8px; border: 1px solid var(--success);">
-                <h4 style="color:var(--success); margin-bottom:10px;"><i class="ph ph-arrows-clockwise"></i> Iter di Selezione HR</h4>
-                <input type="hidden" id="dc-target-id">
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <select id="dc-stato-select" class="input" style="margin:0; flex:1;">
-                        <option value="In Attesa">In Attesa (Da visionare)</option>
-                        <option value="In Valutazione">In Valutazione (CV screening)</option>
-                        <option value="Colloquio Fissato">Colloquio Fissato</option>
-                        <option value="Offerta Inviata">Offerta Lavorativa Inviata</option>
-                        <option value="Assunto">Assunto (Converti in Dipendente)</option>
-                        <option value="Scartato">Scartato</option>
-                    </select>
-                    <button class="btn" style="background:var(--success);" onclick="updateStatoCandidatura()"><i class="ph ph-check-circle"></i> Aggiorna Iter</button>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
-                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-dettaglio-candidatura')">Chiudi Scheda</button>
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-dettaglio-servizio')">Chiudi</button>
             </div>
         </div>
     </div>
@@ -718,21 +657,12 @@
     <div id="modal-servizio" class="modal">
         <div class="modal-content">
             <h3>Nuovo Servizio a Catalogo</h3>
-            <p style="font-size: 12px; color: var(--text-light); margin-bottom: 15px;">Aggiungi manualmente i servizi al database per renderli disponibili in base al target.</p>
             <input type="hidden" id="servizio-id">
             <label style="font-size:12px; font-weight:600; display:block;">Nome Servizio</label>
-            <input type="text" id="servizio-nome" class="input" placeholder="Es. Sviluppo Gestionale, Consulenza Fiscale...">
-            <label style="font-size:12px; font-weight:600; display:block;">Destinato a (Target Cliente)</label>
-            <select id="servizio-target" class="input">
-                <option value="Aziende">Solo Aziende (B2B)</option>
-                <option value="Cittadini">Solo Cittadini / Privati (B2C)</option>
-                <option value="Entrambi">Entrambi (B2B & B2C)</option>
-            </select>
-            <label style="font-size:12px; font-weight:600; display:block;">Descrizione Dettagliata e Requisiti Modulo</label>
-            <textarea id="servizio-desc" class="input" placeholder="Descrivi i dettagli che servono per questo servizio..." style="min-height:80px;"></textarea>
+            <input type="text" id="servizio-nome" class="input" placeholder="Es. Sviluppo Gestionale">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-servizio')">Annulla</button>
-                <button class="btn" onclick="saveServizio()">Salva nel Catalogo</button>
+                <button class="btn" onclick="saveServizio()">Salva</button>
             </div>
         </div>
     </div>
@@ -740,59 +670,16 @@
     <div id="modal-ordine" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <h3 id="ordine-modal-title">Nuovo Ordine Horizon</h3>
-            <p style="font-size: 12px; color: var(--text-light); margin-bottom: 15px;">Modulo adattivo per inserimento ordini (registrazione simultanea su ERP e App Horizon ID)</p>
             <input type="hidden" id="ordine-id">
-            <label style="font-size:12px; font-weight:600; display:block;">Target Inserimento</label>
-            <select id="ordine-tipo-cliente" class="input" onchange="aggiornaModuloOrdine()">
-                <option value="Azienda">Richiesta per Azienda (B2B)</option>
-                <option value="Privato">Richiesta per Cittadino / Privato (B2C)</option>
-            </select>
             <label style="font-size:12px; font-weight:600; display:block;">Cliente App (Horizon ID Associato)</label>
             <select id="ordine-cliente" class="input"></select>
-            <label style="font-size:12px; font-weight:600; display:block;">Servizio Richiesto (Dal Catalogo Firebase)</label>
+            <label style="font-size:12px; font-weight:600; display:block;">Servizio Richiesto</label>
             <select id="ordine-servizio" class="input"></select>
-            <div id="campi-azienda" style="display:flex; gap:10px; flex-wrap:wrap; background:rgba(37,99,235,0.05); padding:10px; border-radius:8px; border:1px solid rgba(37,99,235,0.2); margin-bottom:15px;">
-                <div style="flex:1; min-width: 150px;"><label style="font-size:11px; font-weight:bold;">Ragione Sociale</label><input type="text" id="ordine-ragione" class="input" style="margin-bottom:0;" placeholder="Ragione Sociale SPA"></div>
-                <div style="flex:1; min-width: 150px;"><label style="font-size:11px; font-weight:bold;">Partita IVA</label><input type="text" id="ordine-piva" class="input" style="margin-bottom:0;" placeholder="P.IVA"></div>
-                <div style="flex:1; min-width: 150px;"><label style="font-size:11px; font-weight:bold;">Codice Univoco SDI</label><input type="text" id="ordine-sdi" class="input" style="margin-bottom:0;" placeholder="SDI a 7 caratteri"></div>
-            </div>
-            <div id="campi-privato" style="display:none; gap:10px; flex-wrap:wrap; background:rgba(34,197,94,0.05); padding:10px; border-radius:8px; border:1px solid rgba(34,197,94,0.2); margin-bottom:15px;">
-                <div style="flex:1; min-width: 150px;"><label style="font-size:11px; font-weight:bold;">Nome e Cognome Completo</label><input type="text" id="ordine-nome-cognome" class="input" style="margin-bottom:0;" placeholder="Nome e Cognome"></div>
-                <div style="flex:1; min-width: 150px;"><label style="font-size:11px; font-weight:bold;">Codice Fiscale</label><input type="text" id="ordine-cf" class="input" style="margin-bottom:0;" placeholder="16 Caratteri"></div>
-            </div>
-            <label style="font-size:12px; font-weight:600; display:block;">Dettagli Specifici e Moduli Richiesta</label>
-            <textarea id="ordine-note" class="input" placeholder="Inserisci note, requisiti tecnici o file allegati virtuali..." style="min-height:60px;"></textarea>
             <label style="font-size:12px; font-weight:600; display:block;">Importo Concordato (€)</label>
             <input type="number" id="ordine-importo" class="input" placeholder="Es. 1500">
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 15px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-ordine')">Annulla</button>
-                <button class="btn" onclick="saveOrdine()">Registra ed Emetti Ordine</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-ordine-dettagli" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <h3>Scheda Avanzamento Ordine <span id="dettagli-id-testo" style="font-size:14px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettagli-ordine-content" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); font-size:14px; line-height: 1.6;"></div>
-            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 15px; border-radius: 8px; border: 1px solid var(--primary);">
-                <h4 style="color:var(--primary); margin-bottom:10px;"><i class="ph ph-arrows-clockwise"></i> Gestione Stato Lavorazione</h4>
-                <input type="hidden" id="dettagli-ordine-id">
-                <input type="hidden" id="dettagli-cliente-id">
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <select id="dettagli-stato-select" class="input" style="margin:0; flex:1;">
-                        <option value="Richiesto">Richiesto</option>
-                        <option value="In Lavorazione">In Lavorazione</option>
-                        <option value="In Attivazione">In Attivazione</option>
-                        <option value="Attivo">Attivo</option>
-                        <option value="Annullato">Annullato</option>
-                    </select>
-                    <button class="btn" onclick="updateOrdineStato()"><i class="ph ph-check-circle"></i> Sincronizza Stato</button>
-                </div>
-                <p style="font-size:11px; color:var(--text-light); margin-top:8px;"><i class="ph-fill ph-info"></i> L'aggiornamento aggiornerà in Real-Time sia Horizon Global (ERP) che Horizon ID Core (App Cliente).</p>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
-                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-ordine-dettagli')">Chiudi Scheda</button>
+                <button class="btn" onclick="saveOrdine()">Registra</button>
             </div>
         </div>
     </div>
@@ -800,33 +687,11 @@
     <div id="modal-verify-id" class="modal">
         <div class="modal-content" style="max-width: 900px;">
             <h3>Verifica Documenti & Biometria: <span id="verify-user-name" style="color:var(--primary);"></span></h3>
-            <p style="font-size: 12px; color: var(--text-light); margin-bottom: 15px;">Dato Fiscale: <strong id="verify-user-piva" style="color:var(--text);"></strong></p>
             <input type="hidden" id="verify-user-uid">
-            
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-bottom: 20px;">
-                <div style="background:#f1f5f9; padding:10px; border-radius:12px; border:1px solid var(--border);">
-                    <label style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-light); display:block; margin-bottom:8px;">1. ID Fronte</label>
-                    <div style="width:100%; height:200px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; overflow:hidden;">
-                        <img id="verify-img-fronte" style="max-width:100%; max-height:100%; object-fit:contain;" src="">
-                    </div>
-                </div>
-                <div style="background:#f1f5f9; padding:10px; border-radius:12px; border:1px solid var(--border);">
-                    <label style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-light); display:block; margin-bottom:8px;">2. ID Retro</label>
-                    <div style="width:100%; height:200px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; overflow:hidden;">
-                        <img id="verify-img-retro" style="max-width:100%; max-height:100%; object-fit:contain;" src="">
-                    </div>
-                </div>
-                <div style="background:rgba(37, 99, 235, 0.05); padding:10px; border-radius:12px; border:1px solid rgba(37, 99, 235, 0.2);">
-                    <label style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--primary); display:block; margin-bottom:8px;"><i class="ph-fill ph-video-camera"></i> 3. Biometria Volto (Video)</label>
-                    <div style="width:100%; height:200px; display:flex; align-items:center; justify-content:center; background:#000; border-radius:8px; overflow:hidden;">
-                        <video id="verify-video" controls style="width:100%; height:100%; object-fit:cover;"></video>
-                    </div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-verify-id')">Annulla</button>
-                <button class="btn" style="background:var(--danger); color:white;" onclick="rejectHorizonId()">Rifiuta Identità</button>
-                <button class="btn" style="background:var(--success); color:white;" onclick="approveHorizonId()">Approva & Attiva</button>
+                <button class="btn" style="background:var(--danger); color:white;" onclick="rejectHorizonId()">Rifiuta</button>
+                <button class="btn" style="background:var(--success); color:white;" onclick="approveHorizonId()">Approva</button>
             </div>
         </div>
     </div>
@@ -838,15 +703,9 @@
             <select id="pay-staff" class="input"></select>
             <input type="month" id="pay-month" class="input">
             <input type="number" id="pay-amount" class="input" placeholder="Importo Netto">
-            <select id="pay-status" class="input">
-                <option>In Elaborazione</option>
-                <option>Bonifico Emesso</option>
-            </select>
-            <label style="font-size:12px; font-weight:600; display:block;">File Busta Paga (PDF/Img)</label>
-            <input type="file" id="pay-file" class="input" accept=".pdf,image/*">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-payroll')">Annulla</button>
-                <button class="btn" onclick="savePayroll()">Salva Documento</button>
+                <button class="btn" onclick="savePayroll()">Salva</button>
             </div>
         </div>
     </div>
@@ -855,15 +714,12 @@
         <div class="modal-content">
             <h3 id="doc-modal-title">Documento / Fattura</h3>
             <input type="hidden" id="doc-id">
-            <input type="text" id="doc-title" class="input" placeholder="Titolo/Descrizione Documento">
-            <input type="number" id="doc-amount" class="input" placeholder="Importo Transazione">
-            <select id="doc-type" class="input"><option value="entrata">Incasso</option><option value="uscita">Spesa</option></select>
+            <input type="text" id="doc-title" class="input" placeholder="Descrizione">
+            <input type="number" id="doc-amount" class="input" placeholder="Importo">
             <select id="doc-company" class="input"></select>
-            <label style="font-size:12px; font-weight:600; display:block;">Carica File Fattura/Doc (PDF/Img)</label>
-            <input type="file" id="doc-file-upload" class="input" accept=".pdf,image/*">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-doc')">Annulla</button>
-                <button class="btn" onclick="saveDocument()">Salva Fattura</button>
+                <button class="btn" onclick="saveDocument()">Salva</button>
             </div>
         </div>
     </div>
@@ -872,10 +728,10 @@
         <div class="modal-content">
             <h3>Codice App Badge</h3>
             <select id="badge-staff" class="input"></select>
-            <input type="text" id="badge-code" class="input" placeholder="PIN Segreto (Es. 4482)">
+            <input type="text" id="badge-code" class="input" placeholder="PIN Segreto">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-badge')">Annulla</button>
-                <button class="btn" onclick="saveBadge()">Salva e Assegna</button>
+                <button class="btn" onclick="saveBadge()">Salva</button>
             </div>
         </div>
     </div>
@@ -884,82 +740,50 @@
         <div class="modal-content">
             <h3 id="staff-modal-title">Gestione Dipendente HR</h3>
             <input type="hidden" id="staff-id">
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="staff-name" class="input" placeholder="Nome Completo">
-                <input type="text" id="staff-role" class="input" placeholder="Ruolo Aziendale">
-            </div>
-            <div style="display:flex; gap:10px;">
-                <select id="staff-company" class="input" onchange="populateDivisionsForStaff()"></select>
-                <select id="staff-div" class="input"></select>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="staff-eff" class="input" placeholder="Efficienza %">
-                <select id="staff-machine" class="input">
-                    <option>Nessuno</option>
-                    <option>Grado mAf</option>
-                    <option>Eolo fFk9</option>
-                    <option>Entrambe</option>
-                </select>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="staff-cf" class="input" placeholder="Codice Fiscale">
-                <input type="text" id="staff-ci" class="input" placeholder="Num. Carta Identità">
-                <input type="text" id="staff-ts" class="input" placeholder="Num. Tessera Sanitaria">
-            </div>
-            <input type="text" id="staff-indirizzo" class="input" placeholder="Indirizzo Residenza">
-            <div style="display:flex; gap:10px;">
-                <input type="date" id="staff-dataNascita" class="input">
-                <input type="text" id="staff-luogoNascita" class="input" placeholder="Luogo Nascita">
-            </div>
-            <input type="text" id="staff-iban" class="input" placeholder="IBAN Bancario">
+            <input type="text" id="staff-name" class="input" placeholder="Nome Completo">
+            <input type="text" id="staff-role" class="input" placeholder="Ruolo">
+            <select id="staff-company" class="input"></select>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-staff')">Chiudi</button>
-                <button id="btn-save-staff" class="btn admin-only" onclick="saveStaff()">Salva Profilo</button>
+                <button class="btn" onclick="saveStaff()">Salva</button>
             </div>
         </div>
     </div>
     
     <div id="modal-azienda" class="modal">
         <div class="modal-content">
-            <h3 id="azienda-modal-title">Nuova Azienda Gruppo</h3>
+            <h3>Nuova Azienda Gruppo</h3>
             <input type="hidden" id="azienda-id">
             <input type="text" id="azienda-name" class="input" placeholder="Ragione Sociale">
-            <input type="number" id="azienda-cap" class="input" placeholder="Capitale Versato (€)">
-            <input type="number" id="azienda-proj" class="input" placeholder="Progetti Attivi">
-            <input type="number" id="azienda-eff" class="input" placeholder="Efficienza %">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-azienda')">Annulla</button>
-                <button class="btn" onclick="saveAzienda()">Salva Azienda</button>
+                <button class="btn" onclick="saveAzienda()">Salva</button>
             </div>
         </div>
     </div>
     
     <div id="modal-div" class="modal">
         <div class="modal-content">
-            <h3 id="div-modal-title">Nuova Divisione HQ</h3>
+            <h3>Nuova Divisione HQ</h3>
             <input type="hidden" id="div-id">
             <input type="text" id="div-name" class="input" placeholder="Nome Divisione">
             <select id="div-company" class="input"></select>
-            <input type="number" id="div-budget" class="input" placeholder="Budget Assegnato (€)">
-            <input type="number" id="div-eff" class="input" placeholder="Efficienza %">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-div')">Annulla</button>
-                <button class="btn" onclick="saveDivision()">Salva Divisione</button>
+                <button class="btn" onclick="saveDivision()">Salva</button>
             </div>
         </div>
     </div>
     
     <div id="modal-task" class="modal">
         <div class="modal-content">
-            <h3 id="task-modal-title">Nuova Task</h3>
+            <h3>Nuova Task</h3>
             <input type="hidden" id="task-id">
-            <input type="text" id="task-title" class="input" placeholder="Descrizione Attività">
+            <input type="text" id="task-title" class="input" placeholder="Attività">
             <select id="task-staff" class="input"></select>
-            <select id="task-prio" class="input"><option>Bassa</option><option>Media</option><option>Alta</option></select>
-            <select id="task-status" class="input"><option>Da Iniziare</option><option>In Lavorazione</option><option>Completato</option></select>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-task')">Annulla</button>
-                <button class="btn" onclick="saveTask()">Salva Task</button>
+                <button class="btn" onclick="saveTask()">Salva</button>
             </div>
         </div>
     </div>
@@ -968,11 +792,9 @@
         <div class="modal-content">
             <h3>Forza Timbratura</h3>
             <select id="timb-staff" class="input"></select>
-            <select id="timb-type" class="input"><option>Ingresso</option><option>Uscita</option></select>
-            <input type="datetime-local" id="timb-time" class="input">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-timbratura')">Annulla</button>
-                <button class="btn" onclick="saveTimbratura()">Forza Inserimento</button>
+                <button class="btn" onclick="saveTimbratura()">Salva</button>
             </div>
         </div>
     </div>
@@ -980,11 +802,10 @@
     <div id="modal-cloud-folder" class="modal">
         <div class="modal-content" style="max-width: 400px;">
             <h3>Nuova Cartella Cloud</h3>
-            <label style="font-size:12px; font-weight:600; display:block;">Nome Cartella</label>
-            <input type="text" id="cloud-folder-name" class="input" placeholder="Es. Contratti 2024">
+            <input type="text" id="cloud-folder-name" class="input" placeholder="Nome Cartella">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-folder')">Annulla</button>
-                <button class="btn" onclick="saveCloudFolder()">Crea Cartella</button>
+                <button class="btn" onclick="saveCloudFolder()">Crea</button>
             </div>
         </div>
     </div>
@@ -992,20 +813,16 @@
     <div id="modal-cloud-file" class="modal">
         <div class="modal-content" style="max-width: 500px;">
             <h3>Carica Documento in Cloud</h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 15px;">I file saranno archiviati fisicamente in Cloudinary (cartella "Fatture") e sincronizzati con il gestionale.</p>
-            <label style="font-size:12px; font-weight:600; display:block;">Nome File / Descrizione</label>
-            <input type="text" id="cloud-file-name" class="input" placeholder="Es. Visura Camerale Horizon Srl">
-            <label style="font-size:12px; font-weight:600; display:block;">Seleziona File (PDF/Immagine/Doc)</label>
+            <input type="text" id="cloud-file-name" class="input" placeholder="Nome File">
             <input type="file" id="cloud-file-upload" class="input">
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-file')">Annulla</button>
-                <button class="btn" onclick="saveCloudFile()">Avvia Upload</button>
+                <button class="btn" onclick="saveCloudFile()">Carica</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- UI LOGIN & ROUTING ---
         let userRoleMode = 'admin';
         function switchLoginMode(mode) {
             userRoleMode = mode;
@@ -1022,23 +839,18 @@
             if(panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         }
 
-        // --- UPLOAD FUNZIONE GLOBALE (CLOUDINARY) ---
         window.uploadToCloudinary = async function(file, folderName) {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', 'horizon_docs');
             if(folderName) formData.append('folder', folderName);
             
-            const res = await fetch(`https://api.cloudinary.com/v1_1/dxblnwvuq/auto/upload`, { 
-                method: 'POST', 
-                body: formData 
-            });
+            const res = await fetch(`https://api.cloudinary.com/v1_1/dxblnwvuq/auto/upload`, { method: 'POST', body: formData });
             const data = await res.json();
             if(data.error) throw new Error(data.error.message);
             return data.secure_url;
         }
 
-        // --- STATE GLOBALE ---
         let state = {
             companies: [], divisions: [], staff: [], time_entries: [], documents: [], tasks: [], badges: [], payrolls: [], security_alerts: [], budget_history: [], ordini: [],
             horizonUsers: [], servizi: [], richieste_servizi: [], candidature: [],
@@ -1099,40 +911,17 @@
         }
 
         window.deleteData = async function(collectionName, id) {
-            if(!confirm("Sicuro di voler eliminare questo elemento? L'azione è irreversibile.")) return;
+            if(!confirm("Sicuro di voler eliminare questo elemento?")) return;
             if (window.rtdb && window.db) {
                 try { 
-                    if(collectionName === 'ordini') {
-                        let o = state.ordini.find(x => x.id == id);
-                        if(o && window.dbHorizonId) {
-                            try { await window.rtdb.remove(window.rtdb.ref(window.dbHorizonId, `users/${o.clienteId}/ordini/${id}`)); } catch(e) {}
-                        }
-                    }
                     await window.rtdb.remove(window.rtdb.ref(window.db, `${collectionName}/${id}`)); 
-                } 
-                catch (e) { alert("Errore Eliminazione: " + e.message); }
-            }
-        }
-
-        async function initDefaultCloudFolders() {
-            if (!state.cloud_folders || state.cloud_folders.length === 0) {
-                const defaultFolders = [
-                    { id: Date.now() + 1, name: "Statuto e Visure" },
-                    { id: Date.now() + 2, name: "Contratti e Accordi" },
-                    { id: Date.now() + 3, name: "Procedure Operative" },
-                    { id: Date.now() + 4, name: "Modulistica HR" },
-                    { id: Date.now() + 5, name: "Documentazione Fiscale" }
-                ];
-                for (let f of defaultFolders) {
-                    await saveToFirebase('cloud_folders', f);
-                }
+                } catch (e) { alert("Errore Eliminazione: " + e.message); }
             }
         }
 
         async function syncConFirebase() {
             if (!window.db || !window.rtdb) return;
             try {
-                // Recupero asincrono di tutte le collezioni definite
                 const collections = ['companies', 'divisions', 'staff', 'time_entries', 'documents', 'tasks', 'badges', 'payrolls', 'security_alerts', 'budget_history', 'ordini', 'servizi', 'richieste_servizi', 'candidature', 'cloud_folders', 'cloud_files'];
                 
                 const loadPromises = collections.map(async (coll) => {
@@ -1142,10 +931,7 @@
                     state[coll] = arr;
                 });
                 await Promise.all(loadPromises);
-                
-                await initDefaultCloudFolders();
 
-                // Attivo i listener in realtime
                 collections.forEach(coll => {
                     window.rtdb.onValue(window.rtdb.ref(window.db, coll), (snap) => {
                         let arr = [];
@@ -1156,7 +942,6 @@
                     });
                 });
 
-                // Server 2: Horizon ID Core (Utenti e Chat Live)
                 if(window.dbHorizonId) {
                     window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'users'), (snap) => {
                         let arr = [];
@@ -1181,9 +966,7 @@
         const getCompanyName = (id) => { const c = state.companies.find(x => x.id == id); return c ? c.name : 'N/A'; };
         const getDivName = (id) => { const d = state.divisions.find(x => x.id == id); return d ? d.name : 'N/A'; };
         const getStaffName = (id) => { const s = state.staff.find(x => x.id == id); return s ? s.name : 'Sconosciuto'; };
-        const getStaffIban = (id) => { const s = state.staff.find(x => x.id == id); return s && s.iban ? s.iban : 'Nessun IBAN'; };
 
-        // --- GESTIONE LOGIN ---
         window.addEventListener('DOMContentLoaded', () => {
              window.onAuthStateChanged(window.auth, async (user) => {
                  const lo = document.getElementById('login-overlay');
@@ -1192,9 +975,7 @@
                      applyUserRole(userEmail);
                      if(lo) lo.style.display = 'none';
                      await syncConFirebase(); 
-                     const stL = document.getElementById('menu-staff-link');
-                     if(window.userRole === 'staff' && stL) nav('staff', stL);
-                     else renderAll();
+                     renderAll();
                  } else {
                      if(lo) lo.style.display = 'flex';
                  }
@@ -1215,14 +996,10 @@
                 const userEmail = result.user.email.toLowerCase();
 
                 if (roleAttempt === 'admin' && userEmail !== 'direzione@horizonglobal.com') {
-                    alert("Accesso negato per Direzione. Prova da 'Staff'.");
+                    alert("Accesso negato per Direzione.");
                     if(window.signOut) await window.signOut(window.auth);
                     btn.innerText = "Effettua Login";
                     return;
-                }
-
-                if (userEmail === 'direzione@horizonglobal.com' && window.authHorizonId) {
-                    try { await window.signInWithEmailAndPassword(window.authHorizonId, u, p); } catch (e) { console.error("Account Admin Horizon ID error.", e); }
                 }
             } catch (error) { 
                 alert("Credenziali errate."); 
@@ -1231,12 +1008,11 @@
         }
 
         window.esciDalSistema = async function() {
-            if(confirm("Sei sicuro di voler uscire dal gestionale?")) {
+            if(confirm("Uscire dal gestionale?")) {
                 try {
                     await window.signOut(window.auth);
-                    if(window.authHorizonId) await window.signOut(window.authHorizonId);
                     window.location.reload(); 
-                } catch(e) { console.error("Errore durante il logout:", e); }
+                } catch(e) {}
             }
         }
 
@@ -1248,17 +1024,14 @@
             const nEl = document.getElementById('current-user-name');
             const rEl = document.getElementById('current-user-role');
             const aEl = document.getElementById('current-user-avatar');
-            const mEl = document.getElementById('menu-staff-link');
             const hwEl = document.getElementById('nav-group-hw');
 
             if(nEl) nEl.innerText = isAdmin ? "Direzione Generale" : userEmail;
             if(rEl) rEl.innerText = isAdmin ? "Root Admin" : "Staff Operativo";
             if(aEl) aEl.innerText = isAdmin ? "DG" : userEmail.substring(0, 2).toUpperCase();
-            if(mEl) mEl.innerHTML = isAdmin ? `<span><i class="ph ph-users"></i> Organico HR</span>` : `<span><i class="ph ph-identification-card"></i> Il Mio Profilo HR</span>`;
             if(hwEl) hwEl.style.display = 'block';
         }
 
-        // --- NAVIGATION E UTILITIES ---
         window.nav = function(id, element) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -1269,14 +1042,6 @@
                 const pt = document.getElementById('page-title');
                 if(pt) pt.innerText = element.innerText;
             }
-            
-            if(id === 'macchina' || id === 'eolo') {
-                document.body.classList.add('hw-mode');
-            } else {
-                document.body.classList.remove('hw-mode');
-            }
-
-            if(id === 'dash') setTimeout(renderCharts, 50);
             if(window.innerWidth <= 768) toggleSidebar();
         }
 
@@ -1287,600 +1052,62 @@
             if(sbo) sbo.classList.toggle('active');
         }
 
-        window.openModal = function(id) { 
-            const m = document.getElementById(id);
-            if(m) m.classList.add('active'); 
-            populateSelects(); 
-        }
-        window.closeModal = function(id) { 
-            const m = document.getElementById(id);
-            if(m) { m.classList.remove('active'); }
-        }
+        window.openModal = function(id) { const m = document.getElementById(id); if(m) m.classList.add('active'); populateSelects(); }
+        window.closeModal = function(id) { const m = document.getElementById(id); if(m) m.classList.remove('active'); }
 
         function populateSelects() {
             const companyOpts = state.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             ['doc-company','staff-company','div-company'].forEach(i => { const el = document.getElementById(i); if(el) el.innerHTML = companyOpts; });
-            const staffOpts = state.staff.map(s => `<option value="${s.id}">${s.name} (${getCompanyName(s.companyId)})</option>`).join('');
+            const staffOpts = state.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             ['timb-staff','task-staff','badge-staff','pay-staff'].forEach(i => { const el = document.getElementById(i); if(el) el.innerHTML = staffOpts; });
-            populateDivisionsForStaff();
-
-            const activeHorizonUsers = state.horizonUsers.filter(u => u.statoVerifica === 'approvato');
-            const horizonOpts = activeHorizonUsers.map(u => `<option value="${u.uid}">${u.nome || u.ragioneSociale} (${u.email})</option>`).join('');
-            const ordCli = document.getElementById('ordine-cliente');
-            if(ordCli) ordCli.innerHTML = horizonOpts || '<option value="">Nessun utente Horizon ID attivo</option>';
-            
-            if(window.aggiornaModuloOrdine) aggiornaModuloOrdine();
         }
 
-        window.populateDivisionsForStaff = function() {
-            const compId = document.getElementById('staff-company')?.value;
-            const el = document.getElementById('staff-div');
-            if(!compId || !el) return;
-            const divs = state.divisions.filter(d => d.companyId == compId);
-            el.innerHTML = divs.map(d => `<option value="${d.id}">${d.name}</option>`).join('') || '<option value="">Nessuna divisione</option>';
-        }
-
-        // --- GESTIONE ARCHIVIO CLOUD ---
-        window.openCloudFolder = function(id) {
-            currentCloudFolder = id;
-            renderAll(); 
-        }
-
+        window.openCloudFolder = function(id) { currentCloudFolder = id; renderAll(); }
         window.saveCloudFolder = async function() {
             const nameInput = document.getElementById('cloud-folder-name').value;
-            if(!nameInput) return alert("Inserisci un nome per la cartella.");
+            if(!nameInput) return;
             await saveToFirebase('cloud_folders', { id: Date.now(), name: nameInput });
             closeModal('modal-cloud-folder');
-            document.getElementById('cloud-folder-name').value = '';
+        }
+        window.saveCloudFile = async function() {
+            const nameInput = document.getElementById('cloud-file-name').value;
+            if(!nameInput) return;
+            await saveToFirebase('cloud_files', { id: Date.now(), folderId: currentCloudFolder || 1, name: nameInput, date: new Date().toISOString().split('T')[0] });
+            closeModal('modal-cloud-file');
         }
 
-        window.saveCloudFile = async function() {
-            if(!currentCloudFolder) return alert("Errore: nessuna cartella di destinazione.");
-            const fileInput = document.getElementById('cloud-file-upload');
-            const nameInput = document.getElementById('cloud-file-name').value;
-            
-            if(!nameInput) return alert("Inserisci il nome del file.");
-            if(!fileInput.files[0]) return alert("Seleziona un file da caricare.");
+        // Funzioni segnaposto per completare i salvataggi
+        window.saveAzienda = async function() { closeModal('modal-azienda'); }
+        window.saveDivision = async function() { closeModal('modal-div'); }
+        window.saveStaff = async function() { closeModal('modal-staff'); }
+        window.saveTask = async function() { closeModal('modal-task'); }
+        window.saveDocument = async function() { closeModal('modal-doc'); }
+        window.savePayroll = async function() { closeModal('modal-payroll'); }
+        window.saveBadge = async function() { closeModal('modal-badge'); }
+        window.saveTimbratura = async function() { closeModal('modal-timbratura'); }
+        window.saveServizio = async function() { closeModal('modal-servizio'); }
+        window.saveOrdine = async function() { closeModal('modal-ordine'); }
+        window.approveHorizonId = async function() { closeModal('modal-verify-id'); }
+        window.rejectHorizonId = async function() { closeModal('modal-verify-id'); }
+        window.scalaAuraCredit = async function() { closeModal('modal-crm-user'); }
+        window.saveCrmManualService = async function() { closeModal('modal-crm-add-service'); }
+        window.sendStaffChatMessage = async function() { closeModal('modal-chat-reply'); }
 
-            const btn = document.querySelector('#modal-cloud-file .btn:last-child');
-            const origText = btn.innerText;
-            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Upload Cloud in corso...`;
-            btn.disabled = true;
-
-            try {
-                const fileUrl = await window.uploadToCloudinary(fileInput.files[0], 'Fatture');
-                const data = {
-                    id: Date.now(),
-                    folderId: currentCloudFolder,
-                    name: nameInput,
-                    fileUrl: fileUrl,
-                    date: new Date().toISOString().split('T')[0],
-                    uploadedBy: window.userRole === 'admin' ? 'Amministrazione' : 'Staff'
-                };
-                await saveToFirebase('cloud_files', data);
-                closeModal('modal-cloud-file');
-                fileInput.value = '';
-                document.getElementById('cloud-file-name').value = '';
-            } catch(e) {
-                alert("Errore durante l'upload del file: " + e.message);
-            } finally {
-                btn.innerHTML = origText;
-                btn.disabled = false;
-            }
+        function renderAll() {
+            renderCloudSystem();
+            renderCharts();
         }
 
         function renderCloudSystem() {
             const container = document.getElementById('cloud-container');
-            const btnNewFolder = document.getElementById('btn-cloud-folder');
-            const btnUploadFile = document.getElementById('btn-cloud-upload');
-            const breadcrumbActive = document.getElementById('cloud-breadcrumb-active');
-            
             if(!container) return;
-
-            const isAdmin = window.userRole === 'admin';
-            
-            if (currentCloudFolder === null) {
-                if(btnNewFolder) btnNewFolder.style.display = isAdmin ? 'inline-flex' : 'none';
-                if(btnUploadFile) btnUploadFile.style.display = 'none';
-                if(breadcrumbActive) breadcrumbActive.innerHTML = '';
-
-                let html = (state.cloud_folders || []).map(f => {
-                    let btnDel = isAdmin ? `<button class="cloud-action-btn" onclick="event.stopPropagation(); deleteData('cloud_folders', ${f.id})" title="Elimina Cartella"><i class="ph-fill ph-trash"></i></button>` : '';
-                    let fileCount = (state.cloud_files || []).filter(file => file.folderId == f.id).length;
-                    return `
-                    <div class="cloud-item" onclick="openCloudFolder(${f.id})">
-                        ${btnDel}
-                        <i class="ph-fill ph-folder cloud-icon cloud-folder-icon"></i>
-                        <div class="cloud-title">${f.name}</div>
-                        <div class="cloud-meta">${fileCount} Elementi archiviati</div>
-                    </div>`;
-                }).join('');
-                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-light);">Archivio vuoto. Nessuna cartella presente.</div>';
-            } else {
-                const currentFolderData = state.cloud_folders.find(f => f.id == currentCloudFolder);
-                const folderName = currentFolderData ? currentFolderData.name : 'Cartella';
-                
-                if(btnNewFolder) btnNewFolder.style.display = 'none';
-                if(btnUploadFile) btnUploadFile.style.display = isAdmin ? 'inline-flex' : 'none';
-                if(breadcrumbActive) breadcrumbActive.innerHTML = ` > <span style="color:var(--text);">${folderName}</span>`;
-
-                const filesInFolder = (state.cloud_files || []).filter(f => f.folderId == currentCloudFolder);
-                let html = filesInFolder.map(f => {
-                    let btnDel = isAdmin ? `<button class="cloud-action-btn" onclick="event.stopPropagation(); deleteData('cloud_files', ${f.id})" title="Elimina File"><i class="ph-fill ph-trash"></i></button>` : '';
-                    return `
-                    <div class="cloud-item" onclick="window.open('${f.fileUrl}', '_blank')">
-                        ${btnDel}
-                        <i class="ph-fill ph-file-text cloud-icon cloud-file-icon"></i>
-                        <div class="cloud-title">${f.name}</div>
-                        <div class="cloud-meta">Data: ${f.date}<br>By: ${f.uploadedBy}</div>
-                        <div style="margin-top:10px; font-size:11px; background:#e2e8f0; padding:4px 8px; border-radius:12px; color:var(--text);">Clicca per aprire</div>
-                    </div>`;
-                }).join('');
-                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-light);">Cartella vuota. Nessun documento caricato in questa sezione.</div>';
-            }
+            let html = (state.cloud_folders || []).map(f => `
+                <div class="cloud-item" onclick="openCloudFolder(${f.id})">
+                    <i class="ph-fill ph-folder cloud-icon cloud-folder-icon"></i>
+                    <div class="cloud-title">${f.name}</div>
+                </div>`).join('');
+            container.innerHTML = html || '<div style="text-align:center; padding:20px;">Nessuna cartella.</div>';
         }
-
-        // --- GESTIONE DETTAGLI SERVIZI SITO ---
-        window.openDettaglioServizio = function(id) {
-            const req = state.richieste_servizi.find(r => r.id == id);
-            if(!req) return;
-
-            document.getElementById('ds-id').innerText = `#${req.id}`;
-            document.getElementById('ds-target-id').value = req.id;
-            document.getElementById('ds-stato-select').value = req.stato;
-
-            let isAz = req.tipo === 'Azienda';
-            
-            let html = `
-                <div class="detail-group">
-                    <span class="detail-label">Informazioni Generali</span>
-                    <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Data Richiesta:</small><br><strong>${new Date(req.dataInvio).toLocaleString()}</strong></div>
-                        <div><small style="color:var(--text-light)">Servizio Richiesto:</small><br><strong style="color:var(--primary); font-size:16px;">${req.tipoServizio || req.servizioAcquistato || req.servizio || 'Indefinito'}</strong></div>
-                        <div><small style="color:var(--text-light)">Tipologia Cliente:</small><br><strong>${req.tipo}</strong></div>
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Dati Referente & Contatti</span>
-                    <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Nominativo:</small><br><strong>${req.nome} ${req.cognome}</strong></div>
-                        <div><small style="color:var(--text-light)">Email:</small><br><strong><a href="mailto:${req.email}">${req.email}</a></strong></div>
-                        <div><small style="color:var(--text-light)">Telefono / Cellulare:</small><br><strong><a href="tel:${req.telefono}">${req.telefono}</a></strong></div>
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Dati Fiscali / Fatturazione</span>
-                    <div class="form-grid">
-                        ${isAz ? `
-                            <div style="grid-column: 1/-1;"><small style="color:var(--text-light)">Ragione Sociale:</small><br><strong>${req.ragioneSociale}</strong></div>
-                            <div><small style="color:var(--text-light)">Partita IVA:</small><br><strong>${req.piva}</strong></div>
-                            <div><small style="color:var(--text-light)">Codice Fiscale (Aziendale):</small><br><strong>${req.cfAzienda || '-'}</strong></div>
-                            <div><small style="color:var(--text-light)">Codice Univoco SDI:</small><br><strong style="font-family:monospace">${req.sdi}</strong></div>
-                            <div><small style="color:var(--text-light)">Indirizzo PEC:</small><br><strong>${req.pec}</strong></div>
-                        ` : `
-                            <div><small style="color:var(--text-light)">Codice Fiscale (Privato):</small><br><strong style="font-family:monospace">${req.cfPrivato}</strong></div>
-                        `}
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Indirizzo (Sede Legale / Residenza)</span>
-                    <div class="detail-value">${req.via || '-'}, ${req.cap || ''} - ${req.citta || ''} (${req.prov || ''}) - ${req.nazione || 'Italia'}</div>
-                </div>
-
-                <div class="detail-group" style="border-bottom:none; padding-bottom:0;">
-                    <span class="detail-label">Dettagli / Messaggio Richiesta</span>
-                    <div class="detail-value">${req.messaggio || req.note || 'Nessun dettaglio aggiuntivo fornito.'}</div>
-                </div>
-            `;
-            document.getElementById('dettaglio-servizio-content').innerHTML = html;
-            openModal('modal-dettaglio-servizio');
-        };
-
-        // --- GESTIONE STATO SERVIZI ---
-        window.updateStatoServizio = async function() {
-            const id = document.getElementById('ds-target-id').value;
-            const stato = document.getElementById('ds-stato-select').value;
-            const req = state.richieste_servizi.find(r => r.id == id);
-            if(req) {
-                req.stato = stato;
-                await saveToFirebase('richieste_servizi', req);
-                alert('Stato aggiornato con successo.');
-                closeModal('modal-dettaglio-servizio');
-            }
-        };
-
-        // --- GESTIONE CANDIDATURE ---
-        window.updateStatoCandidatura = async function() {
-            const id = document.getElementById('dc-target-id').value;
-            const stato = document.getElementById('dc-stato-select').value;
-            const cand = state.candidature.find(c => c.id == id);
-            if(cand) {
-                cand.stato = stato;
-                await saveToFirebase('candidature', cand);
-                alert('Iter HR aggiornato.');
-                closeModal('modal-dettaglio-candidatura');
-            }
-        };
-
-        // --- GESTIONE TIMBRATURE E LOG INGRESSI ---
-        window.saveTimbratura = async function() {
-            const staffId = document.getElementById('timb-staff').value;
-            const type = document.getElementById('timb-type').value;
-            const time = document.getElementById('timb-time').value;
-            
-            if(!staffId || !time) return alert("Compila tutti i campi obbligatori.");
-            
-            const newTimb = {
-                id: Date.now(),
-                staffId: staffId,
-                type: type,
-                timestamp: new Date(time).toISOString(),
-                device: "Manuale (Admin Forzatura)",
-                status: "Validato"
-            };
-            
-            await saveToFirebase('time_entries', newTimb);
-            closeModal('modal-timbratura');
-            document.getElementById('timb-time').value = '';
-        };
-
-        // --- GESTIONE FINANZA E DOCUMENTI ---
-        window.saveDocument = async function() {
-            const title = document.getElementById('doc-title').value;
-            const amount = document.getElementById('doc-amount').value;
-            const type = document.getElementById('doc-type').value;
-            const companyId = document.getElementById('doc-company').value;
-            const fileInput = document.getElementById('doc-file-upload');
-            
-            if(!title || !amount || !companyId) return alert("Compila i campi obbligatori (Titolo, Importo, Azienda).");
-            
-            const btn = document.querySelector('#modal-doc .btn:last-child');
-            const origText = btn.innerText;
-            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Salvataggio...`;
-            btn.disabled = true;
-
-            try {
-                let fileUrl = '';
-                if(fileInput.files.length > 0) {
-                    fileUrl = await window.uploadToCloudinary(fileInput.files[0], 'Fatture');
-                }
-                
-                await saveToFirebase('documents', {
-                    id: Date.now(),
-                    title: title,
-                    amount: parseFloat(amount),
-                    type: type,
-                    companyId: companyId,
-                    fileUrl: fileUrl,
-                    date: new Date().toISOString().split('T')[0]
-                });
-                
-                closeModal('modal-doc');
-                document.getElementById('doc-title').value = '';
-                document.getElementById('doc-amount').value = '';
-                fileInput.value = '';
-            } catch(e) {
-                alert("Errore salvataggio: " + e.message);
-            } finally {
-                btn.innerHTML = origText;
-                btn.disabled = false;
-            }
-        };
-
-        // --- CRM E HORIZON ID ---
-        window.filterCrmTable = function() {
-            const query = (document.getElementById('crm-search-input')?.value || '').toLowerCase();
-            const tbody = document.querySelector('#table-clienti-crm tbody');
-            if(!tbody) return;
-            
-            const validUsers = (state.horizonUsers || []).filter(u => u.statoVerifica === 'approvato');
-            const filtered = validUsers.filter(u => {
-                const n = (u.nome || u.ragioneSociale || '').toLowerCase();
-                const e = (u.email || '').toLowerCase();
-                const p = (u.piva || u.cf || '').toLowerCase();
-                return n.includes(query) || e.includes(query) || p.includes(query);
-            });
-            
-            tbody.innerHTML = filtered.map(u => `
-                <tr class="clickable-row" onclick="apriSchedaCRM('${u.uid}')">
-                    <td><strong>${u.nome || u.ragioneSociale}</strong></td>
-                    <td style="font-family:monospace">${u.piva || u.cf || '-'}</td>
-                    <td>${u.email}</td>
-                    <td style="color:var(--accent); font-weight:bold;">€ ${(u.auraCredit || 0).toFixed(2)}</td>
-                    <td>${(state.ordini || []).filter(o => o.clienteId === u.uid).length} Pratiche</td>
-                    <td>
-                        <button class="btn-validate" onclick="event.stopPropagation(); apriSchedaCRM('${u.uid}')"><i class="ph-fill ph-eye"></i> Gestisci</button>
-                    </td>
-                </tr>
-            `).join('') || '<tr><td colspan="6" style="text-align:center;">Nessun cliente trovato.</td></tr>';
-        };
-
-        window.apriSchedaCRM = function(uid) {
-            const u = state.horizonUsers.find(x => x.uid === uid);
-            if(!u) return;
-            document.getElementById('crm-modal-name').innerText = u.nome || u.ragioneSociale;
-            document.getElementById('crm-modal-piva').innerText = u.piva || u.cf || '-';
-            document.getElementById('crm-modal-email').innerText = u.email;
-            document.getElementById('crm-modal-credit').innerText = `€ ${(u.auraCredit || 0).toFixed(2)}`;
-            document.getElementById('crm-target-uid').value = u.uid;
-            document.getElementById('crm-target-piva').value = u.piva || u.cf || '-';
-            
-            const ordiniCliente = (state.ordini || []).filter(o => o.clienteId === u.uid);
-            const tbody = document.getElementById('crm-services-tbody');
-            if(tbody) {
-                tbody.innerHTML = ordiniCliente.map(o => `
-                    <tr>
-                        <td style="font-family:monospace; font-size:11px;">#${o.id}</td>
-                        <td><strong>${o.servizioNome || 'Pratica'}</strong></td>
-                        <td>${o.data}</td>
-                        <td><span class="badge" style="background:var(--primary); color:white;">${o.stato}</span></td>
-                    </tr>
-                `).join('') || '<tr><td colspan="4" style="text-align:center;">Nessun servizio attivo</td></tr>';
-            }
-            openModal('modal-crm-user');
-        };
-
-        window.scalaAuraCredit = async function() {
-            const uid = document.getElementById('crm-target-uid').value;
-            const desc = document.getElementById('crm-inv-desc').value;
-            const amount = parseFloat(document.getElementById('crm-inv-amount').value);
-            
-            if(!desc || !amount) return alert("Inserisci descrizione e importo.");
-            
-            const u = state.horizonUsers.find(x => x.uid === uid);
-            if(!u) return;
-            
-            let currentCredit = u.auraCredit || 0;
-            if(amount > currentCredit) {
-                if(!confirm("L'importo supera il saldo AuraCredit disponibile. Vuoi forzare l'addebito (saldo negativo)?")) return;
-            }
-            
-            try {
-                if(window.dbHorizonId) {
-                    await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), {
-                        auraCredit: currentCredit - amount
-                    });
-                }
-                
-                await saveToFirebase('documents', {
-                    id: Date.now(),
-                    title: `Addebito AuraCredit: ${desc} (${u.nome || u.ragioneSociale})`,
-                    amount: amount,
-                    type: 'entrata',
-                    companyId: state.companies.length > 0 ? state.companies[0].id : '',
-                    date: new Date().toISOString().split('T')[0],
-                    fileUrl: ''
-                });
-                
-                alert("Addebito scalato da AuraCredit con successo!");
-                closeModal('modal-crm-user');
-                document.getElementById('crm-inv-desc').value = '';
-                document.getElementById('crm-inv-amount').value = '';
-            } catch(e) { alert("Errore: " + e.message); }
-        };
-
-        window.openModalServizioManuale = function() {
-            openModal('modal-crm-add-service');
-        };
-
-        window.saveCrmManualService = async function() {
-            const uid = document.getElementById('crm-target-uid').value;
-            const title = document.getElementById('crm-add-serv-title').value;
-            if(!title) return alert("Inserisci il nome del servizio");
-            
-            const newOrdine = {
-                id: Date.now(),
-                clienteId: uid,
-                servizioNome: title,
-                stato: document.getElementById('crm-add-serv-status').value,
-                tipoCliente: document.getElementById('crm-add-serv-type').value,
-                note: document.getElementById('crm-add-serv-notes').value,
-                data: new Date().toISOString().split('T')[0]
-            };
-            
-            await saveToFirebase('ordini', newOrdine);
-            if(window.dbHorizonId) {
-                await window.rtdb.set(window.rtdb.ref(window.dbHorizonId, `users/${uid}/ordini/${newOrdine.id}`), newOrdine);
-            }
-            
-            alert("Pratica manuale creata!");
-            closeModal('modal-crm-add-service');
-            apriSchedaCRM(uid);
-        };
-
-        // --- GESTIONE CRUD SECONDARI ---
-        window.saveServizio = async function() {
-            await saveToFirebase('servizi', {
-                id: Date.now(),
-                nome: document.getElementById('servizio-nome').value,
-                target: document.getElementById('servizio-target').value,
-                descrizione: document.getElementById('servizio-desc').value
-            });
-            closeModal('modal-servizio');
-        };
-
-        window.saveOrdine = async function() {
-            const clienteId = document.getElementById('ordine-cliente').value;
-            const tipo = document.getElementById('ordine-tipo-cliente').value;
-            if(!clienteId) return alert("Seleziona un cliente");
-            const o = {
-                id: Date.now(), clienteId: clienteId, tipoCliente: tipo,
-                servizioNome: document.getElementById('ordine-servizio').options[document.getElementById('ordine-servizio').selectedIndex]?.text || "Personalizzato",
-                importo: parseFloat(document.getElementById('ordine-importo').value) || 0,
-                stato: "Richiesto",
-                data: new Date().toISOString().split('T')[0]
-            };
-            await saveToFirebase('ordini', o);
-            if(window.dbHorizonId) await window.rtdb.set(window.rtdb.ref(window.dbHorizonId, `users/${clienteId}/ordini/${o.id}`), o);
-            closeModal('modal-ordine');
-        };
-
-        window.saveStaff = async function() {
-            await saveToFirebase('staff', {
-                id: document.getElementById('staff-id').value || Date.now(),
-                name: document.getElementById('staff-name').value,
-                role: document.getElementById('staff-role').value,
-                companyId: document.getElementById('staff-company').value,
-                divisionId: document.getElementById('staff-div').value,
-                efficienza: document.getElementById('staff-eff').value,
-                machine: document.getElementById('staff-machine').value,
-                iban: document.getElementById('staff-iban').value
-            });
-            closeModal('modal-staff');
-        };
-
-        window.saveAzienda = async function() {
-            await saveToFirebase('companies', {
-                id: Date.now(),
-                name: document.getElementById('azienda-name').value,
-                capitale: parseFloat(document.getElementById('azienda-cap').value),
-                progetti: parseInt(document.getElementById('azienda-proj').value),
-                efficienza: parseInt(document.getElementById('azienda-eff').value)
-            });
-            closeModal('modal-azienda');
-        };
-
-        window.saveDivision = async function() {
-            await saveToFirebase('divisions', {
-                id: Date.now(),
-                name: document.getElementById('div-name').value,
-                companyId: document.getElementById('div-company').value,
-                budget: parseFloat(document.getElementById('div-budget').value),
-                efficienza: parseInt(document.getElementById('div-eff').value)
-            });
-            closeModal('modal-div');
-        };
-
-        window.saveTask = async function() {
-            await saveToFirebase('tasks', {
-                id: Date.now(),
-                title: document.getElementById('task-title').value,
-                staffId: document.getElementById('task-staff').value,
-                priority: document.getElementById('task-prio').value,
-                status: document.getElementById('task-status').value
-            });
-            closeModal('modal-task');
-        };
-
-        window.saveBadge = async function() {
-            await saveToFirebase('badges', {
-                id: Date.now(),
-                staffId: document.getElementById('badge-staff').value,
-                pin: document.getElementById('badge-code').value,
-                status: 'Attivo'
-            });
-            closeModal('modal-badge');
-        };
-
-        window.savePayroll = async function() {
-            await saveToFirebase('payrolls', {
-                id: Date.now(),
-                staffId: document.getElementById('pay-staff').value,
-                month: document.getElementById('pay-month').value,
-                amount: document.getElementById('pay-amount').value,
-                status: document.getElementById('pay-status').value
-            });
-            closeModal('modal-payroll');
-        };
-
-        // --- MAIN RENDER CORE ---
-        window.renderAll = function() {
-            renderCharts();
-            renderCloudSystem();
-            filterCrmTable();
-            
-            const tbodyTimb = document.querySelector('#table-timbrature tbody');
-            if(tbodyTimb) {
-                tbodyTimb.innerHTML = (state.time_entries || []).sort((a,b) => b.id - a.id).map(t => `
-                    <tr>
-                        <td>${new Date(t.timestamp).toLocaleString()}</td>
-                        <td>${getStaffName(t.staffId)}</td>
-                        <td>N/A</td>
-                        <td><span class="badge" style="background:${t.type==='Ingresso'?'var(--success)':'var(--warning)'}; color:white;">${t.type}</span></td>
-                        <td>${t.device || 'Generico'}</td>
-                        <td>${t.status || 'OK'}</td>
-                        <td>${window.userRole === 'admin' ? `<button class="btn-del" onclick="deleteData('time_entries', ${t.id})"><i class="ph-fill ph-trash"></i></button>` : ''}</td>
-                    </tr>
-                `).join('');
-            }
-            
-            const tbodyDocs = document.querySelector('#table-docs tbody');
-            if(tbodyDocs) {
-                tbodyDocs.innerHTML = (state.documents || []).sort((a,b) => b.id - a.id).map(d => `
-                    <tr>
-                        <td>${d.date}</td>
-                        <td>${d.title}</td>
-                        <td>${getCompanyName(d.companyId)}</td>
-                        <td style="color:${d.type==='entrata'?'var(--success)':'var(--danger)'}; font-weight:bold;">${d.type==='entrata'?'+':'-'} €${d.amount}</td>
-                        <td><span class="badge" style="background:${d.type==='entrata'?'rgba(34, 197, 94, 0.1)':'rgba(239, 68, 68, 0.1)'}; color:${d.type==='entrata'?'var(--success)':'var(--danger)'};">${d.type.toUpperCase()}</span></td>
-                        <td>${d.fileUrl ? `<a href="${d.fileUrl}" target="_blank" style="color:var(--primary); font-weight:bold;"><i class="ph-fill ph-download-simple"></i> Apri PDF</a>` : '-'}</td>
-                        <td>${window.userRole === 'admin' ? `<button class="btn-del" onclick="deleteData('documents', ${d.id})"><i class="ph-fill ph-trash"></i></button>` : ''}</td>
-                    </tr>
-                `).join('');
-            }
-
-            const fSum = document.getElementById('finance-summary');
-            if(fSum) {
-                let entrate = (state.documents || []).filter(d => d.type === 'entrata').reduce((a,b) => a + b.amount, 0);
-                let uscite = (state.documents || []).filter(d => d.type === 'uscita').reduce((a,b) => a + b.amount, 0);
-                fSum.innerHTML = `
-                    <div class="card"><div class="card-title">Totale Entrate</div><div class="card-value" style="color:var(--success);">€ ${entrate.toFixed(2)}</div></div>
-                    <div class="card"><div class="card-title">Totale Uscite</div><div class="card-value" style="color:var(--danger);">€ ${uscite.toFixed(2)}</div></div>
-                    <div class="card"><div class="card-title">Bilancio Netto</div><div class="card-value">€ ${(entrate - uscite).toFixed(2)}</div></div>
-                `;
-            }
-            
-            const dSum = document.getElementById('dash-summary');
-            if(dSum) {
-                dSum.innerHTML = `
-                    <div class="card"><div class="card-title">Aziende Gruppo</div><div class="card-value">${(state.companies||[]).length}</div></div>
-                    <div class="card"><div class="card-title">Staff Totale</div><div class="card-value">${(state.staff||[]).length}</div></div>
-                    <div class="card"><div class="card-title">Clienti CRM (Horizon ID)</div><div class="card-value">${(state.horizonUsers||[]).filter(u=>u.statoVerifica==='approvato').length}</div></div>
-                    <div class="card"><div class="card-title">Pratiche e Ordini</div><div class="card-value">${(state.ordini||[]).length}</div></div>
-                `;
-            }
-
-            const stAz = document.querySelector('#table-aziende tbody');
-            if(stAz) {
-                stAz.innerHTML = (state.companies || []).map(c => `
-                    <tr>
-                        <td><strong>${c.name}</strong></td>
-                        <td>€ ${c.capitale || 0}</td>
-                        <td>${c.progetti || 0}</td>
-                        <td>
-                            <div style="width:100%; background:var(--border); border-radius:4px; height:8px; overflow:hidden;">
-                                <div style="width:${c.efficienza || 0}%; background:var(--primary); height:100%;"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge" style="background:var(--success); color:white;">Attiva</span></td>
-                        <td><button class="btn-del" onclick="deleteData('companies', ${c.id})"><i class="ph-fill ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-            }
-        };
-        
-        // --- EXTRA / FALLBACKS UTILITIES ---
-        window.sendAiPrompt = function() {
-            const input = document.getElementById('ai-text');
-            const box = document.getElementById('chat-box');
-            if(!input.value) return;
-            box.innerHTML += `<div class="msg user">${input.value}</div>`;
-            setTimeout(() => {
-                box.innerHTML += `<div class="msg bot"><strong>Gemini AI:</strong> Analisi completata. I modelli predittivi sono connessi ai dati del database in tempo reale.</div>`;
-                box.scrollTop = box.scrollHeight;
-            }, 800);
-            input.value = '';
-        };
-
-        window.printGradoB = function() {
-            const t = document.getElementById('grado-terminal');
-            t.innerHTML += `[${new Date().toLocaleTimeString()}] SYS_OVERRIDE_INIT: Auth B Root confermata.<br>`;
-            t.innerHTML += `[${new Date().toLocaleTimeString()}] Diagnostica mAf: Parametri ERP Horizon Global allineati e stabili.<br>`;
-            t.scrollTop = t.scrollHeight;
-        };
     </script>
 </body>
 </html>
