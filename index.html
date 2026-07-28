@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Horizon Global ERP</title>
+    <title>Horizon App | Imprenditori</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -11,19 +11,15 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, child, onValue, remove, update, push } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
-        import { getStorage } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, child, onValue, push } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
 
         // SERVER 1: HORIZON GLS (ERP CENTRALE)
         const firebaseConfig = {
             apiKey: "AIzaSyBJjhL9-d-2QMKDYviV7KfYhUOHWDAoasU",
             authDomain: "horizongls.firebaseapp.com",
             databaseURL: "https://horizongls-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "horizongls",
-            storageBucket: "horizongls.firebasestorage.app",
-            messagingSenderId: "611544552805",
-            appId: "1:611544552805:web:88fb0e35e59fb5bf543d8c"
+            projectId: "horizongls"
         };
         
         // SERVER 2: HORIZON ID CORE (APP UTENTI)
@@ -31,24 +27,18 @@
             apiKey: "AIzaSyD8_itwMJwjLSftJaFJ6ztQN-B6WSBORoo",
             authDomain: "horizon-id-core.firebaseapp.com",
             databaseURL: "https://horizon-id-core-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "horizon-id-core",
-            storageBucket: "horizon-id-core.firebasestorage.app",
-            messagingSenderId: "366693750800",
-            appId: "1:366693750800:web:20b54d0d2180d30fa7d295"
+            projectId: "horizon-id-core"
         };
         
         const app = initializeApp(firebaseConfig);
         const appHorizonId = initializeApp(horizonIdConfig, "horizonIdApp"); 
         
-        window.auth = getAuth(app);
         window.authHorizonId = getAuth(appHorizonId); 
         window.db = getDatabase(app); 
         window.dbHorizonId = getDatabase(appHorizonId); 
-        window.storage = getStorage(app);
 
-        window.rtdb = { ref, set, get, child, onValue, remove, update, push };
+        window.rtdb = { ref, set, get, child, onValue, push };
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
         window.signOut = signOut;
         window.onAuthStateChanged = onAuthStateChanged;
     </script>
@@ -56,1539 +46,358 @@
     <style>
         :root {
             --primary: #2563EB; --primary-dark: #1E40AF; --secondary: #0F172A;
-            --accent: #22C55E; --success: #22C55E; --warning: #F59E0B; --danger: #EF4444;
+            --accent: #22C55E; --warning: #F59E0B; --danger: #EF4444;
             --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A; --text-light: #64748B;
-            --border: #E2E8F0; --sidebar-w: 280px; --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --sys-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --radius-lg: 16px; --radius-md: 12px; --radius-sm: 8px;
+            --border: #E2E8F0; --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --sys-font: 'Inter', sans-serif;
+            --bottom-nav-h: 65px;
         }
 
-        body.hw-mode {
-            --bg: #03060a; --card: rgba(10, 15, 25, 0.85); --text: #b8f2ff; --text-light: #4a758c;
-            --border: rgba(0, 229, 255, 0.2); --primary: #00e5ff; --secondary: #0a1018;
-            --sys-font: 'Rajdhani', monospace, sans-serif; background: radial-gradient(circle at top right, #09121f, var(--bg));
+        /* Dark Mode coerente con l'OS istituzionale */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #03060a; --card: #0a1018; --text: #f1f5f9; --text-light: #94a3b8;
+                --border: #1e293b; --primary: #00e5ff; --secondary: #0a1018;
+            }
         }
-        body.hw-mode .sidebar { background: #020406; border-right-color: var(--border); }
-        body.hw-mode .topbar { background: rgba(2, 4, 6, 0.95); border-bottom-color: var(--border); }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--sys-font); -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* Login Overlay Mobile First */
-        #login-overlay { position: fixed; inset: 0; background: #0F172A; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .login-box { background: white; padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
-        .login-tabs { display: flex; margin-bottom: 20px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
-        .login-tabs button { flex: 1; padding: 12px; border: none; font-weight: 600; cursor: pointer; background: #f1f5f9; color: #64748B; font-size: 14px; }
-        .login-tabs button.active { background: var(--primary); color: white; }
-        .login-box input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid var(--border); border-radius: var(--radius-sm); outline: none; font-size: 15px; }
-        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; margin-top: 12px; font-size: 15px; }
+        /* Login Overlay */
+        #login-overlay { position: fixed; inset: 0; background: var(--secondary); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: var(--card); padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .login-box input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid var(--border); border-radius: 12px; outline: none; background: var(--bg); color: var(--text); font-size: 15px;}
+        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 15px; font-size: 16px; }
 
-        /* Sidebar & Navigation Header Mobile-First Optimized */
-        .sidebar { position: fixed; top: 0; bottom: 0; left: -280px; width: var(--sidebar-w); background: #0B1120; border-right: 1px solid #1E293B; display: flex; flex-direction: column; z-index: 1001; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #FFFFFF; }
-        .sidebar.open { transform: translateX(280px); }
-        .logo { height: 64px; display: flex; align-items: center; padding: 0 20px; gap: 12px; border-bottom: 1px solid #1E293B; flex-shrink: 0; }
-        .logo i { font-size: 26px; color: var(--primary); }
-        .nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .nav-link { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); color: #94A3B8; text-decoration: none; font-weight: 500; cursor: pointer; font-size: 14px; }
-        .nav-link:active, .nav-link.active { background: var(--primary); color: white; }
+        /* Header */
+        .topbar { height: 60px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 10; flex-shrink: 0; position: sticky; top: 0;}
+        .topbar-title { font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 8px; }
 
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); }
-        .sidebar-overlay.active { display: block; }
-
-        /* Main Container Layout */
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; width: 100%; }
-        .topbar { height: 64px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10; flex-shrink: 0; backdrop-filter: blur(8px); }
-        .mobile-menu-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; border-radius: var(--radius-sm); }
-        
-        .view { display: none; padding: 16px; overflow-y: auto; height: calc(100vh - 64px); -webkit-overflow-scrolling: touch; animation: fadeIn 0.2s ease-in-out; }
+        /* Main Content */
+        .main { flex: 1; overflow-y: auto; padding: 20px 20px calc(var(--bottom-nav-h) + 20px) 20px; position: relative; }
+        .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* UI Grid & Touch-Optimized Responsive Cards */
-        .grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .card { background: var(--card); border-radius: var(--radius-md); border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
-        .card-title { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .card-value { font-size: 24px; font-weight: 800; color: var(--text); }
+        /* Components */
+        .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+        .card-title { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px; }
         
-        /* Mobile Horizontal Scroll Tables */
-        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 8px; border-radius: var(--radius-sm); }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { text-align: left; padding: 10px 12px; color: var(--text-light); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; background: rgba(0,0,0,0.01); }
-        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); white-space: nowrap; }
+        .credit-box { background: linear-gradient(135deg, var(--secondary), #1e293b); color: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .credit-val { font-size: 32px; font-weight: 800; color: var(--accent); margin-top: 5px; }
         
-        /* Touch Action Buttons */
-        .action-btns button { padding: 8px 12px; border: none; border-radius: var(--radius-sm); cursor: pointer; margin-right: 4px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-        .btn-edit { background: var(--warning); color: #fff;}
-        .btn-del { background: var(--danger); color: #fff;}
-        .btn-validate { background: var(--accent); color: #fff; }
-
-        .btn { padding: 12px 18px; border-radius: var(--radius-sm); border: none; font-weight: 600; font-size: 14px; cursor: pointer; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; width: auto; }
-        .input { width: 100%; padding: 12px; margin: 4px 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 14px; }
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; text-transform: uppercase; }
-
-        /* Full Screen Responsive Modals */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: flex-end; justify-content: center; padding: 0; }
-        .modal.active { display: flex; }
-        .modal-content { background: var(--card); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px; border: 1px solid var(--border); color: var(--text); box-shadow: 0 -10px 25px rgba(0,0,0,0.15); }
-        .modal-content-lg { max-width: 100%; }
-
-        /* Mobile AI Chat Section */
-        .ai-chat { display: flex; flex-direction: column; height: 60vh; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); }
-        .ai-msgs { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 90%; padding: 10px 14px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.4; }
-        .msg.bot { background: white; border: 1px solid var(--border); align-self: flex-start; }
-        .msg.user { background: var(--primary); color: white; align-self: flex-end; }
-        .ai-input { display: flex; padding: 10px; border-top: 1px solid var(--border); background: var(--card); gap: 8px; }
-        .ai-input input { flex: 1; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; outline: none; font-size: 14px; }
-
-        .hw-panel { border: 1px solid var(--primary); padding: 12px; background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); box-shadow: inset 0 0 20px rgba(0,229,255,0.05); }
-        .hw-title { color: var(--primary); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(0,229,255,0.3); padding-bottom: 4px; margin-bottom: 8px; }
-        .terminal { background: #010204; color: #00ff66; font-family: monospace; padding: 8px; height: 140px; overflow-y: auto; border: 1px solid #1a2b3c; font-size: 11px; }
-
-        tr.clickable-row:active { background-color: rgba(37, 99, 235, 0.1); }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .list-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .list-item-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .list-item-meta { font-size: 12px; color: var(--text-light); }
         
-        .detail-group { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-        .detail-group:last-child { border-bottom: none; }
-        .detail-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .detail-value { font-size: 13px; color: var(--text); font-weight: 500; }
-        
-        /* Touch Optimized Cloud Grid */
-        .cloud-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 140px; }
-        .cloud-item:active { transform: scale(0.98); border-color: var(--primary); }
-        .cloud-icon { font-size: 38px; margin-bottom: 6px; }
-        .cloud-folder-icon { color: #F59E0B; }
-        .cloud-file-icon { color: var(--primary); }
-        .cloud-title { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-all; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .cloud-meta { font-size: 10px; color: var(--text-light); margin-top: 4px; }
-        .cloud-action-btn { position: absolute; top: 8px; right: 8px; background: rgba(239, 68, 68, 0.15); color: var(--danger); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-size: 14px; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-attivo { background: rgba(34, 197, 94, 0.15); color: var(--accent); }
+        .status-attesa { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
 
-        /* Media Queries for Tablet and Desktop Scaling */
-        @media (min-width: 769px) {
-            .sidebar { left: 0; }
-            .sidebar.open { transform: none; }
-            .main { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); }
-            .mobile-menu-btn { display: none; }
-            .grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px; }
-            .form-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
-            .topbar { padding: 0 32px; height: 70px; }
-            .view { padding: 32px; height: calc(100vh - 70px); }
-            .modal { align-items: center; padding: 15px; }
-            .modal-content { border-radius: var(--radius-lg); max-width: 650px; max-height: 90vh; }
-            .modal-content-lg { max-width: 900px; }
-        }
+        /* Chat UI */
+        .chat-container { display: flex; flex-direction: column; height: calc(100vh - 60px - var(--bottom-nav-h) - 40px); }
+        .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 15px;}
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.4; }
+        .msg.bot { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-input-area { display: flex; gap: 10px; margin-top: 10px; }
+        .chat-input-area input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid var(--border); outline: none; background: var(--card); color: var(--text); }
+        .btn-send { background: var(--primary); color: white; border: none; border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer;}
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-nav-h); background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 100; box-shadow: 0 -4px 10px rgba(0,0,0,0.03); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); text-decoration: none; font-size: 10px; font-weight: 600; width: 25%; height: 100%; cursor: pointer; transition: color 0.2s;}
+        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+        
+        .btn-action { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-size: 14px;}
     </style>
 </head>
 <body>
 
+    <!-- LOGIN -->
     <div id="login-overlay">
         <div class="login-box">
-            <h2 style="color: var(--primary); margin-bottom: 20px;"><i class="ph-fill ph-shield-check"></i> Horizon Global</h2>
-            <div class="login-tabs">
-                <button id="btn-tab-admin" class="active" onclick="switchLoginMode('admin')">Admin</button>
-                <button id="btn-tab-staff" onclick="switchLoginMode('staff')">Staff</button>
-            </div>
-            <p id="login-desc" style="font-size: 13px; color: #666; margin-bottom: 20px;">Accesso Riservato Direzione (direzione@horizonglobal.com)</p>
-            <input type="text" id="login-user" placeholder="Email Utente">
-            <input type="password" id="login-pass" placeholder="Password Firebase">
-            <button id="btn-login-action" class="btn-login" onclick="attemptLogin('admin')">Effettua Login</button>
+            <h2 style="color: var(--primary); margin-bottom: 10px; font-size: 24px;"><i class="ph-fill ph-globe-hemisphere-east"></i> Horizon ID</h2>
+            <p style="font-size: 13px; color: var(--text-light); margin-bottom: 25px;">Accesso Clienti ed Imprenditori</p>
+            <input type="email" id="login-email" placeholder="Email Utente">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button class="btn-login" onclick="appLogin()">Accedi al Portale</button>
         </div>
     </div>
 
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <i class="ph-fill ph-globe-hemisphere-east"></i>
-            <span style="font-weight: 800; font-size: 15px; letter-spacing: 0.5px;">HORIZON OS v8</span>
+    <!-- HEADER -->
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="ph-fill ph-globe-hemisphere-east" style="color: var(--primary);"></i> Horizon
         </div>
-        <nav class="nav">
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 10px 0 5px 10px;">Workspace</div>
-            <a class="nav-link active admin-only" onclick="nav('dash', this)"><span><i class="ph ph-chart-pie"></i> Dashboard Globale</span></a>
-            <a class="nav-link admin-only" onclick="nav('aziende', this)"><span><i class="ph ph-buildings"></i> Gruppo & Aziende</span></a>
-            <a class="nav-link admin-only" onclick="nav('divs', this)"><span><i class="ph ph-tree-structure"></i> Divisioni Interne</span></a>
-            
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Ricezione Esterna Sito</div>
-            <a class="nav-link admin-only" onclick="nav('richieste-servizi', this)"><span><i class="ph ph-briefcase"></i> Servizi Horizon</span></a>
-            <a class="nav-link" onclick="nav('clienti-crm', this)"><span><i class="ph ph-users-three"></i> Clienti Registrati (CRM)</span> <i class="ph-fill ph-circle" style="color:var(--accent); font-size:8px;"></i></a>
-            <a class="nav-link admin-only" onclick="nav('candidature', this)"><span><i class="ph ph-user-list"></i> Candidature Staff</span></a>
-            
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Gestione & Operatività</div>
-            <a class="nav-link" id="menu-staff-link" onclick="nav('staff', this)"><span><i class="ph ph-users"></i> Organico HR</span></a>
-            <a class="nav-link admin-only" onclick="nav('payrolls', this)"><span><i class="ph ph-money"></i> Paghe & Stipendi</span></a>
-            <a class="nav-link admin-only" onclick="nav('badges', this)"><span><i class="ph ph-identification-card"></i> Gestione Badge App</span></a>
-            <a class="nav-link" onclick="nav('timbrature', this)"><span><i class="ph ph-clock"></i> Timbrature & Presenze</span> <i class="ph-fill ph-circle" style="color:var(--accent); font-size:8px;"></i></a>
-            
-            <a class="nav-link" onclick="nav('ordini', this)"><span><i class="ph ph-shopping-cart"></i> Ordini & Servizi Horizon</span></a>
-            
-            <a class="nav-link" onclick="nav('docs', this)"><span><i class="ph ph-files"></i> Documenti & Finanza</span></a>
-            <a class="nav-link" onclick="nav('cloud', this)"><span><i class="ph ph-cloud"></i> Archivio Cloud</span> <i class="ph-fill ph-circle" style="color:var(--primary); font-size:8px;"></i></a>
-            <a class="nav-link" onclick="nav('tasks', this)"><span><i class="ph ph-check-square"></i> Task & Ticket</span></a>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <i class="ph ph-bell" style="font-size: 22px; color: var(--text-light);"></i>
+            <div id="user-avatar" style="width: 32px; height: 32px; border-radius: 8px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;" onclick="appLogout()">U</div>
+        </div>
+    </header>
 
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Ecosistema Esterno</div>
-            <a class="nav-link admin-only" onclick="nav('horizon-id', this)"><span><i class="ph ph-identification-badge"></i> Horizon ID (Utenti)</span></a>
-            <a class="nav-link" onclick="nav('chat-supporto', this)"><span><i class="ph ph-chats-teardrop"></i> Supporto Chat (Live)</span> <i class="ph-fill ph-circle" style="color:#0A84FF; font-size:8px;"></i></a>
-
-            <div id="nav-group-hw" style="display:none;">
-                <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Infrastruttura & AI</div>
-                <a class="nav-link admin-only" onclick="nav('ai', this)"><span><i class="ph ph-sparkle"></i> AI Predittiva</span> <span style="font-size:10px; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">BETA</span></a>
-                <a class="nav-link" id="nav-macchina" style="display:none;" onclick="nav('macchina', this)"><span><i class="ph ph-cpu"></i> Grado mAf</span> <i class="ph ph-warning-circle" style="color:var(--danger)"></i></a>
-                <a class="nav-link" id="nav-eolo" style="display:none;" onclick="nav('eolo', this)"><span><i class="ph ph-broadcast"></i> Eolo fFk9</span></a>
-            </div>
-            
-            <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px;">Sistema</div>
-            <a class="nav-link admin-only" onclick="nav('settings', this)"><span><i class="ph ph-gear"></i> Settings Globali</span></a>
-
-            <div style="flex-grow: 1;"></div>
-            <a class="nav-link" onclick="esciDalSistema()" style="color: var(--danger); border-top: 1px solid #1E293B; border-radius: 0; padding-top: 15px; margin-top: auto;">
-                <span><i class="ph ph-sign-out"></i> Esci dal Sistema</span>
-            </a>
-        </nav>
-    </aside>
-
+    <!-- MAIN VIEWS -->
     <main class="main">
-        <header class="topbar">
-            <div style="font-weight: 600; display:flex; align-items:center; font-size: 16px; gap: 8px;">
-                <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
-                <span id="page-title">Dashboard Globale</span>
-            </div>
-            <div class="topbar-right-panel" style="display: flex; align-items: center; gap: 10px;">
-                <div style="position: relative;" class="admin-only">
-                    <button onclick="toggleNotifiche()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text); position:relative; margin-top: 3px;">
-                        <i class="ph ph-bell"></i>
-                        <span id="bell-badge" style="display:none; position:absolute; top:-2px; right:-4px; background:var(--danger); color:white; font-size:10px; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center; font-weight:bold;">0</span>
-                    </button>
-                    <div id="notif-panel" style="display:none; position:absolute; top:40px; right:0; width:280px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:12px; z-index:100; max-height:300px; overflow-y:auto; padding:12px;">
-                        <h4 style="font-size:13px; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:10px; color:var(--danger);"><i class="ph-fill ph-shield-warning"></i> Avvisi Sicurezza</h4>
-                        <div id="notif-list" style="font-size:11px; color:var(--text-light);">Nessun allarme registrato.</div>
-                    </div>
-                </div>
-                <div style="text-align: right; line-height: 1.2;">
-                    <div style="font-size: 12px; font-weight: 700;" id="current-user-name">...</div>
-                    <div style="font-size: 10px; color: var(--text-light);" id="current-user-role">...</div>
-                </div>
-                <div id="current-user-avatar" style="width: 34px; height: 34px; border-radius: 8px; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0;">DG</div>
-            </div>
-        </header>
-
-        <section id="view-dash" class="view active admin-only">
-            <div class="grid" id="dash-summary"></div>
-            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                <div class="card"><div class="card-title">Distribuzione Budget</div><div style="position: relative; height: 220px; width: 100%;"><canvas id="budgetDoughnutChart"></canvas></div></div>
-                <div class="card"><div class="card-title">Trend Storico Budget</div><div style="position: relative; height: 220px; width: 100%;"><canvas id="budgetHistoryChart"></canvas></div></div>
-            </div>
-            <div class="card">
-                <div class="card-title">Performance Entità Globali</div>
-                <div class="table-wrapper">
-                    <table id="table-dash-stats">
-                        <thead><tr><th>Azienda / Divisione</th><th>Capitale Sociale</th><th>Progetti Attivi</th><th>Efficienza (%)</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-richieste-servizi" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Ricezione Richieste Servizi</h2>
-                    <p style="font-size: 12px; color: var(--text-light);">Form di contatto e richiesta servizi compilati dal sito web istituzionale.</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-richieste-servizi">
-                        <thead><tr><th>Data Richiesta</th><th>Richiedente</th><th>Rag. Sociale / P.IVA</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-clienti-crm" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Clienti Registrati (Horizon ID)</h2>
-                    <p style="font-size: 12px; color: var(--text-light);">Schede utente sincrone, storico servizi associati tramite CF e gestione scalabilità AuraCredit.</p>
-                </div>
-                <div style="flex: 1; min-width: 100%;">
-                    <input type="text" id="crm-search-input" class="input" style="margin:0;" placeholder="Cerca per Nome, Rag. Sociale, P.IVA/CF o Email..." onkeyup="filterCrmTable()">
-                </div>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-clienti-crm">
-                        <thead><tr><th>Anagrafica Cliente</th><th>CF / P.IVA</th><th>Email</th><th>Saldo AuraCredit</th><th>Pratiche Servizi</th><th>Azioni CRM</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-candidature" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Ricezione Candidature HR</h2>
-                    <p style="font-size: 12px; color: var(--text-light);">CV e candidature spontanee inviate dal sito web.</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-candidature">
-                        <thead><tr><th>Data</th><th>Candidato</th><th>Posizione</th><th>Recapito</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-ordini" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Ordini Servizi Horizon</h2>
-                    <p style="font-size: 12px; color: var(--text-light);">Inserimento ordini personalizzati in sync con App Cliente (Horizon ID).</p>
-                </div>
-                <div style="display:flex; gap:8px; width: 100%;">
-                    <button class="btn admin-only" style="background:var(--secondary); flex: 1;" onclick="openModal('modal-servizio')"><i class="ph ph-list-plus"></i> Catalogo</button>
-                    <button class="btn admin-only" style="flex: 1;" onclick="apriNuovoOrdine()"><i class="ph ph-plus"></i> Ordine</button>
-                </div>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-ordini">
-                        <thead><tr><th>Data</th><th>Cliente (Horizon ID)</th><th>Servizio</th><th>Importo</th><th>Stato Attuale</th><th>Azioni Admin</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-horizon-id" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Verifica Utenti Horizon ID</h2>
-                    <p style="font-size: 12px; color: var(--text-light);">Connesso a `horizon-id-core`.</p>
-                </div>
-            </div>
-            
-            <h3 style="margin-bottom: 10px; color: var(--warning); font-size: 15px;"><i class="ph-fill ph-clock"></i> Richieste In Attesa / Mancanti</h3>
-            <div class="card" style="margin-bottom: 20px;">
-                <div class="table-wrapper">
-                    <table id="table-horizon-pending">
-                        <thead><tr><th>Utente / Rag. Sociale</th><th>P.IVA / CF</th><th>Email</th><th>Registrazione</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <h3 style="margin-bottom: 10px; color: var(--success); font-size: 15px;"><i class="ph-fill ph-check-circle"></i> Utenti Attivi e Verificati</h3>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-horizon-active">
-                        <thead><tr><th>Utente / Rag. Sociale</th><th>P.IVA / CF</th><th>Email</th><th>Registrazione</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-chat-supporto" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Supporto Tecnico Chat (Horizon ID)</h2>
-                    <p style="font-size: 12px; color: var(--text-light);">Infrastruttura di risposta in tempo reale con crittografia client per gli utenti dell'App.</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-chat-supporto">
-                        <thead><tr><th>Utente Horizon ID</th><th>P.IVA / CF</th><th>Ultimo Messaggio</th><th>Data / Ora</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-aziende" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2>Gruppo Societario</h2>
-                <button class="btn admin-only" onclick="openModal('modal-azienda')"><i class="ph ph-plus"></i> Nuova Azienda</button>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-aziende">
-                        <thead><tr><th>Azienda</th><th>Capitale Nominale</th><th>Progetti</th><th>Efficienza</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-divs" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2>Gestione Divisioni</h2>
-                <button class="btn admin-only" onclick="openModal('modal-div')"><i class="ph ph-plus"></i> Nuova Divisione</button>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-divs">
-                        <thead><tr><th>Divisione</th><th>Azienda Madre</th><th>Budget</th><th>Efficienza</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-badges" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2>Gestione Codici Badge</h2>
-                <button class="btn admin-only" onclick="openModal('modal-badge')"><i class="ph ph-plus"></i> Genera Badge</button>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-badges">
-                        <thead><tr><th>Dipendente</th><th>Codice Segreto (PIN)</th><th>Data Creazione</th><th>ID Dispositivo Ass.</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-payrolls" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2>Gestione Paghe e Stipendi</h2>
-                <button class="btn admin-only" onclick="openModal('modal-payroll')"><i class="ph ph-plus"></i> Busta Paga</button>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-payrolls">
-                        <thead><tr><th>Periodo</th><th>Dipendente</th><th>Importo</th><th>IBAN Bonifico</th><th>Stato</th><th>Documento PDF</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-staff" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2 id="staff-page-title">Gestione Organico HR Globale</h2>
-                    <p id="staff-page-desc" style="font-size: 12px; color: var(--text-light);">Gestione completa dei dipendenti e dei dati fiscali/bancari.</p>
-                </div>
-                <button class="btn admin-only" id="btn-new-staff" onclick="openModal('modal-staff')"><i class="ph ph-plus"></i> Dipendente</button>
-            </div>
-            <div class="card admin-only" id="staff-admin-view">
-                <div class="table-wrapper">
-                    <table id="table-staff">
-                        <thead><tr><th>Nome</th><th>Ruolo</th><th>Azienda</th><th>Efficienza</th><th>Accesso Macchinari</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            <div id="staff-user-view" style="display:none; width: 100%;"></div>
-        </section>
-
-        <section id="view-timbrature" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2 id="timbrature-page-title">Log Ingressi e Timbrature</h2>
-                <div class="admin-only" style="display:flex; gap:8px;">
-                    <button class="btn" onclick="openModal('modal-timbratura')"><i class="ph ph-plus"></i> Forzatura</button>
-                </div>
-            </div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-timbrature">
-                        <thead><tr><th>Timestamp</th><th>Dipendente</th><th>Azienda/Div</th><th>Tipo</th><th>Dispositivo/Geo</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-docs" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2>Amministrazione, Fatture & Uploads</h2>
-                <button class="btn admin-only" onclick="openModal('modal-doc')"><i class="ph ph-plus"></i> Inserisci Doc</button>
-            </div>
-            <div class="grid admin-only" id="finance-summary"></div>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-docs">
-                        <thead><tr><th>Data</th><th>Descrizione</th><th>Azienda Rif.</th><th>Importo</th><th>Tipo</th><th>File / Download</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
         
-        <section id="view-cloud" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <h2>Archivio Cloud Condiviso</h2>
-                    <div id="cloud-breadcrumb" style="font-size: 13px; color: var(--primary); font-weight: 500; margin-top:5px; cursor:pointer;">
-                        <span onclick="openCloudFolder(null)"><i class="ph-fill ph-house"></i> Root Principale</span> <span id="cloud-breadcrumb-active"></span>
-                    </div>
-                </div>
-                <div class="admin-only" style="display:flex; gap:8px; width: 100%;">
-                    <button class="btn" id="btn-cloud-folder" style="flex: 1;" onclick="openModal('modal-cloud-folder')"><i class="ph ph-folder-plus"></i> Cartella</button>
-                    <button class="btn" id="btn-cloud-upload" style="display:none; flex: 1;" onclick="openModal('modal-cloud-file')"><i class="ph ph-upload-simple"></i> Upload</button>
-                </div>
+        <!-- DASHBOARD & CRESCITA -->
+        <section id="view-dash" class="view active">
+            <h2 style="font-size: 20px; margin-bottom: 15px;">La tua Dashboard</h2>
+            
+            <div class="credit-box">
+                <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8;">Saldo AuraCredit</div>
+                <div class="credit-val" id="ui-auracredit">€ 0.00</div>
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 100px; opacity: 0.1;"><i class="ph-fill ph-wallet"></i></div>
             </div>
-            <div id="cloud-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;"></div>
-        </section>
 
-        <section id="view-tasks" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap: wrap; gap: 10px;">
-                <h2>Gestione Task & Ticketing</h2>
-                <button class="btn admin-only" onclick="openModal('modal-task')"><i class="ph ph-plus"></i> Nuovo Task</button>
-            </div>
             <div class="card">
-                <div class="table-wrapper">
-                    <table id="table-tasks">
-                        <thead><tr><th>Titolo Task</th><th>Assegnato a</th><th>Priorità</th><th>Stato</th><th>Azioni</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+                <div class="card-title">Monitoraggio Spese (Ultimi 6 Mesi)</div>
+                <div style="position: relative; height: 180px; width: 100%;">
+                    <canvas id="speseChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Stato Servizi Attivi</div>
+                <div id="ui-servizi-dash">
+                    <!-- Popolato via JS -->
+                    <div style="text-align: center; color: var(--text-light); font-size: 13px; padding: 10px;">Nessun servizio in corso.</div>
                 </div>
             </div>
         </section>
 
-        <section id="view-ai" class="view admin-only">
-            <div class="grid">
-                <div style="grid-column: 1 / -1;">
-                    <h2>Assistente Analitico Globale (Gemini Integration)</h2>
-                    <div class="ai-chat">
-                        <div class="ai-msgs" id="chat-box">
-                            <div class="msg bot"><strong>Gemini AI:</strong> Ciao Admin. Sono connesso. Come posso aiutarti?</div>
-                        </div>
-                        <div class="ai-input admin-only">
-                            <input type="text" id="ai-text" placeholder="Scrivi una richiesta...">
-                            <button class="btn" onclick="sendAiPrompt()"><i class="ph ph-paper-plane-right"></i></button>
-                        </div>
-                    </div>
+        <!-- SERVIZI E APPUNTAMENTI -->
+        <section id="view-servizi" class="view">
+            <h2 style="font-size: 20px; margin-bottom: 15px;">I Miei Servizi</h2>
+            <button class="btn-action" style="margin-bottom: 20px;" onclick="alert('Funzione di prenotazione appuntamento in fase di attivazione.')"><i class="ph ph-calendar-plus"></i> Richiedi Nuovo Servizio</button>
+            
+            <div class="card">
+                <div class="card-title">Storico Pratiche e Lavori</div>
+                <div id="ui-lista-ordini">
+                    <div style="text-align: center; color: var(--text-light); font-size: 13px; padding: 20px;">Caricamento pratiche...</div>
                 </div>
             </div>
         </section>
 
-        <section id="view-macchina" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="color: var(--primary); font-family: 'Rajdhani'; font-size: 18px;">TERMINALE GRADO mAf // CORE OS v8.0</h2>
-            </div>
-            <div class="grid">
-                <div class="hw-panel">
-                    <div class="hw-title">Console Grado B (Root Access)</div>
-                    <div class="terminal" id="grado-terminal">[SYS] Accesso effettuato al Mainframe Centrale.<br></div>
-                    <button class="btn admin-only" style="width:100%; margin-top:10px; background:#00e5ff; color:#000;" onclick="printGradoB()">Esegui Override Diagnostica</button>
+        <!-- CHAT SUPPORTO -->
+        <section id="view-chat" class="view">
+            <h2 style="font-size: 20px; margin-bottom: 15px;">Supporto Horizon Live</h2>
+            <div class="chat-container">
+                <div class="chat-messages" id="ui-chat-msgs">
+                    <div class="msg bot">Benvenuto nel supporto prioritario Horizon. Come possiamo assistere la tua azienda oggi?</div>
                 </div>
-            </div>
-        </section>
-
-        <section id="view-eolo" class="view">
-            <h2 style="color: var(--primary); font-family: 'Rajdhani'; margin-bottom:16px; font-size: 18px;">RADIOTERRA EOLO fFk9 // TELEMETRIA</h2>
-            <div class="grid">
-                <div class="hw-panel" style="text-align:center;">
-                    <div class="hw-title">Potenza Trasmissione (TX)</div>
-                    <div style="font-size: 32px; font-family: monospace; color:#00e5ff; font-weight:bold;" id="eolo-pwr">14.2 kW</div>
-                    <input type="range" min="10" max="50" value="14" style="width:100%; margin-top:15px;" class="admin-only" oninput="document.getElementById('eolo-pwr').innerText = this.value + '.2 kW'">
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Scrivi un messaggio..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button class="btn-send" onclick="sendChatMessage()"><i class="ph-fill ph-paper-plane-right"></i></button>
                 </div>
-            </div>
-        </section>
-
-        <section id="view-settings" class="view admin-only">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2>Settings Globali ERP</h2>
-            </div>
-            <div class="card" style="max-width: 100%;">
-                <label style="font-size:12px; font-weight:600; display:block;">Nome Azienda</label>
-                <input type="text" class="input" value="Horizon Global ERP" disabled>
-                <button class="btn" style="margin-top: 10px; width: 100%;" onclick="alert('Salvate.')">Salva Impostazioni</button>
             </div>
         </section>
 
     </main>
 
-    <div id="modal-crm-user" class="modal">
-        <div class="modal-content modal-content-lg">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px; flex-wrap: wrap; gap: 8px;">
-                <div>
-                    <h3 id="crm-modal-name" style="font-size:18px; color:var(--text);">Nome Cliente</h3>
-                    <p style="font-size:11px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
-                </div>
-                <div style="text-align:right;">
-                    <span style="font-size:10px; color:var(--text-light); uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
-                    <span id="crm-modal-credit" style="font-size:20px; font-weight:800; color:var(--accent);">€ 0.00</span>
-                </div>
-            </div>
-            <input type="hidden" id="crm-target-uid">
-            <input type="hidden" id="crm-target-piva">
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="font-size:13px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi e Pratiche in Sincronia</h4>
-                <button class="btn" style="padding:6px 10px; font-size:11px; min-height: initial;" onclick="openModalServizioManuale()"><i class="ph ph-plus"></i> Manuale</button>
-            </div>
-            
-            <div class="card" style="padding:10px; margin-bottom:16px; max-height:200px; overflow-y:auto;">
-                <div class="table-wrapper">
-                    <table style="margin-top:0;">
-                        <thead><tr><th>ID</th><th>Servizio Richiesto</th><th>Data Invio</th><th>Stato</th><th>Gestisci</th></tr></thead>
-                        <tbody id="crm-services-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:14px; border-radius:12px; margin-bottom:16px;">
-                <h4 style="color:var(--accent); margin-bottom:8px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
-                <p style="font-size:11px; color:var(--text-light); margin-bottom:10px;">Compila il modulo per addebitare il cliente. L'importo verrà sottratto dal saldo AuraCredit sull'App Horizon ID e salvato nello storico contabile del gestionale.</p>
-                <div style="display:grid; grid-template-columns: 1fr; gap:8px;">
-                    <div>
-                        <label style="font-size:10px; font-weight:bold; display:block; margin-bottom:2px;">Descrizione / Modulo Addebitato</label>
-                        <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Es. Rinnovo Modulo ERP Enterprise">
-                    </div>
-                    <div>
-                        <label style="font-size:10px; font-weight:bold; display:block; margin-bottom:2px;">Importo da Scalare (€)</label>
-                        <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Es. 150">
-                    </div>
-                </div>
-                <div style="text-align:right; margin-top:10px;">
-                    <button class="btn" style="background:var(--accent); width: 100%;" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito & Fattura</button>
-                </div>
-            </div>
-
-            <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-crm-add-service" class="modal">
-        <div class="modal-content" style="max-width:500px;">
-            <h3 style="margin-bottom:8px;">Inserimento Servizio Manuale</h3>
-            <p style="font-size:11px; color:var(--text-light); margin-bottom:12px;">La pratica verrà creata sul database globale e associata automaticamente all'anagrafica del cliente.</p>
-            <label style="font-size:11px; font-weight:600; display:block;">Servizio / Modulo da Attivare</label>
-            <input type="text" id="crm-add-serv-title" class="input" placeholder="Es. Connettività Orion FWA o Sito Web Custom">
-            <label style="font-size:11px; font-weight:600; display:block;">Tipologia Contratto</label>
-            <select id="crm-add-serv-type" class="input">
-                <option value="Azienda">Azienda (B2B Corporate)</option>
-                <option value="Privato">Privato / Cittadino (B2C)</option>
-            </select>
-            <label style="font-size:11px; font-weight:600; display:block;">Stato Iniziale Pratica</label>
-            <select id="crm-add-serv-status" class="input">
-                <option value="raccolta">In Raccolta / Nuova</option>
-                <option value="in corso">In Lavorazione / In Corso</option>
-                <option value="approvata">Approvata / Attiva</option>
-            </select>
-            <label style="font-size:11px; font-weight:600; display:block;">Note / Specifiche Tecniche</label>
-            <textarea id="crm-add-serv-notes" class="input" style="min-height:60px;" placeholder="Dettagli aggiuntivi per i tecnici..."></textarea>
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-crm-add-service')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveCrmManualService()">Crea Pratica</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-chat-reply" class="modal">
-        <div class="modal-content" style="max-width:600px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
-                <div>
-                    <h3 style="font-size:15px;">Chat Live: <span id="chat-modal-user" style="color:var(--primary);"></span></h3>
-                    <p style="font-size:10px; color:var(--text-light);" id="chat-modal-piva"></p>
-                </div>
-                <span class="badge" style="background:#32D74B; color:black; font-weight:800;">Connesso</span>
-            </div>
-            <input type="hidden" id="chat-target-uid">
-            <div id="chat-modal-messages" style="height:280px; overflow-y:auto; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
-            <div style="display:flex; gap:8px;">
-                <input type="text" id="chat-modal-input" class="input" style="margin:0; flex:1;" placeholder="Scrivi una risposta allo staff..." onkeypress="if(event.key==='Enter') sendStaffChatMessage()">
-                <button class="btn" onclick="sendStaffChatMessage()"><i class="ph ph-paper-plane-right"></i></button>
-            </div>
-            <div style="display:flex; justify-content:flex-end; margin-top:12px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-chat-reply')">Chiudi Chat</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-dettaglio-servizio" class="modal">
-        <div class="modal-content modal-content-lg">
-            <h3>Scheda Dettaglio: Richiesta Servizio <span id="ds-id" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettaglio-servizio-content" style="margin-top: 12px; margin-bottom: 16px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 14px;"></div>
-            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
-                <h4 style="color:var(--primary); margin-bottom:8px; font-size: 13px;"><i class="ph ph-arrows-clockwise"></i> Gestione Stato Richiesta</h4>
-                <input type="hidden" id="ds-target-id">
-                <div style="display:flex; gap:8px; align-items:center; flex-direction: column;">
-                    <select id="ds-stato-select" class="input" style="margin:0; width: 100%;">
-                        <option value="Nuova">Nuova (Da valutare)</option>
-                        <option value="raccolta">In Raccolta / Pratica Aperta</option>
-                        <option value="in corso">In Lavorazione / In Corso</option>
-                        <option value="Preventivo Inviato">Preventivo Inviato</option>
-                        <option value="approvata">Approvata / Attiva</option>
-                        <option value="rifiutata">Rifiutata / Chiusa</option>
-                    </select>
-                    <button class="btn" style="width: 100%;" onclick="updateStatoServizio()"><i class="ph ph-check-circle"></i> Aggiorna Stato</button>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 16px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-dettaglio-servizio')">Chiudi Scheda</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-dettaglio-candidatura" class="modal">
-        <div class="modal-content modal-content-lg">
-            <h3>Scheda Profilo Candidato <span id="dc-id" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettaglio-candidatura-content" style="margin-top: 12px; margin-bottom: 16px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 14px;"></div>
-            <div class="admin-only" style="background: rgba(34, 197, 94, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--success);">
-                <h4 style="color:var(--success); margin-bottom:8px; font-size: 13px;"><i class="ph ph-arrows-clockwise"></i> Iter di Selezione HR</h4>
-                <input type="hidden" id="dc-target-id">
-                <div style="display:flex; gap:8px; align-items:center; flex-direction: column;">
-                    <select id="dc-stato-select" class="input" style="margin:0; width: 100%;">
-                        <option value="In Attesa">In Attesa (Da visionare)</option>
-                        <option value="In Valutazione">In Valutazione (CV screening)</option>
-                        <option value="Colloquio Fissato">Colloquio Fissato</option>
-                        <option value="Offerta Inviata">Offerta Lavorativa Inviata</option>
-                        <option value="Assunto">Assunto (Converti in Dipendente)</option>
-                        <option value="Scartato">Scartato</option>
-                    </select>
-                    <button class="btn" style="background:var(--success); width: 100%;" onclick="updateStatoCandidatura()"><i class="ph ph-check-circle"></i> Aggiorna Iter</button>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 16px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-dettaglio-candidatura')">Chiudi Scheda</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-servizio" class="modal">
-        <div class="modal-content">
-            <h3>Nuovo Servizio a Catalogo</h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">Aggiungi manualmente i servizi al database per renderli disponibili in base al target.</p>
-            <input type="hidden" id="servizio-id">
-            <label style="font-size:11px; font-weight:600; display:block;">Nome Servizio</label>
-            <input type="text" id="servizio-nome" class="input" placeholder="Es. Sviluppo Gestionale, Consulenza Fiscale...">
-            <label style="font-size:11px; font-weight:600; display:block;">Destinato a (Target Cliente)</label>
-            <select id="servizio-target" class="input">
-                <option value="Aziende">Solo Aziende (B2B)</option>
-                <option value="Cittadini">Solo Cittadini / Privati (B2C)</option>
-                <option value="Entrambi">Entrambi (B2B & B2C)</option>
-            </select>
-            <label style="font-size:11px; font-weight:600; display:block;">Descrizione Dettagliata e Requisiti Modulo</label>
-            <textarea id="servizio-desc" class="input" placeholder="Descrivi i dettagli che servono per questo servizio..." style="min-height:70px;"></textarea>
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-servizio')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveServizio()">Salva Catalogo</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-ordine" class="modal">
-        <div class="modal-content" style="max-width: 700px;">
-            <h3 id="ordine-modal-title">Nuovo Ordine Horizon</h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">Modulo adattivo per inserimento ordini (registrazione simultanea su ERP e App Horizon ID)</p>
-            <input type="hidden" id="ordine-id">
-            <label style="font-size:11px; font-weight:600; display:block;">Target Inserimento</label>
-            <select id="ordine-tipo-cliente" class="input" onchange="aggiornaModuloOrdine()">
-                <option value="Azienda">Richiesta per Azienda (B2B)</option>
-                <option value="Privato">Richiesta per Cittadino / Privato (B2C)</option>
-            </select>
-            <label style="font-size:11px; font-weight:600; display:block;">Cliente App (Horizon ID Associato)</label>
-            <select id="ordine-cliente" class="input"></select>
-            <label style="font-size:11px; font-weight:600; display:block;">Servizio Richiesto (Dal Catalogo Firebase)</label>
-            <select id="ordine-servizio" class="input"></select>
-            <div id="campi-azienda" style="display:flex; gap:8px; flex-direction:column; background:rgba(37,99,235,0.05); padding:10px; border-radius:8px; border:1px solid rgba(37,99,235,0.2); margin-bottom:12px;">
-                <div><label style="font-size:10px; font-weight:bold;">Ragione Sociale</label><input type="text" id="ordine-ragione" class="input" style="margin-bottom:0;" placeholder="Ragione Sociale SPA"></div>
-                <div><label style="font-size:10px; font-weight:bold;">Partita IVA</label><input type="text" id="ordine-piva" class="input" style="margin-bottom:0;" placeholder="P.IVA"></div>
-                <div><label style="font-size:10px; font-weight:bold;">Codice Univoco SDI</label><input type="text" id="ordine-sdi" class="input" style="margin-bottom:0;" placeholder="SDI a 7 caratteri"></div>
-            </div>
-            <div id="campi-privato" style="display:none; gap:8px; flex-direction:column; background:rgba(34,197,94,0.05); padding:10px; border-radius:8px; border:1px solid rgba(34,197,94,0.2); margin-bottom:12px;">
-                <div><label style="font-size:10px; font-weight:bold;">Nome e Cognome Completo</label><input type="text" id="ordine-nome-cognome" class="input" style="margin-bottom:0;" placeholder="Nome e Cognome"></div>
-                <div><label style="font-size:10px; font-weight:bold;">Codice Fiscale</label><input type="text" id="ordine-cf" class="input" style="margin-bottom:0;" placeholder="16 Caratteri"></div>
-            </div>
-            <label style="font-size:11px; font-weight:600; display:block;">Dettagli Specifici e Moduli Richiesta</label>
-            <textarea id="ordine-note" class="input" placeholder="Inserisci note, requisiti tecnici o file allegati virtuali..." style="min-height:50px;"></textarea>
-            <label style="font-size:11px; font-weight:600; display:block;">Importo Concordato (€)</label>
-            <input type="number" id="ordine-importo" class="input" placeholder="Es. 1500">
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 12px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-ordine')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveOrdine()">Registra Ordine</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-ordine-dettagli" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <h3>Scheda Avanzamento Ordine <span id="dettagli-id-testo" style="font-size:13px; color:var(--text-light); font-family:monospace;"></span></h3>
-            <div id="dettagli-ordine-content" style="margin-top: 12px; margin-bottom: 16px; padding: 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); font-size:13px; line-height: 1.5;"></div>
-            <div class="admin-only" style="background: rgba(37, 99, 235, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
-                <h4 style="color:var(--primary); margin-bottom:8px; font-size: 13px;"><i class="ph ph-arrows-clockwise"></i> Gestione Stato Lavorazione</h4>
-                <input type="hidden" id="dettagli-ordine-id">
-                <input type="hidden" id="dettagli-cliente-id">
-                <div style="display:flex; gap:8px; align-items:center; flex-direction: column;">
-                    <select id="dettagli-stato-select" class="input" style="margin:0; width: 100%;">
-                        <option value="Richiesto">Richiesto</option>
-                        <option value="In Lavorazione">In Lavorazione</option>
-                        <option value="In Attivazione">In Attivazione</option>
-                        <option value="Attivo">Attivo</option>
-                        <option value="Annullato">Annullato</option>
-                    </select>
-                    <button class="btn" style="width: 100%;" onclick="updateOrdineStato()"><i class="ph ph-check-circle"></i> Sincronizza Stato</button>
-                </div>
-                <p style="font-size:10px; color:var(--text-light); margin-top:8px;"><i class="ph-fill ph-info"></i> L'aggiornamento aggiornerà in Real-Time sia Horizon Global (ERP) che Horizon ID Core (App Cliente).</p>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 16px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-ordine-dettagli')">Chiudi Scheda</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-verify-id" class="modal">
-        <div class="modal-content" style="max-width: 900px;">
-            <h3>Verifica Documenti & Biometria: <span id="verify-user-name" style="color:var(--primary);"></span></h3>
-            <p style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">Dato Fiscale: <strong id="verify-user-piva" style="color:var(--text);"></strong></p>
-            <input type="hidden" id="verify-user-uid">
-            
-            <div style="display:grid; grid-template-columns: 1fr; gap:12px; margin-bottom: 16px;">
-                <div style="background:#f1f5f9; padding:10px; border-radius:12px; border:1px solid var(--border);">
-                    <label style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-light); display:block; margin-bottom:6px;">1. ID Fronte</label>
-                    <div style="width:100%; height:160px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; overflow:hidden;">
-                        <img id="verify-img-fronte" style="max-width:100%; max-height:100%; object-fit:contain;" src="">
-                    </div>
-                </div>
-                <div style="background:#f1f5f9; padding:10px; border-radius:12px; border:1px solid var(--border);">
-                    <label style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-light); display:block; margin-bottom:6px;">2. ID Retro</label>
-                    <div style="width:100%; height:160px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; overflow:hidden;">
-                        <img id="verify-img-retro" style="max-width:100%; max-height:100%; object-fit:contain;" src="">
-                    </div>
-                </div>
-                <div style="background:rgba(37, 99, 235, 0.05); padding:10px; border-radius:12px; border:1px solid rgba(37, 99, 235, 0.2);">
-                    <label style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--primary); display:block; margin-bottom:6px;"><i class="ph-fill ph-video-camera"></i> 3. Biometria Volto (Video)</label>
-                    <div style="width:100%; height:160px; display:flex; align-items:center; justify-content:center; background:#000; border-radius:8px; overflow:hidden;">
-                        <video id="verify-video" controls style="width:100%; height:100%; object-fit:cover;"></video>
-                    </div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; flex-direction: column;">
-                <button class="btn" style="background:var(--success); color:white;" onclick="approveHorizonId()">Approva & Attiva</button>
-                <button class="btn" style="background:var(--danger); color:white;" onclick="rejectHorizonId()">Rifiuta Identità</button>
-                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-verify-id')">Annulla</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-payroll" class="modal">
-        <div class="modal-content">
-            <h3>Busta Paga</h3>
-            <input type="hidden" id="pay-id">
-            <select id="pay-staff" class="input"></select>
-            <input type="month" id="pay-month" class="input">
-            <input type="number" id="pay-amount" class="input" placeholder="Importo Netto">
-            <select id="pay-status" class="input">
-                <option>In Elaborazione</option>
-                <option>Bonifico Emesso</option>
-            </select>
-            <label style="font-size:11px; font-weight:600; display:block;">File Busta Paga (PDF/Img)</label>
-            <input type="file" id="pay-file" class="input" accept=".pdf,image/*">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-payroll')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="savePayroll()">Salva Documento</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-doc" class="modal">
-        <div class="modal-content">
-            <h3 id="doc-modal-title">Documento / Fattura</h3>
-            <input type="hidden" id="doc-id">
-            <input type="text" id="doc-title" class="input" placeholder="Titolo/Descrizione Documento">
-            <input type="number" id="doc-amount" class="input" placeholder="Importo Transazione">
-            <select id="doc-type" class="input"><option value="entrata">Incasso</option><option value="uscita">Spesa</option></select>
-            <select id="doc-company" class="input"></select>
-            <label style="font-size:11px; font-weight:600; display:block;">Carica File Fattura/Doc (PDF/Img)</label>
-            <input type="file" id="doc-file-upload" class="input" accept=".pdf,image/*">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-doc')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveDocument()">Salva Fattura</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-badge" class="modal">
-        <div class="modal-content">
-            <h3>Codice App Badge</h3>
-            <select id="badge-staff" class="input"></select>
-            <input type="text" id="badge-code" class="input" placeholder="PIN Segreto (Es. 4482)">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-badge')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveBadge()">Salva e Assegna</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-staff" class="modal">
-        <div class="modal-content">
-            <h3 id="staff-modal-title">Gestione Dipendente HR</h3>
-            <input type="hidden" id="staff-id">
-            <div style="display:flex; gap:8px; flex-direction:column;">
-                <input type="text" id="staff-name" class="input" placeholder="Nome Completo">
-                <input type="text" id="staff-role" class="input" placeholder="Ruolo Aziendale">
-            </div>
-            <div style="display:flex; gap:8px; flex-direction:column;">
-                <select id="staff-company" class="input" onchange="populateDivisionsForStaff()"></select>
-                <select id="staff-div" class="input"></select>
-            </div>
-            <div style="display:flex; gap:8px; flex-direction:column;">
-                <input type="number" id="staff-eff" class="input" placeholder="Efficienza %">
-                <select id="staff-machine" class="input">
-                    <option>Nessuno</option>
-                    <option>Grado mAf</option>
-                    <option>Eolo fFk9</option>
-                    <option>Entrambe</option>
-                </select>
-            </div>
-            <div style="display:flex; gap:8px; flex-direction:column;">
-                <input type="text" id="staff-cf" class="input" placeholder="Codice Fiscale">
-                <input type="text" id="staff-ci" class="input" placeholder="Num. Carta Identità">
-                <input type="text" id="staff-ts" class="input" placeholder="Num. Tessera Sanitaria">
-            </div>
-            <input type="text" id="staff-indirizzo" class="input" placeholder="Indirizzo Residenza">
-            <div style="display:flex; gap:8px; flex-direction:column;">
-                <input type="date" id="staff-dataNascita" class="input">
-                <input type="text" id="staff-luogoNascita" class="input" placeholder="Luogo Nascita">
-            </div>
-            <input type="text" id="staff-iban" class="input" placeholder="IBAN Bancario">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-staff')">Chiudi</button>
-                <button id="btn-save-staff" class="btn admin-only" style="flex: 1;" onclick="saveStaff()">Salva Profilo</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-azienda" class="modal">
-        <div class="modal-content">
-            <h3 id="azienda-modal-title">Nuova Azienda Gruppo</h3>
-            <input type="hidden" id="azienda-id">
-            <input type="text" id="azienda-name" class="input" placeholder="Ragione Sociale">
-            <input type="number" id="azienda-cap" class="input" placeholder="Capitale Versato (€)">
-            <input type="number" id="azienda-proj" class="input" placeholder="Progetti Attivi">
-            <input type="number" id="azienda-eff" class="input" placeholder="Efficienza %">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-azienda')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveAzienda()">Salva Azienda</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-div" class="modal">
-        <div class="modal-content">
-            <h3 id="div-modal-title">Nuova Divisione HQ</h3>
-            <input type="hidden" id="div-id">
-            <input type="text" id="div-name" class="input" placeholder="Nome Divisione">
-            <select id="div-company" class="input"></select>
-            <input type="number" id="div-budget" class="input" placeholder="Budget Assegnato (€)">
-            <input type="number" id="div-eff" class="input" placeholder="Efficienza %">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-div')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveDivision()">Salva Divisione</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-task" class="modal">
-        <div class="modal-content">
-            <h3 id="task-modal-title">Nuova Task</h3>
-            <input type="hidden" id="task-id">
-            <input type="text" id="task-title" class="input" placeholder="Descrizione Attività">
-            <select id="task-staff" class="input"></select>
-            <select id="task-prio" class="input"><option>Bassa</option><option>Media</option><option>Alta</option></select>
-            <select id="task-status" class="input"><option>Da Iniziare</option><option>In Lavorazione</option><option>Completato</option></select>
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-task')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveTask()">Salva Task</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-timbratura" class="modal">
-        <div class="modal-content">
-            <h3>Forza Timbratura</h3>
-            <select id="timb-staff" class="input"></select>
-            <select id="timb-type" class="input"><option>Ingresso</option><option>Uscita</option></select>
-            <input type="datetime-local" id="timb-time" class="input">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-timbratura')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveTimbratura()">Forza Inserimento</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-cloud-folder" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3>Nuova Cartella Cloud</h3>
-            <label style="font-size:11px; font-weight:600; display:block;">Nome Cartella</label>
-            <input type="text" id="cloud-folder-name" class="input" placeholder="Es. Contratti 2024">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-cloud-folder')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveCloudFolder()">Crea Cartella</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-cloud-file" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <h3>Carica Documento in Cloud</h3>
-            <p style="font-size: 10px; color: var(--text-light); margin-bottom: 12px;">I file saranno archiviati fisicamente in Cloudinary (cartella "Fatture") e sincronizzati con il gestionale.</p>
-            <label style="font-size:11px; font-weight:600; display:block;">Nome File / Descrizione</label>
-            <input type="text" id="cloud-file-name" class="input" placeholder="Es. Visura Camerale Horizon Srl">
-            <label style="font-size:11px; font-weight:600; display:block;">Seleziona File (PDF/Immagine/Doc)</label>
-            <input type="file" id="cloud-file-upload" class="input">
-            <div style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="btn" style="background:#e2e8f0; color:#333; flex: 1;" onclick="closeModal('modal-cloud-file')">Annulla</button>
-                <button class="btn" style="flex: 1;" onclick="saveCloudFile()">Avvia Upload</button>
-            </div>
-        </div>
-    </div>
-    <!-- MODALE CRM DEFINITIVO -->
-    <div id="modal-crm-user" class="modal">
-        <div class="modal-content modal-content-lg">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px; flex-wrap: wrap; gap: 8px;">
-                <div>
-                    <h3 id="crm-modal-name" style="font-size:18px; color:var(--text);">Nome Cliente</h3>
-                    <p style="font-size:11px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva" style="color:var(--text); font-family:monospace;"></strong> | Email: <span id="crm-modal-email"></span></p>
-                </div>
-                <div style="text-align:right;">
-                    <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; display:block; font-weight:bold;">Saldo AuraCredit</span>
-                    <span id="crm-modal-credit" style="font-size:20px; font-weight:800; color:var(--accent);">€ 0.00</span>
-                </div>
-            </div>
-            <input type="hidden" id="crm-target-uid">
-            <input type="hidden" id="crm-target-piva">
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="font-size:13px; color:var(--primary);"><i class="ph-fill ph-briefcase"></i> Servizi e Pratiche</h4>
-                <button class="btn" style="padding:6px 10px; font-size:11px; min-height: initial;" onclick="openModal('modal-crm-add-service')"><i class="ph ph-plus"></i> Manuale</button>
-            </div>
-            
-            <div class="card" style="padding:10px; margin-bottom:16px; max-height:200px; overflow-y:auto;">
-                <div class="table-wrapper">
-                    <table style="margin-top:0;">
-                        <thead><tr><th>ID</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
-                        <tbody id="crm-services-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:14px; border-radius:12px; margin-bottom:16px;">
-                <h4 style="color:var(--accent); margin-bottom:10px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
-                <div style="display:grid; grid-template-columns: 1fr; gap:8px;">
-                    <input type="text" id="crm-inv-desc" class="input" style="margin:0;" placeholder="Descrizione">
-                    <input type="number" id="crm-inv-amount" class="input" style="margin:0;" placeholder="Importo (€)">
-                </div>
-                <div style="text-align:right; margin-top:10px;">
-                    <button class="btn" style="background:var(--accent); width: 100%;" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito</button>
-                </div>
-            </div>
-
-            <div style="display:flex; justify-content:flex-end;">
-                <button class="btn" style="background:#e2e8f0; color:#333; width: 100%;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
-            </div>
-        </div>
-    </div>
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a class="nav-item active" onclick="nav('dash', this)">
+            <i class="ph-fill ph-squares-four"></i>
+            <span>Home</span>
+        </a>
+        <a class="nav-item" onclick="nav('servizi', this)">
+            <i class="ph-fill ph-briefcase"></i>
+            <span>Servizi</span>
+        </a>
+        <a class="nav-item" onclick="nav('chat', this)">
+            <i class="ph-fill ph-chats-teardrop"></i>
+            <span>Supporto</span>
+        </a>
+    </nav>
 
     <script>
-        // --- UI LOGIN & ROUTING ---
-        let userRoleMode = 'admin';
-        function switchLoginMode(mode) {
-            userRoleMode = mode;
-            const btnA = document.getElementById('btn-tab-admin');
-            const btnS = document.getElementById('btn-tab-staff');
-            const desc = document.getElementById('login-desc');
-            if(btnA) btnA.className = mode === 'admin' ? 'active' : '';
-            if(btnS) btnS.className = mode === 'staff' ? 'active' : '';
-            if(desc) desc.innerText = mode === 'admin' ? 'Accesso Riservato Direzione (direzione@horizonglobal.com)' : 'Accesso Operativo Staff';
-        }
+        let currentUser = null;
+        let userData = {};
+        let ordiniData = [];
 
-        function toggleNotifiche() {
-            const panel = document.getElementById('notif-panel');
-            if(panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // --- UPLOAD FUNZIONE GLOBALE (CLOUDINARY) ---
-        window.uploadToCloudinary = async function(file, folderName) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'horizon_docs');
-            if(folderName) formData.append('folder', folderName);
-            
-            const res = await fetch(`https://api.cloudinary.com/v1_1/dxblnwvuq/auto/upload`, { 
-                method: 'POST', 
-                body: formData 
-            });
-            const data = await res.json();
-            if(data.error) throw new Error(data.error.message);
-            return data.secure_url;
-        }
-
-        // --- STATE GLOBALE ---
-        let state = {
-            companies: [], divisions: [], staff: [], time_entries: [], documents: [], tasks: [], badges: [], payrolls: [], security_alerts: [], budget_history: [], ordini: [],
-            horizonUsers: [], servizi: [], richieste_servizi: [], candidature: [],
-            cloud_folders: [], cloud_files: [], chats: {}
-        };
-
-        let currentCloudFolder = null; 
-        let doughnutChartInst = null;
-        let lineChartInst = null;
-
-        function renderCharts() {
-            const dashEl = document.getElementById('view-dash');
-            if(!dashEl || !dashEl.classList.contains('active')) return;
-
-            const divNames = state.divisions.map(d => d.name);
-            const divBudgets = state.divisions.map(d => d.budget);
-
-            const cD = document.getElementById('budgetDoughnutChart');
-            if(cD) {
-                const ctxD = cD.getContext('2d');
-                if(doughnutChartInst) doughnutChartInst.destroy();
-                doughnutChartInst = new Chart(ctxD, {
-                    type: 'doughnut',
-                    data: { labels: divNames.length ? divNames : ['Nessuna'], datasets: [{ data: divBudgets.length ? divBudgets : [1], backgroundColor: ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
-                });
-            }
-
-            const cH = document.getElementById('budgetHistoryChart');
-            if(cH) {
-                const ctxL = cH.getContext('2d');
-                if(lineChartInst) lineChartInst.destroy();
-
-                let historyLabels = []; let historyData = [];
-                if (state.budget_history && state.budget_history.length > 0) {
-                    let sortedHistory = [...state.budget_history].sort((a, b) => a.id - b.id);
-                    historyLabels = sortedHistory.map(h => h.date); historyData = sortedHistory.map(h => h.total);
-                } else {
-                    let currentTotal = state.divisions.reduce((acc, d) => acc + d.budget, 0);
-                    historyLabels = [new Date().toLocaleDateString('it-IT')]; historyData = [currentTotal];
-                }
-
-                lineChartInst = new Chart(ctxL, {
-                    type: 'line',
-                    data: { labels: historyLabels, datasets: [{ label: 'Budget (€)', data: historyData, borderColor: '#2563EB', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.3 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } }
-                });
-            }
-        }
-
-        async function saveToFirebase(collectionName, item) {
-            if (window.rtdb && window.db) {
-                try {
-                    const docId = item.id.toString();
-                    await window.rtdb.set(window.rtdb.ref(window.db, `${collectionName}/${docId}`), JSON.parse(JSON.stringify(item)));
-                } catch (e) { alert("Errore Salvataggio DB: " + e.message); }
-            }
-        }
-
-        window.deleteData = async function(collectionName, id) {
-            if(!confirm("Sicuro di voler eliminare questo elemento? L'azione è irreversibile.")) return;
-            if (window.rtdb && window.db) {
-                try { 
-                    if(collectionName === 'ordini') {
-                        let o = state.ordini.find(x => x.id == id);
-                        if(o && window.dbHorizonId) {
-                            try { await window.rtdb.remove(window.rtdb.ref(window.dbHorizonId, `users/${o.clienteId}/ordini/${id}`)); } catch(e) {}
-                        }
-                    }
-                    await window.rtdb.remove(window.rtdb.ref(window.db, `${collectionName}/${id}`)); 
-                } 
-                catch (e) { alert("Errore Eliminazione: " + e.message); }
-            }
-        }
-
-        async function initDefaultCloudFolders() {
-            if (!state.cloud_folders || state.cloud_folders.length === 0) {
-                const defaultFolders = [
-                    { id: Date.now() + 1, name: "Statuto e Visure" },
-                    { id: Date.now() + 2, name: "Contratti e Accordi" },
-                    { id: Date.now() + 3, name: "Procedure Operative" },
-                    { id: Date.now() + 4, name: "Modulistica HR" },
-                    { id: Date.now() + 5, name: "Documentazione Fiscale" }
-                ];
-                for (let f of defaultFolders) {
-                    await saveToFirebase('cloud_folders', f);
-                }
-            }
-        }
-
-        async function syncConFirebase() {
-            if (!window.db || !window.rtdb) return;
-            try {
-                // Recupero asincrono di tutte le collezioni definite nell'Index 9
-                const collections = ['companies', 'divisions', 'staff', 'time_entries', 'documents', 'tasks', 'badges', 'payrolls', 'security_alerts', 'budget_history', 'ordini', 'servizi', 'richieste_servizi', 'candidature', 'cloud_folders', 'cloud_files'];
-                
-                const loadPromises = collections.map(async (coll) => {
-                    const snap = await window.rtdb.get(window.rtdb.ref(window.db, coll));
-                    let arr = [];
-                    if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
-                    state[coll] = arr;
-                });
-                await Promise.all(loadPromises);
-                
-                await initDefaultCloudFolders();
-
-                // Attivo i listener in realtime
-                collections.forEach(coll => {
-                    window.rtdb.onValue(window.rtdb.ref(window.db, coll), (snap) => {
-                        let arr = [];
-                        if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
-                        state[coll] = arr;
-                        const lo = document.getElementById('login-overlay');
-                        if(lo && lo.style.display === 'none') renderAll();
-                    });
-                });
-
-                // Server 2: Horizon ID Core (Utenti e Chat Live)
-                if(window.dbHorizonId) {
-                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'users'), (snap) => {
-                        let arr = [];
-                        if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
-                        state.horizonUsers = arr;
-                        populateSelects(); 
-                        const lo = document.getElementById('login-overlay');
-                        if(lo && lo.style.display === 'none') renderAll();
-                    });
-
-                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'chats'), (snap) => {
-                        let chatsObj = {};
-                        if (snap.exists()) { chatsObj = snap.val(); }
-                        state.chats = chatsObj;
-                        const lo = document.getElementById('login-overlay');
-                        if(lo && lo.style.display === 'none') renderAll();
-                    });
-                }
-            } catch (error) { console.error(error); }
-        }
-
-        const getCompanyName = (id) => { const c = state.companies.find(x => x.id == id); return c ? c.name : 'N/A'; };
-        const getDivName = (id) => { const d = state.divisions.find(x => x.id == id); return d ? d.name : 'N/A'; };
-        const getStaffName = (id) => { const s = state.staff.find(x => x.id == id); return s ? s.name : 'Sconosciuto'; };
-        const getStaffIban = (id) => { const s = state.staff.find(x => x.id == id); return s && s.iban ? s.iban : 'Nessun IBAN'; };
-
-        // --- GESTIONE LOGIN ---
+        // --- GESTIONE AUTENTICAZIONE ---
         window.addEventListener('DOMContentLoaded', () => {
-             window.onAuthStateChanged(window.auth, async (user) => {
-                 const lo = document.getElementById('login-overlay');
+             window.onAuthStateChanged(window.authHorizonId, (user) => {
+                 const overlay = document.getElementById('login-overlay');
                  if (user) {
-                     const userEmail = user.email.toLowerCase();
-                     applyUserRole(userEmail);
-                     if(lo) lo.style.display = 'none';
-                     await syncConFirebase(); 
-                     const stL = document.getElementById('menu-staff-link');
-                     if(window.userRole === 'staff' && stL) nav('staff', stL);
-                     else renderAll();
+                     currentUser = user;
+                     overlay.style.display = 'none';
+                     document.getElementById('user-avatar').innerText = user.email.substring(0, 1).toUpperCase();
+                     syncUserData(user.uid);
+                     initCharts();
                  } else {
-                     if(lo) lo.style.display = 'flex';
+                     overlay.style.display = 'flex';
                  }
              });
         });
 
-        window.attemptLogin = async function(roleAttempt) {
-            const uEl = document.getElementById('login-user');
-            const pEl = document.getElementById('login-pass');
-            const btn = document.getElementById('btn-login-action');
-            if(!uEl || !pEl || !btn) return;
-
-            const u = uEl.value; const p = pEl.value;
-            btn.innerText = "Accesso...";
-
-            try {
-                const result = await window.signInWithEmailAndPassword(window.auth, u, p);
-                const userEmail = result.user.email.toLowerCase();
-
-                if (roleAttempt === 'admin' && userEmail !== 'direzione@horizonglobal.com') {
-                    alert("Accesso negato per Direzione. Prova da 'Staff'.");
-                    if(window.signOut) await window.signOut(window.auth);
-                    btn.innerText = "Effettua Login";
-                    return;
-                }
-
-                if (userEmail === 'direzione@horizonglobal.com' && window.authHorizonId) {
-                    try { await window.signInWithEmailAndPassword(window.authHorizonId, u, p); } catch (e) { console.error("Account Admin Horizon ID error.", e); }
-                }
-            } catch (error) { 
-                alert("Credenziali errate."); 
-                btn.innerText = "Effettua Login";
-            }
-        }
-
-        window.esciDalSistema = async function() {
-            if(confirm("Sei sicuro di voler uscire dal gestionale?")) {
-                try {
-                    await window.signOut(window.auth);
-                    if(window.authHorizonId) await window.signOut(window.authHorizonId);
-                    window.location.reload(); 
-                } catch(e) { console.error("Errore durante il logout:", e); }
-            }
-        }
-
-        function applyUserRole(userEmail) {
-            window.currentUserEmail = userEmail;
-            const isAdmin = (userEmail === 'direzione@horizonglobal.com');
-            window.userRole = isAdmin ? 'admin' : 'staff';
+        window.appLogin = async function() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            if(!email || !pass) return alert("Inserisci credenziali valide.");
             
-            const nEl = document.getElementById('current-user-name');
-            const rEl = document.getElementById('current-user-role');
-            const aEl = document.getElementById('current-user-avatar');
-            const mEl = document.getElementById('menu-staff-link');
-            const hwEl = document.getElementById('nav-group-hw');
-
-            if(nEl) nEl.innerText = isAdmin ? "Direzione Generale" : userEmail;
-            if(rEl) rEl.innerText = isAdmin ? "Root Admin" : "Staff Operativo";
-            if(aEl) aEl.innerText = isAdmin ? "DG" : userEmail.substring(0, 2).toUpperCase();
-            if(mEl) mEl.innerHTML = isAdmin ? `<span><i class="ph ph-users"></i> Organico HR</span>` : `<span><i class="ph ph-identification-card"></i> Il Mio Profilo HR</span>`;
-            if(hwEl) hwEl.style.display = 'block';
+            try {
+                await window.signInWithEmailAndPassword(window.authHorizonId, email, pass);
+            } catch (error) {
+                alert("Credenziali errate o account non verificato.");
+            }
         }
 
-        // --- NAVIGATION E UTILITIES ---
-        window.nav = function(id, element) {
+        window.appLogout = function() {
+            if(confirm("Vuoi disconnetterti dall'App?")) {
+                window.signOut(window.authHorizonId);
+            }
+        }
+
+        // --- SINCRONIZZAZIONE DATI FIREBASE ---
+        function syncUserData(uid) {
+            // Sincronizza Dati Anagrafici e AuraCredit da Horizon ID
+            const userRef = window.rtdb.ref(window.dbHorizonId, `users/${uid}`);
+            window.rtdb.onValue(userRef, (snap) => {
+                if (snap.exists()) {
+                    userData = snap.val();
+                    const saldo = userData.auraCredit || 0;
+                    document.getElementById('ui-auracredit').innerText = `€ ${parseFloat(saldo).toFixed(2)}`;
+                }
+            });
+
+            // Sincronizza Ordini/Servizi da Horizon GLS (ERP Centrale)
+            const ordiniRef = window.rtdb.ref(window.db, `ordini`);
+            window.rtdb.onValue(ordiniRef, (snap) => {
+                if (snap.exists()) {
+                    let allOrdini = [];
+                    snap.forEach(child => { allOrdini.push(child.val()); });
+                    // Filtra solo gli ordini associati all'UID dell'imprenditore
+                    ordiniData = allOrdini.filter(o => o.clienteId === uid);
+                    renderServizi();
+                }
+            });
+
+            // Sincronizza Chat
+            const chatRef = window.rtdb.ref(window.dbHorizonId, `chats/${uid}/messages`);
+            window.rtdb.onValue(chatRef, (snap) => {
+                const box = document.getElementById('ui-chat-msgs');
+                box.innerHTML = '';
+                if(snap.exists()) {
+                    snap.forEach(child => {
+                        const m = child.val();
+                        const div = document.createElement('div');
+                        div.className = `msg ${m.sender === 'user' ? 'user' : 'bot'}`;
+                        div.innerText = m.text;
+                        box.appendChild(div);
+                    });
+                    box.scrollTop = box.scrollHeight;
+                } else {
+                    box.innerHTML = '<div class="msg bot">Benvenuto nel supporto prioritario Horizon. Come possiamo assistere la tua azienda oggi?</div>';
+                }
+            });
+        }
+
+        // --- RENDER UI ---
+        function renderServizi() {
+            const listEl = document.getElementById('ui-lista-ordini');
+            const dashEl = document.getElementById('ui-servizi-dash');
+            
+            if(ordiniData.length === 0) {
+                listEl.innerHTML = `<div style="text-align: center; color: var(--text-light); font-size: 13px; padding: 20px;">Nessuna pratica registrata.</div>`;
+                dashEl.innerHTML = `<div style="text-align: center; color: var(--text-light); font-size: 13px; padding: 10px;">Nessun servizio in corso.</div>`;
+                return;
+            }
+
+            let html = '';
+            let dashHtml = '';
+            
+            // Ordina dal più recente
+            const sorted = [...ordiniData].sort((a,b) => new Date(b.data) - new Date(a.data));
+
+            sorted.forEach((o, index) => {
+                let badgeClass = o.stato === 'Attivo' || o.stato === 'Approvata' ? 'status-attivo' : 'status-attesa';
+                let item = `
+                <div class="list-item">
+                    <div>
+                        <div class="list-item-title">${o.servizioNome || 'Servizio Horizon'}</div>
+                        <div class="list-item-meta">Pratica #${o.id} • ${new Date(o.data).toLocaleDateString('it-IT')}</div>
+                    </div>
+                    <div class="status-badge ${badgeClass}">${o.stato}</div>
+                </div>`;
+                html += item;
+                if(index < 2) dashHtml += item; // Mostra solo gli ultimi 2 in dashboard
+            });
+
+            listEl.innerHTML = html;
+            dashEl.innerHTML = dashHtml;
+        }
+
+        // --- CHAT LOGIC ---
+        window.sendChatMessage = function() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text || !currentUser) return;
+
+            const chatRef = window.rtdb.ref(window.dbHorizonId, `chats/${currentUser.uid}/messages`);
+            window.rtdb.push(chatRef, {
+                sender: 'user',
+                text: text,
+                timestamp: Date.now()
+            });
+
+            // Aggiorna metadati chat per alert nel CRM desktop
+            const metaRef = window.rtdb.ref(window.dbHorizonId, `chats/${currentUser.uid}/meta`);
+            window.rtdb.set(metaRef, {
+                lastMessage: text,
+                timestamp: Date.now(),
+                userName: userData.ragioneSociale || userData.nome || currentUser.email,
+                piva: userData.piva || userData.cf || 'N/A'
+            });
+
+            input.value = '';
+        }
+
+        // --- NAVIGAZIONE PWA ---
+        window.nav = function(viewId, element) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            const target = document.getElementById('view-'+id);
-            if(target) target.classList.add('active');
-            if(element) {
-                element.classList.add('active');
-                const pt = document.getElementById('page-title');
-                if(pt) pt.innerText = element.innerText;
-            }
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            if(element) element.classList.add('active');
+        }
+
+        // --- CHART.JS INIZIALIZZAZIONE ---
+        let speseChartInst = null;
+        function initCharts() {
+            const ctx = document.getElementById('speseChart');
+            if(!ctx) return;
             
-            if(id === 'macchina' || id === 'eolo') {
-                document.body.classList.add('hw-mode');
-            } else {
-                document.body.classList.remove('hw-mode');
-            }
-
-            if(id === 'dash') setTimeout(renderCharts, 50);
-            if(window.innerWidth <= 768) toggleSidebar();
-        }
-
-        window.toggleSidebar = function() {
-            const sb = document.getElementById('sidebar');
-            const sbo = document.getElementById('sidebar-overlay');
-            if(sb) sb.classList.toggle('open');
-            if(sbo) sbo.classList.toggle('active');
-        }
-
-        window.openModal = function(id) { 
-            const m = document.getElementById(id);
-            if(m) m.classList.add('active'); 
-            populateSelects(); 
-        }
-        window.closeModal = function(id) { 
-            const m = document.getElementById(id);
-            if(m) { m.classList.remove('active'); }
-        }
-
-        function populateSelects() {
-            const companyOpts = state.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            ['doc-company','staff-company','div-company'].forEach(i => { const el = document.getElementById(i); if(el) el.innerHTML = companyOpts; });
-            const staffOpts = state.staff.map(s => `<option value="${s.id}">${s.name} (${getCompanyName(s.companyId)})</option>`).join('');
-            ['timb-staff','task-staff','badge-staff','pay-staff'].forEach(i => { const el = document.getElementById(i); if(el) el.innerHTML = staffOpts; });
-            populateDivisionsForStaff();
-
-            const activeHorizonUsers = state.horizonUsers.filter(u => u.statoVerifica === 'approvato');
-            const horizonOpts = activeHorizonUsers.map(u => `<option value="${u.uid}">${u.nome || u.ragioneSociale} (${u.email})</option>`).join('');
-            const ordCli = document.getElementById('ordine-cliente');
-            if(ordCli) ordCli.innerHTML = horizonOpts || '<option value="">Nessun utente Horizon ID attivo</option>';
+            if(speseChartInst) speseChartInst.destroy();
             
-            if(window.aggiornaModuloOrdine) aggiornaModuloOrdine();
+            // Dati fittizi dimostrativi per il monitoraggio spese (simulazione crescita ERP)
+            const labels = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu'];
+            const data = [120, 190, 300, 250, 400, 350];
+
+            speseChartInst = new Chart(ctx.getContext('2d'), {
+                type: 'bar',
+                data: { 
+                    labels: labels, 
+                    datasets: [{ 
+                        label: 'Investimenti / Spese (€)', 
+                        data: data, 
+                        backgroundColor: '#2563EB',
+                        borderRadius: 6
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    } 
+                }
+            });
         }
-
-        window.populateDivisionsForStaff = function() {
-            const compId = document.getElementById('staff-company')?.value;
-            const el = document.getElementById('staff-div');
-            if(!compId || !el) return;
-            const divs = state.divisions.filter(d => d.companyId == compId);
-            el.innerHTML = divs.map(d => `<option value="${d.id}">${d.name}</option>`).join('') || '<option value="">Nessuna divisione</option>';
-        }
-
-        // --- GESTIONE ARCHIVIO CLOUD ---
-        window.openCloudFolder = function(id) {
-            currentCloudFolder = id;
-            renderAll(); 
-        }
-
-        window.saveCloudFolder = async function() {
-            const nameInput = document.getElementById('cloud-folder-name').value;
-            if(!nameInput) return alert("Inserisci un nome per la cartella.");
-            await saveToFirebase('cloud_folders', { id: Date.now(), name: nameInput });
-            closeModal('modal-cloud-folder');
-            document.getElementById('cloud-folder-name').value = '';
-        }
-
-        window.saveCloudFile = async function() {
-            if(!currentCloudFolder) return alert("Errore: nessuna cartella di destinazione.");
-            const fileInput = document.getElementById('cloud-file-upload');
-            const nameInput = document.getElementById('cloud-file-name').value;
-            
-            if(!nameInput) return alert("Inserisci il nome del file.");
-            if(!fileInput.files[0]) return alert("Seleziona un file da caricare.");
-
-            const btn = document.querySelector('#modal-cloud-file .btn:last-child');
-            const origText = btn.innerText;
-            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Upload Cloud in corso...`;
-            btn.disabled = true;
-
-            try {
-                const fileUrl = await window.uploadToCloudinary(fileInput.files[0], 'Fatture');
-                const data = {
-                    id: Date.now(),
-                    folderId: currentCloudFolder,
-                    name: nameInput,
-                    fileUrl: fileUrl,
-                    date: new Date().toISOString().split('T')[0],
-                    uploadedBy: window.userRole === 'admin' ? 'Amministrazione' : 'Staff'
-                };
-                await saveToFirebase('cloud_files', data);
-                closeModal('modal-cloud-file');
-                fileInput.value = '';
-                document.getElementById('cloud-file-name').value = '';
-            } catch(e) {
-                alert("Errore durante l'upload del file: " + e.message);
-            } finally {
-                btn.innerHTML = origText;
-                btn.disabled = false;
-            }
-        }
-
-        function renderCloudSystem() {
-            const container = document.getElementById('cloud-container');
-            const btnNewFolder = document.getElementById('btn-cloud-folder');
-            const btnUploadFile = document.getElementById('btn-cloud-upload');
-            const breadcrumbActive = document.getElementById('cloud-breadcrumb-active');
-            
-            if(!container) return;
-
-            const isAdmin = window.userRole === 'admin';
-            
-            if (currentCloudFolder === null) {
-                if(btnNewFolder) btnNewFolder.style.display = isAdmin ? 'inline-flex' : 'none';
-                if(btnUploadFile) btnUploadFile.style.display = 'none';
-                if(breadcrumbActive) breadcrumbActive.innerHTML = '';
-
-                let html = (state.cloud_folders || []).map(f => {
-                    let btnDel = isAdmin ? `<button class="cloud-action-btn" onclick="event.stopPropagation(); deleteData('cloud_folders', ${f.id})" title="Elimina Cartella"><i class="ph-fill ph-trash"></i></button>` : '';
-                    let fileCount = (state.cloud_files || []).filter(file => file.folderId == f.id).length;
-                    return `
-                    <div class="cloud-item" onclick="openCloudFolder(${f.id})">
-                        ${btnDel}
-                        <i class="ph-fill ph-folder cloud-icon cloud-folder-icon"></i>
-                        <div class="cloud-title">${f.name}</div>
-                        <div class="cloud-meta">${fileCount} Elementi archiviati</div>
-                    </div>`;
-                }).join('');
-                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-light);">Archivio vuoto. Nessuna cartella presente.</div>';
-            } else {
-                const currentFolderData = state.cloud_folders.find(f => f.id == currentCloudFolder);
-                const folderName = currentFolderData ? currentFolderData.name : 'Cartella';
-                
-                if(btnNewFolder) btnNewFolder.style.display = 'none';
-                if(btnUploadFile) btnUploadFile.style.display = isAdmin ? 'inline-flex' : 'none';
-                if(breadcrumbActive) breadcrumbActive.innerHTML = ` > <span style="color:var(--text);">${folderName}</span>`;
-
-                const filesInFolder = (state.cloud_files || []).filter(f => f.folderId == currentCloudFolder);
-                let html = filesInFolder.map(f => {
-                    let btnDel = isAdmin ? `<button class="cloud-action-btn" onclick="event.stopPropagation(); deleteData('cloud_files', ${f.id})" title="Elimina File"><i class="ph-fill ph-trash"></i></button>` : '';
-                    return `
-                    <div class="cloud-item" onclick="window.open('${f.fileUrl}', '_blank')">
-                        ${btnDel}
-                        <i class="ph-fill ph-file-text cloud-icon cloud-file-icon"></i>
-                        <div class="cloud-title">${f.name}</div>
-                        <div class="cloud-meta">Data: ${f.date}<br>By: ${f.uploadedBy}</div>
-                        <div style="margin-top:10px; font-size:11px; background:#e2e8f0; padding:4px 8px; border-radius:12px; color:var(--text);">Clicca per aprire</div>
-                    </div>`;
-                }).join('');
-                container.innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-light);">Cartella vuota. Nessun documento caricato in questa sezione.</div>';
-            }
-        }
-
-        // --- GESTIONE DETTAGLI SERVIZI SITO ---
-        window.openDettaglioServizio = function(id) {
-            const req = state.richieste_servizi.find(r => r.id == id);
-            if(!req) return;
-
-            document.getElementById('ds-id').innerText = `#${req.id}`;
-            document.getElementById('ds-target-id').value = req.id;
-            document.getElementById('ds-stato-select').value = req.stato;
-
-            let isAz = req.tipo === 'Azienda';
-            
-            let html = `
-                <div class="detail-group">
-                    <span class="detail-label">Informazioni Generali</span>
-                    <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Data Richiesta:</small><br><strong>${new Date(req.dataInvio).toLocaleString()}</strong></div>
-                        <div><small style="color:var(--text-light)">Servizio Richiesto:</small><br><strong style="color:var(--primary); font-size:16px;">${req.tipoServizio || req.servizioAcquistato || req.servizio || 'Indefinito'}</strong></div>
-                        <div><small style="color:var(--text-light)">Tipologia Cliente:</small><br><strong>${req.tipo}</strong></div>
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Dati Referente & Contatti</span>
-                    <div class="form-grid">
-                        <div><small style="color:var(--text-light)">Nominativo:</small><br><strong>${req.nome} ${req.cognome}</strong></div>
-                        <div><small style="color:var(--text-light)">Email:</small><br><strong><a href="mailto:${req.email}">${req.email}</a></strong></div>
-                        <div><small style="color:var(--text-light)">Telefono / Cellulare:</small><br><strong><a href="tel:${req.telefono}">${req.telefono}</a></strong></div>
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Dati Fiscali / Fatturazione</span>
-                    <div class="form-grid">
-                        ${isAz ? `
-                            <div style="grid-column: 1/-1;"><small style="color:var(--text-light)">Ragione Sociale:</small><br><strong>${req.ragioneSociale}</strong></div>
-                            <div><small style="color:var(--text-light)">Partita IVA:</small><br><strong>${req.piva}</strong></div>
-                            <div><small style="color:var(--text-light)">Codice Fiscale (Aziendale):</small><br><strong>${req.cfAzienda || '-'}</strong></div>
-                            <div><small style="color:var(--text-light)">Codice Univoco SDI:</small><br><strong style="font-family:monospace">${req.sdi}</strong></div>
-                            <div><small style="color:var(--text-light)">Indirizzo PEC:</small><br><strong>${req.pec}</strong></div>
-                        ` : `
-                            <div><small style="color:var(--text-light)">Codice Fiscale (Privato):</small><br><strong style="font-family:monospace">${req.cfPrivato}</strong></div>
-                        `}
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <span class="detail-label">Indirizzo (Sede Legale / Residenza)</span>
-                    <div class="detail-value">${req.via || '-'}, ${req.cap || ''} - ${req.citta || ''} (${req.prov || ''}) - ${req.nazione || 'Italia'}</div>
-                </div>
-
-                <div class="detail-group" style="border-bottom:none; padding-bottom:0;">
-                    <span class="detail-label">Dettagli / Messaggio Richiesta</span>
-                    <div style="background:#f1f5f9; padding:15px; border-radius:8px; font-size:13px; line-height:1.6; white-space:pre-wrap;">${req.dettagli || 'Nessun dettaglio aggiuntivo.'}</div>
-                </div>
-            `;
-
-            document.getElementById('dettaglio-servizio-content').innerHTML = html;
-            openModal('modal-dettaglio-servizio');
-        }
-
-        window.updateStatoServizio = async function() {
-            const id = document.getElementById('ds-target-id').value;
-            const nuovoStato = document.getElementById('ds-stato-select').value;
-            const req = state.richieste_servizi.find(r => r.id == id);
-            if(req) {
-                req.stato = nuovoStato;
-                await saveToFirebase('richieste_servizi', req);
-                alert("Stato della richiesta aggiornato correttamente.");
-                closeModal('modal-dettaglio-servizio');
-            }
-        }
-
-        // --- GESTIONE DETTAGLI CANDIDATURE ---
-        window.openDettaglioCandidatura = function(id) {
-            const c = state.candidature.find(x => x.id == id);
-            if(!c) return;
-
-            document.getElementById('dc-id').innerText = `#${c.id}`;
-            document.getElementById('dc-target-id').value = c.id;
-            document.getElementById('dc-stato-select').value = c.stato;
-
-            let eta = '-';
-            if(c.dataNascita) {
-                const diff = Date.now() - new Date(c.dataNascita).getTime();
-                eta = Math.abs(
+    </script>
+</body>
+</html>
