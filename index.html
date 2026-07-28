@@ -80,7 +80,7 @@
         .login-tabs button { flex: 1; padding: 12px; border: none; font-weight: bold; cursor: pointer; background: #f1f5f9; color: #64748B; }
         .login-tabs button.active { background: var(--primary); color: white; }
         .login-box input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 16px; }
-        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
+        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: margin-top: 15px; font-size: 16px; }
 
         /* Topbar Mobile */
         .topbar { height: 60px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 10; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -550,364 +550,214 @@
     <div id="modal-doc" class="modal"><div class="modal-content"><h3 id="doc-modal-title">Documento / Fattura</h3><input type="hidden" id="doc-id"><input type="text" id="doc-title" class="input" placeholder="Descrizione"><input type="number" id="doc-amount" class="input" placeholder="Importo"><select id="doc-type" class="input"><option value="entrata">Incasso</option><option value="uscita">Spesa</option></select><select id="doc-company" class="input"></select><input type="file" id="doc-file-upload" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-doc')">Annulla</button><button class="btn" onclick="saveDocument()">Salva</button></div></div></div>
     
     <div id="modal-cloud-folder" class="modal"><div class="modal-content"><h3>Nuova Cartella Cloud</h3><input type="text" id="cloud-folder-name" class="input" placeholder="Nome"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-folder')">Annulla</button><button class="btn" onclick="saveCloudFolder()">Crea</button></div></div></div>
-    <div id="modal-cloud-file" class="modal"><div class="modal-content"><h3>Carica Documento</h3><input type="text" id="cloud-file-name" class="input" placeholder="Nome File"><input type="file" id="cloud-file-upload" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-file')">Annulla</button><button class="btn" onclick="saveCloudFile()">Upload</button></div></div></div>
+    <div id="modal-cloud-file" class="modal"><div class="modal-content"><h3>Upload File</h3><input type="text" id="cloud-file-name" class="input" placeholder="Nome File"><input type="file" id="cloud-file-data" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-file')">Annulla</button><button class="btn" onclick="saveCloudFile()">Carica</button></div></div></div>
 
-    <!-- Modali Base Rimanenti (Identici in logica, adattati CSS) -->
-    <div id="modal-task" class="modal"><div class="modal-content"><h3>Nuova Task</h3><input type="hidden" id="task-id"><input type="text" id="task-title" class="input" placeholder="Descrizione"><select id="task-staff" class="input"></select><select id="task-prio" class="input"><option>Bassa</option><option>Media</option><option>Alta</option></select><select id="task-status" class="input"><option>Da Iniziare</option><option>In Lavorazione</option><option>Completato</option></select><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-task')">Annulla</button><button class="btn" onclick="saveTask()">Salva</button></div></div></div>
-    <div id="modal-badge" class="modal"><div class="modal-content"><h3>Codice Badge</h3><select id="badge-staff" class="input"></select><input type="text" id="badge-code" class="input" placeholder="PIN"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-badge')">Annulla</button><button class="btn" onclick="saveBadge()">Salva</button></div></div></div>
-    <div id="modal-timbratura" class="modal"><div class="modal-content"><h3>Forza Timbratura</h3><select id="timb-staff" class="input"></select><select id="timb-type" class="input"><option>Ingresso</option><option>Uscita</option></select><input type="datetime-local" id="timb-time" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-timbratura')">Annulla</button><button class="btn" onclick="saveTimbratura()">Forza</button></div></div></div>
+    <div id="modal-task" class="modal"><div class="modal-content"><h3>Nuovo Ticket/Task</h3><input type="text" id="task-title" class="input" placeholder="Titolo"><select id="task-staff" class="input"></select><select id="task-prio" class="input"><option>Bassa</option><option>Media</option><option>Alta</option></select><select id="task-status" class="input"><option>Aperto</option><option>In Corso</option><option>Chiuso</option></select><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-task')">Annulla</button><button class="btn" onclick="saveTask()">Crea</button></div></div></div>
+    
+    <div id="modal-badge" class="modal"><div class="modal-content"><h3>Assegna Badge RFID</h3><select id="badge-staff" class="input"></select><input type="text" id="badge-code" class="input" placeholder="PIN/Codice Badge"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-badge')">Annulla</button><button class="btn" onclick="saveBadge()">Assegna</button></div></div></div>
+    
+    <div id="modal-timbratura" class="modal"><div class="modal-content"><h3>Forza Timbratura</h3><select id="timb-staff" class="input"></select><select id="timb-type" class="input"><option value="Entrata">Entrata</option><option value="Uscita">Uscita</option></select><input type="datetime-local" id="timb-time" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-timbratura')">Annulla</button><button class="btn" onclick="saveTimbratura()">Registra</button></div></div></div>
 
-    <script>
-        // --- UI LOGIN & ROUTING PWA ---
-        let userRoleMode = 'admin';
-        function switchLoginMode(mode) {
-            userRoleMode = mode;
-            const btnA = document.getElementById('btn-tab-admin');
-            const btnS = document.getElementById('btn-tab-staff');
-            const desc = document.getElementById('login-desc');
-            if(btnA) btnA.className = mode === 'admin' ? 'active' : '';
-            if(btnS) btnS.className = mode === 'staff' ? 'active' : '';
-            if(desc) desc.innerText = mode === 'admin' ? 'Accesso Riservato Direzione (direzione@horizonglobal.com)' : 'Accesso Operativo Staff';
-        }
-
-        function toggleNotifiche() {
-            const panel = document.getElementById('notif-panel');
-            if(panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // --- UPLOAD FUNZIONE GLOBALE (CLOUDINARY) ---
-        window.uploadToCloudinary = async function(file, folderName) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'horizon_docs');
-            if(folderName) formData.append('folder', folderName);
-            const res = await fetch(`https://api.cloudinary.com/v1_1/dxblnwvuq/auto/upload`, { method: 'POST', body: formData });
-            const data = await res.json();
-            if(data.error) throw new Error(data.error.message);
-            return data.secure_url;
-        }
-
-        // --- STATE GLOBALE ---
-        let state = {
-            companies: [], divisions: [], staff: [], time_entries: [], documents: [], tasks: [], badges: [], payrolls: [], security_alerts: [], budget_history: [], ordini: [],
-            horizonUsers: [], servizi: [], richieste_servizi: [], candidature: [], appuntamenti: [],
-            cloud_folders: [], cloud_files: [], chats: {}
+    <script type="module">
+        window.state = {
+            staff: [], companies: [], divisions: [], tasks: [], time_entries: [], documents: [],
+            badges: [], cloud_folders: [], cloud_files: [], payrolls: [],
+            ordini: [], servizi_catalogo: [], richieste_servizi: [], candidature: [],
+            horizonUsers: [], appuntamenti: []
         };
+        
+        window.currentUser = null;
+        window.currentUserRole = 'staff';
+        window.currentCloudFolder = null;
+        let authUnsubscribe = null;
+        
+        window.appuntamenti = [];
 
-        let currentCloudFolder = null; 
-        let doughnutChartInst = null;
-        let lineChartInst = null;
+        window.toggleAgendaTipo = function() {
+            const val = document.getElementById('agenda-tipo').value;
+            document.getElementById('agenda-div-registrato').style.display = val === 'registrato' ? 'block' : 'none';
+            document.getElementById('agenda-div-manuale').style.display = val === 'manuale' ? 'block' : 'none';
+        }
 
-        function renderCharts() {
-            const dashEl = document.getElementById('view-dash');
-            if(!dashEl || !dashEl.classList.contains('active')) return;
+        window.saveAppuntamento = async function() {
+            const tipo = document.getElementById('agenda-tipo').value;
+            const data = document.getElementById('agenda-data').value;
+            const note = document.getElementById('agenda-note').value;
+            if(!data) return alert("Inserisci Data/Ora");
 
-            const divNames = state.divisions.map(d => d.name);
-            const divBudgets = state.divisions.map(d => d.budget);
-
-            const cD = document.getElementById('budgetDoughnutChart');
-            if(cD) {
-                const ctxD = cD.getContext('2d');
-                if(doughnutChartInst) doughnutChartInst.destroy();
-                doughnutChartInst = new Chart(ctxD, {
-                    type: 'doughnut',
-                    data: { labels: divNames.length ? divNames : ['Nessuna'], datasets: [{ data: divBudgets.length ? divBudgets : [1], backgroundColor: ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
+            let payload = { id: Date.now(), tipo, data, note, stato: 'Confermato' };
+            if(tipo === 'registrato') {
+                const uid = document.getElementById('agenda-cliente').value;
+                const user = window.state.horizonUsers.find(u => u.uid === uid);
+                payload.clienteId = uid;
+                payload.nome = user ? (user.nome || user.ragioneSociale) : 'Sconosciuto';
+                payload.tel = user ? user.tel : '';
+            } else {
+                payload.nome = document.getElementById('agenda-nome-manuale').value;
+                payload.tel = document.getElementById('agenda-tel-manuale').value;
+                if(!payload.nome) return alert("Inserisci nome");
             }
+            await saveToFirebase('appuntamenti', payload);
+            closeModal('modal-appuntamento');
+        }
 
-            const cH = document.getElementById('budgetHistoryChart');
-            if(cH) {
-                const ctxL = cH.getContext('2d');
-                if(lineChartInst) lineChartInst.destroy();
-                let historyLabels = []; let historyData = [];
-                if (state.budget_history && state.budget_history.length > 0) {
-                    let sortedHistory = [...state.budget_history].sort((a, b) => a.id - b.id);
-                    historyLabels = sortedHistory.map(h => h.date); historyData = sortedHistory.map(h => h.total);
-                } else {
-                    let currentTotal = state.divisions.reduce((acc, d) => acc + d.budget, 0);
-                    historyLabels = [new Date().toLocaleDateString('it-IT')]; historyData = [currentTotal];
-                }
-                lineChartInst = new Chart(ctxL, {
-                    type: 'line',
-                    data: { labels: historyLabels, datasets: [{ label: 'Budget (€)', data: historyData, borderColor: '#2563EB', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.3 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } }
-                });
+        function renderAgenda() {
+            const container = document.getElementById('agenda-list-container');
+            const dashList = document.getElementById('dash-appuntamenti-list');
+            
+            const events = [...window.state.appuntamenti].sort((a,b) => new Date(a.data) - new Date(b.data));
+            
+            if(!container) return;
+            if(events.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--text-light); font-size:12px;">Nessun appuntamento in agenda.</div>`;
+                if(dashList) dashList.innerHTML = "Nessun appuntamento a breve.";
+                return;
             }
-        }
+            
+            container.innerHTML = events.map(e => `
+                <div class="list-card">
+                    <div class="list-card-header">
+                        <div>
+                            <div class="list-card-title">${e.nome}</div>
+                            <div class="list-card-meta">${new Date(e.data).toLocaleString()} - ${e.tipo.toUpperCase()}</div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn-del" onclick="deleteData('appuntamenti', ${e.id})"><i class="ph-fill ph-trash"></i></button>
+                        </div>
+                    </div>
+                    ${e.tel ? `<div style="font-size:12px; margin-bottom:5px;"><i class="ph-fill ph-phone"></i> ${e.tel}</div>` : ''}
+                    <div style="font-size:12px;">${e.note || '-'}</div>
+                </div>
+            `).join('');
 
-        async function saveToFirebase(collectionName, item) {
-            if (window.rtdb && window.db) {
-                try {
-                    const docId = item.id.toString();
-                    await window.rtdb.set(window.rtdb.ref(window.db, `${collectionName}/${docId}`), JSON.parse(JSON.stringify(item)));
-                } catch (e) { alert("Errore Salvataggio DB: " + e.message); }
-            }
-        }
-
-        window.deleteData = async function(collectionName, id) {
-            if(!confirm("Sicuro di voler eliminare?")) return;
-            if (window.rtdb && window.db) {
-                try { await window.rtdb.remove(window.rtdb.ref(window.db, `${collectionName}/${id}`)); } 
-                catch (e) { alert("Errore Eliminazione: " + e.message); }
-            }
-        }
-
-        async function initDefaultCloudFolders() {
-            if (!state.cloud_folders || state.cloud_folders.length === 0) {
-                const defaultFolders = [{ id: Date.now()+1, name: "Statuto e Visure" },{ id: Date.now()+2, name: "Contratti" }];
-                for (let f of defaultFolders) await saveToFirebase('cloud_folders', f);
-            }
-        }
-
-        async function syncConFirebase() {
-            if (!window.db || !window.rtdb) return;
-            try {
-                // Aggiunta la collection 'appuntamenti'
-                const collections = ['companies', 'divisions', 'staff', 'time_entries', 'documents', 'tasks', 'badges', 'payrolls', 'security_alerts', 'budget_history', 'ordini', 'servizi', 'richieste_servizi', 'candidature', 'cloud_folders', 'cloud_files', 'appuntamenti'];
-                
-                const loadPromises = collections.map(async (coll) => {
-                    const snap = await window.rtdb.get(window.rtdb.ref(window.db, coll));
-                    let arr = [];
-                    if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
-                    state[coll] = arr;
-                });
-                await Promise.all(loadPromises);
-                await initDefaultCloudFolders();
-
-                collections.forEach(coll => {
-                    window.rtdb.onValue(window.rtdb.ref(window.db, coll), (snap) => {
-                        let arr = [];
-                        if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
-                        state[coll] = arr;
-                        renderAll();
-                    });
-                });
-
-                if(window.dbHorizonId) {
-                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'users'), (snap) => {
-                        let arr = [];
-                        if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
-                        state.horizonUsers = arr;
-                        populateSelects(); 
-                        renderAll();
-                    });
-                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'chats'), (snap) => {
-                        let chatsObj = {};
-                        if (snap.exists()) { chatsObj = snap.val(); }
-                        state.chats = chatsObj;
-                        renderAll();
-                    });
-                }
-            } catch (error) { console.error(error); }
-        }
-
-        const getCompanyName = (id) => { const c = state.companies.find(x => x.id == id); return c ? c.name : 'N/A'; };
-        const getDivName = (id) => { const d = state.divisions.find(x => x.id == id); return d ? d.name : 'N/A'; };
-        const getStaffName = (id) => { const s = state.staff.find(x => x.id == id); return s ? s.name : 'Sconosciuto'; };
-
-        window.addEventListener('DOMContentLoaded', () => {
-             window.onAuthStateChanged(window.auth, async (user) => {
-                 const lo = document.getElementById('login-overlay');
-                 if (user) {
-                     const userEmail = user.email.toLowerCase();
-                     applyUserRole(userEmail);
-                     if(lo) lo.style.display = 'none';
-                     await syncConFirebase(); 
-                     const stL = document.getElementById('menu-staff-link');
-                     if(window.userRole === 'staff' && stL) nav('staff', stL);
-                     else renderAll();
-                 } else {
-                     if(lo) lo.style.display = 'flex';
-                 }
-             });
-        });
-
-        window.attemptLogin = async function(roleAttempt) {
-            const u = document.getElementById('login-user').value; 
-            const p = document.getElementById('login-pass').value;
-            const btn = document.getElementById('btn-login-action');
-            btn.innerText = "Accesso...";
-            try {
-                const result = await window.signInWithEmailAndPassword(window.auth, u, p);
-                const userEmail = result.user.email.toLowerCase();
-                if (roleAttempt === 'admin' && userEmail !== 'direzione@horizonglobal.com') {
-                    alert("Accesso negato per Direzione. Prova da 'Staff'.");
-                    if(window.signOut) await window.signOut(window.auth);
-                    btn.innerText = "Effettua Login";
-                    return;
-                }
-                if (userEmail === 'direzione@horizonglobal.com' && window.authHorizonId) {
-                    try { await window.signInWithEmailAndPassword(window.authHorizonId, u, p); } catch (e) {}
-                }
-            } catch (error) { alert("Credenziali errate."); btn.innerText = "Effettua Login"; }
-        }
-
-        window.esciDalSistema = async function() {
-            if(confirm("Uscire dal gestionale?")) {
-                try {
-                    await window.signOut(window.auth);
-                    if(window.authHorizonId) await window.signOut(window.authHorizonId);
-                    window.location.reload(); 
-                } catch(e) {}
+            if(dashList) {
+                const upcomings = events.filter(e => new Date(e.data) >= new Date()).slice(0,3);
+                dashList.innerHTML = upcomings.map(e => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding:8px 0;">
+                        <div>
+                            <div style="font-weight:600; color:var(--text);">${e.nome}</div>
+                            <div style="font-size:10px; color:var(--text-light);">${new Date(e.data).toLocaleString()}</div>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
 
-        function applyUserRole(userEmail) {
-            window.currentUserEmail = userEmail;
-            const isAdmin = (userEmail === 'direzione@horizonglobal.com');
-            window.userRole = isAdmin ? 'admin' : 'staff';
-            const aEl = document.getElementById('current-user-avatar');
-            const hwEl = document.getElementById('nav-group-hw');
-            if(aEl) aEl.innerText = isAdmin ? "DG" : userEmail.substring(0, 2).toUpperCase();
-            if(hwEl) hwEl.style.display = isAdmin ? 'block' : 'none';
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+        function initCharts() {
+            const ctxDoughnut = document.getElementById('budgetDoughnutChart');
+            if(ctxDoughnut) {
+                window.doughnutChart = new Chart(ctxDoughnut, { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } } });
+            }
+            const ctxHistory = document.getElementById('budgetHistoryChart');
+            if(ctxHistory) {
+                window.historyChart = new Chart(ctxHistory, { type: 'line', data: { labels: ['Gen','Feb','Mar','Apr','Mag','Giu'], datasets: [{ label: 'Liquidità', data: [0,0,0,0,0,0], borderColor: '#2563EB', tension: 0.4, fill: true, backgroundColor: 'rgba(37, 99, 235, 0.1)' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } } } });
+            }
         }
 
-        // --- NAVIGATION PWA ---
+        window.openModal = function(id) { document.getElementById(id).classList.add('active'); }
+        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); }
+
         window.nav = function(id, element) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
             const target = document.getElementById('view-'+id);
             if(target) target.classList.add('active');
-            
-            // Handle bottom nav active states
+
             if(element && element.classList.contains('nav-item')) {
                 element.classList.add('active');
             } else {
-                // Se navighiamo da un bottone del menu
                 const mappedNavId = { 'dash':'nav-dash', 'agenda':'nav-agenda', 'clienti-crm':'nav-crm', 'ordini':'nav-ordini' }[id];
                 if(mappedNavId) document.getElementById(mappedNavId).classList.add('active');
                 else document.getElementById('nav-menu').classList.add('active');
             }
-
-            if(id === 'macchina' || id === 'eolo') document.body.classList.add('hw-mode');
-            else document.body.classList.remove('hw-mode');
-            if(id === 'dash') setTimeout(renderCharts, 50);
-        }
-
-        window.openModal = function(id) { document.getElementById(id).classList.add('active'); populateSelects(); }
-        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); }
-
-        function populateSelects() {
-            const companyOpts = state.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            ['doc-company','staff-company','div-company'].forEach(i => { const el = document.getElementById(i); if(el) el.innerHTML = companyOpts; });
-            const staffOpts = state.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            ['timb-staff','task-staff','badge-staff','pay-staff'].forEach(i => { const el = document.getElementById(i); if(el) el.innerHTML = staffOpts; });
             
-            const activeHorizonUsers = state.horizonUsers.filter(u => u.statoVerifica === 'approvato');
-            const horizonOpts = activeHorizonUsers.map(u => `<option value="${u.uid}">${u.nome || u.ragioneSociale}</option>`).join('');
-            const ordCli = document.getElementById('ordine-cliente');
-            const ageCli = document.getElementById('agenda-cliente');
-            if(ordCli) ordCli.innerHTML = horizonOpts;
-            if(ageCli) ageCli.innerHTML = horizonOpts;
+            if(id === 'ai') addBotMsg("Analisi predittiva pronta. Modelli caricati.");
         }
 
-        // --- NUOVA FUNZIONE: AGENDA APPUNTAMENTI ---
-        window.toggleAgendaTipo = function() {
-            const tipo = document.getElementById('agenda-tipo').value;
-            document.getElementById('agenda-div-registrato').style.display = tipo === 'registrato' ? 'block' : 'none';
-            document.getElementById('agenda-div-manuale').style.display = tipo === 'manuale' ? 'block' : 'none';
-        }
-
-        window.saveAppuntamento = async function() {
-            const tipo = document.getElementById('agenda-tipo').value;
-            const dataOra = document.getElementById('agenda-data').value;
-            const note = document.getElementById('agenda-note').value;
-            if(!dataOra) return alert("Inserire Data e Ora.");
-
-            let appuntamento = { id: Date.now(), tipo, dataOra, note };
+        window.switchLoginMode = function(mode) {
+            window.currentUserRole = mode;
+            document.getElementById('btn-tab-admin').classList.remove('active');
+            document.getElementById('btn-tab-staff').classList.remove('active');
+            document.getElementById('btn-tab-'+mode).classList.add('active');
             
-            if(tipo === 'registrato') {
-                appuntamento.clienteId = document.getElementById('agenda-cliente').value;
-                const cli = state.horizonUsers.find(u => u.uid === appuntamento.clienteId);
-                appuntamento.nome = cli ? (cli.nome || cli.ragioneSociale) : "Sconosciuto";
+            if(mode === 'admin') {
+                document.getElementById('login-desc').innerText = "Accesso Riservato Direzione";
             } else {
-                appuntamento.nome = document.getElementById('agenda-nome-manuale').value;
-                appuntamento.telefono = document.getElementById('agenda-tel-manuale').value;
-                if(!appuntamento.nome) return alert("Inserire nome del contatto manuale.");
+                document.getElementById('login-desc').innerText = "Accesso Dipendenti / Operatori";
             }
-
-            await saveToFirebase('appuntamenti', appuntamento);
-            closeModal('modal-appuntamento');
         }
 
-        // --- FUNZIONE CRM: MODIFICA CREDITO AURA ---
-        window.modificaCreditoAura = async function() {
-            const uid = document.getElementById('crm-target-uid').value;
-            const importoDaAggiungere = parseFloat(document.getElementById('crm-modifica-credit-amount').value);
-            if(!uid || isNaN(importoDaAggiungere)) return alert("Inserisci un importo valido.");
-            
+        window.attemptLogin = async function(role) {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
             try {
-                const userRef = window.rtdb.ref(window.dbHorizonId, `users/${uid}`);
-                const snap = await window.rtdb.get(userRef);
-                let creditoAttuale = 0;
-                if(snap.exists() && snap.val().auraCredit) creditoAttuale = parseFloat(snap.val().auraCredit);
-                
-                const nuovoCredito = creditoAttuale + importoDaAggiungere;
-                await window.rtdb.update(userRef, { auraCredit: nuovoCredito });
-                
-                document.getElementById('crm-modal-credit').innerText = `€ ${nuovoCredito.toFixed(2)}`;
-                document.getElementById('crm-modifica-credit-amount').value = '';
-                alert(`Credito aggiornato. Nuovo saldo: € ${nuovoCredito.toFixed(2)}`);
-            } catch(e) { alert("Errore aggiornamento credito: " + e.message); }
+                await window.signInWithEmailAndPassword(window.auth, u, p);
+                window.currentUserRole = role; 
+                document.getElementById('login-overlay').style.display = 'none';
+                applyPermissions();
+                if(role === 'admin') nav('dash');
+                else nav('staff');
+                initCharts(); 
+                fetchData();
+                fetchHorizonIdData();
+            } catch(e) {
+                alert("Errore Login: " + e.message);
+            }
         }
 
-        // --- COMPLETAMENTO FUNZIONI RENDER ---
-        function renderAgenda() {
-            const container = document.getElementById('agenda-list-container');
-            const widget = document.getElementById('dash-appuntamenti-list');
-            if(!container) return;
-            
-            let sorted = [...state.appuntamenti].sort((a,b) => new Date(a.dataOra) - new Date(b.dataOra));
-            
-            let html = sorted.map(a => {
-                let isManuale = a.tipo === 'manuale';
-                let icon = isManuale ? '<i class="ph-fill ph-user-plus" style="color:var(--warning)"></i>' : '<i class="ph-fill ph-user-check" style="color:var(--primary)"></i>';
-                let contatti = isManuale ? `Tel: ${a.telefono}` : `Cliente CRM`;
-                return `
-                <div class="list-card">
-                    <div class="list-card-header">
-                        <div class="list-card-title">${icon} ${a.nome}</div>
-                        <div class="list-card-meta">${new Date(a.dataOra).toLocaleString('it-IT', {dateStyle:'short', timeStyle:'short'})}</div>
-                    </div>
-                    <div style="font-size:12px; color:var(--text); margin-bottom:5px;">${a.note || 'Nessuna nota'}</div>
-                    <div style="font-size:11px; color:var(--text-light); display:flex; justify-content:space-between;">
-                        <span>${contatti}</span>
-                        <button onclick="deleteData('appuntamenti', ${a.id})" style="border:none; background:none; color:var(--danger); cursor:pointer;"><i class="ph-fill ph-trash"></i></button>
-                    </div>
-                </div>`;
-            }).join('');
-            
-            container.innerHTML = html || '<div style="text-align:center; padding: 20px; color:var(--text-light); font-size:13px;">Nessun appuntamento in agenda.</div>';
-            if(widget) widget.innerHTML = html || 'Nessun appuntamento imminente.';
+        window.esciDalSistema = async function() {
+            await window.signOut(window.auth);
+            location.reload();
         }
 
-        function renderHorizonIdTables() {
-            const tbodyPending = document.querySelector('#table-horizon-pending tbody');
-            const tbodyActive = document.querySelector('#table-horizon-active tbody');
-            if(!tbodyPending || !tbodyActive) return;
+        function applyPermissions() {
+            const isAdmin = window.currentUserRole === 'admin';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+            
+            const btnStaff = document.getElementById('btn-new-staff');
+            if(btnStaff) btnStaff.style.display = isAdmin ? 'block' : 'none';
+            
+            const tbAdmin = document.getElementById('staff-admin-view');
+            const tbUser = document.getElementById('staff-user-view');
+            if(tbAdmin && tbUser) {
+                tbAdmin.style.display = isAdmin ? 'block' : 'none';
+                tbUser.style.display = isAdmin ? 'none' : 'block';
+            }
+            
+            if(isAdmin) {
+                let d = new Date();
+                if(d.getHours() >= 23 || d.getHours() < 6) {
+                    document.body.classList.add('hw-mode');
+                    document.getElementById('nav-group-hw').style.display = 'block';
+                }
+            }
+        }
 
-            let htmlPending = '';
-            let htmlActive = '';
-
-            state.horizonUsers.forEach(u => {
-                let btn = `<button class="btn btn-sm" onclick="verifyHorizonUser('${u.uid}')">Verifica</button>`;
-                let row = `<tr><td>${u.nome || u.ragioneSociale || '-'}</td><td>${u.piva || u.cf || '-'}</td><td>${u.email}</td><td>${u.dataRegistrazione || '-'}</td><td><span class="badge" style="background:#f1f5f9;color:#333">${u.statoVerifica}</span></td><td>${btn}</td></tr>`;
-                
-                if(u.statoVerifica === 'approvato') htmlActive += row;
-                else htmlPending += row;
+        function fetchData() {
+            const nodes = ['staff', 'companies', 'divisions', 'tasks', 'time_entries', 'documents', 'badges', 'cloud_folders', 'cloud_files', 'payrolls', 'ordini', 'servizi_catalogo', 'richieste_servizi', 'candidature', 'appuntamenti'];
+            nodes.forEach(node => {
+                window.rtdb.onValue(window.rtdb.ref(window.db, node), s => {
+                    const data = s.val();
+                    window.state[node] = data ? Object.values(data) : [];
+                    renderAll();
+                    updateSelects();
+                });
             });
-
-            tbodyPending.innerHTML = htmlPending || '<tr><td colspan="6" style="text-align:center;">Nessuna richiesta in attesa</td></tr>';
-            tbodyActive.innerHTML = htmlActive || '<tr><td colspan="6" style="text-align:center;">Nessun utente attivo</td></tr>';
+        }
+        
+        function fetchHorizonIdData() {
+            window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'users'), s => {
+                const data = s.val();
+                window.state.horizonUsers = data ? Object.values(data) : [];
+                renderAll();
+                updateSelects();
+            });
         }
 
         function renderAll() {
             const lo = document.getElementById('login-overlay');
-            if(lo && lo.style.display !== 'none') return; // Non renderizzare finché non si è loggati
+            if(lo && lo.style.display !== 'none') return;
 
-            // Dash Summary
             const dashSum = document.getElementById('dash-summary');
             if(dashSum) {
                 dashSum.innerHTML = `
@@ -918,11 +768,9 @@
                 `;
             }
 
-            // Ordini
             const tbOrdini = document.querySelector('#table-ordini tbody');
             if(tbOrdini) tbOrdini.innerHTML = state.ordini.map(o => `<tr><td>${new Date(o.id).toLocaleDateString()}</td><td>${o.clienteNome || 'N/A'}</td><td>${o.servizioNome || '-'}</td><td>€${o.importo}</td><td><span class="badge" style="background:#f1f5f9;color:#333">${o.stato}</span></td><td><button class="btn btn-sm btn-edit" onclick="openOrdineDettagli(${o.id})">Apri</button><button class="btn btn-sm btn-del" onclick="deleteData('ordini', ${o.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
 
-            // CRM
             const tbCrm = document.querySelector('#table-clienti-crm tbody');
             if(tbCrm) {
                 tbCrm.innerHTML = state.horizonUsers.filter(u => u.statoVerifica === 'approvato').map(u => {
@@ -930,60 +778,294 @@
                 }).join('');
             }
 
-            // Richieste Sito
             const tbRichieste = document.querySelector('#table-richieste-servizi tbody');
             if(tbRichieste) tbRichieste.innerHTML = state.richieste_servizi.map(r => `<tr><td>${new Date(r.dataInvio).toLocaleDateString()}</td><td>${r.nome} ${r.cognome}</td><td>${r.ragioneSociale || '-'}</td><td>${r.servizioAcquistato || r.tipoServizio || '-'}</td><td>${r.stato}</td><td><button class="btn btn-sm btn-edit" onclick="openDettaglioServizio(${r.id})">Apri</button><button class="btn btn-sm btn-del" onclick="deleteData('richieste_servizi', ${r.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
 
-            // Candidature
             const tbCand = document.querySelector('#table-candidature tbody');
             if(tbCand) tbCand.innerHTML = state.candidature.map(c => `<tr><td>${new Date(c.dataInvio).toLocaleDateString()}</td><td>${c.nome} ${c.cognome}</td><td>${c.posizione}</td><td>${c.email}</td><td>${c.stato}</td><td><button class="btn btn-sm btn-edit" onclick="openDettaglioCandidatura(${c.id})">Apri</button><button class="btn btn-sm btn-del" onclick="deleteData('candidature', ${c.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
 
-            // Staff
             const tbStaff = document.querySelector('#table-staff tbody');
             if(tbStaff) tbStaff.innerHTML = state.staff.map(s => `<tr><td>${s.name}</td><td>${s.role}</td><td>${getCompanyName(s.companyId)}</td><td>${s.eff}%</td><td>${s.machineAcc || 'Nessuno'}</td><td>Attivo</td><td><button class="btn btn-sm btn-del" onclick="deleteData('staff', ${s.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
 
-            // Finanza
             const tbDocs = document.querySelector('#table-docs tbody');
             if(tbDocs) tbDocs.innerHTML = state.documents.map(d => `<tr><td>${d.date}</td><td>${d.title}</td><td>${getCompanyName(d.companyId)}</td><td>€ ${d.amount}</td><td>${d.type}</td><td><a href="${d.fileUrl}" target="_blank" style="color:var(--primary)">Vedi File</a></td><td><button class="btn btn-sm btn-del" onclick="deleteData('documents', ${d.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
 
+            // Rendering Tabelle Mancanti
+            const tbTasks = document.querySelector('#table-tasks tbody');
+            if(tbTasks) tbTasks.innerHTML = state.tasks.map(t => `<tr><td>${t.title}</td><td>${getStaffName(t.staffId)}</td><td>${t.priority}</td><td><span class="badge" style="background:#f1f5f9">${t.status}</span></td><td><button class="btn btn-sm btn-del" onclick="deleteData('tasks', ${t.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbBadges = document.querySelector('#table-badges tbody');
+            if(tbBadges) tbBadges.innerHTML = state.badges.map(b => `<tr><td>${getStaffName(b.staffId)}</td><td>${b.pin}</td><td>${b.createdAt}</td><td>-</td><td>${b.status}</td><td><button class="btn btn-sm btn-del" onclick="deleteData('badges', ${b.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbTimb = document.querySelector('#table-timbrature tbody');
+            if(tbTimb) tbTimb.innerHTML = state.time_entries.map(t => `<tr><td>${new Date(t.timestamp).toLocaleString()}</td><td>${getStaffName(t.staffId)}</td><td>${getCompanyName(t.companyId)}</td><td>${t.type}</td><td>${t.device}</td><td>${t.status}</td><td><button class="btn btn-sm btn-del" onclick="deleteData('time_entries', ${t.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbComp = document.querySelector('#table-aziende tbody');
+            if(tbComp) tbComp.innerHTML = state.companies.map(c => `<tr><td>${c.name}</td><td>€ ${c.capital || 0}</td><td>-</td><td>-</td><td>Attiva</td><td><button class="btn btn-sm btn-del" onclick="deleteData('companies', ${c.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbDivs = document.querySelector('#table-divs tbody');
+            if(tbDivs) tbDivs.innerHTML = state.divisions.map(d => `<tr><td>${d.name}</td><td>${getCompanyName(d.companyId)}</td><td>€ ${d.budget}</td><td>-</td><td><button class="btn btn-sm btn-del" onclick="deleteData('divisions', ${d.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbPay = document.querySelector('#table-payrolls tbody');
+            if(tbPay) tbPay.innerHTML = state.payrolls.map(p => `<tr><td>${p.period}</td><td>${getStaffName(p.staffId)}</td><td>€ ${p.amount}</td><td>${p.iban || '-'}</td><td>${p.status}</td><td><a href="${p.fileUrl || '#'}" target="_blank">Apri</a></td><td><button class="btn btn-sm btn-del" onclick="deleteData('payrolls', ${p.id})"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
             renderHorizonIdTables();
             renderAgenda();
-            if(typeof renderCloudSystem === 'function') renderCloudSystem();
+            if(typeof window.renderCloudSystem === 'function') window.renderCloudSystem();
             renderCharts();
         }
 
-        window.openCrmUser = function(uid) {
-            const u = state.horizonUsers.find(x => x.uid === uid);
-            if(!u) return;
-            document.getElementById('crm-target-uid').value = u.uid;
-            document.getElementById('crm-target-piva').value = u.piva || u.cf || '';
-            document.getElementById('crm-modal-name').innerText = u.nome || u.ragioneSociale;
-            document.getElementById('crm-modal-piva').innerText = u.piva || u.cf || '-';
-            document.getElementById('crm-modal-credit').innerText = `€ ${u.auraCredit || 0}`;
-            document.getElementById('crm-modifica-credit-amount').value = '';
+        function renderHorizonIdTables() {
+            const pending = state.horizonUsers.filter(u => u.statoVerifica === 'inviato_documenti' || u.statoVerifica === 'in_revisione');
+            const active = state.horizonUsers.filter(u => u.statoVerifica === 'approvato');
             
-            // Popola eventuali pratiche/ordini dell'utente
-            const tbServ = document.getElementById('crm-services-tbody');
-            if(tbServ) {
-                const userOrd = state.ordini.filter(o => o.clienteId === uid);
-                tbServ.innerHTML = userOrd.map(o => `<tr><td>${o.servizioNome || '-'}</td><td>${new Date(o.id).toLocaleDateString()}</td><td><span class="badge" style="background:#f1f5f9">${o.stato}</span></td></tr>`).join('') || '<tr><td colspan="3">Nessuna pratica associata</td></tr>';
+            const tbP = document.querySelector('#table-horizon-pending tbody');
+            if(tbP) tbP.innerHTML = pending.map(u => `<tr><td>${u.nome || u.ragioneSociale || '-'}</td><td>${u.piva || u.cf || '-'}</td><td>${u.email}</td><td>-</td><td>${u.statoVerifica}</td><td><button class="btn btn-sm btn-validate" onclick="openVerifyId('${u.uid}')">Verifica</button></td></tr>`).join('');
+            
+            const tbA = document.querySelector('#table-horizon-active tbody');
+            if(tbA) tbA.innerHTML = active.map(u => `<tr><td>${u.nome || u.ragioneSociale || '-'}</td><td>${u.piva || u.cf || '-'}</td><td>${u.email}</td><td>-</td><td>${u.statoVerifica}</td><td>-</td></tr>`).join('');
+        }
+
+        function updateSelects() {
+            populateSelect('agenda-cliente', state.horizonUsers.map(u => ({id: u.uid, name: u.nome || u.ragioneSociale})));
+            populateSelect('ordine-cliente', state.horizonUsers.map(u => ({id: u.uid, name: u.nome || u.ragioneSociale})));
+            populateSelect('ordine-servizio', state.servizi_catalogo.map(s => ({id: s.id, name: s.nome})));
+            
+            populateSelect('doc-company', state.companies);
+            populateSelect('task-staff', state.staff);
+            populateSelect('badge-staff', state.staff);
+            populateSelect('timb-staff', state.staff);
+        }
+        
+        function populateSelect(id, data) {
+            const el = document.getElementById(id);
+            if(el) {
+                const val = el.value;
+                el.innerHTML = '<option value="">- Seleziona -</option>' + data.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+                el.value = val;
             }
+        }
+
+        function getCompanyName(id) { const c = state.companies.find(x => x.id == id); return c ? c.name : '-'; }
+        function getStaffName(id) { const s = state.staff.find(x => x.id == id); return s ? s.name : '-'; }
+        
+        function renderCharts() {
+            if(!window.doughnutChart) return;
+            const bgMap = {};
+            state.documents.forEach(d => { if(d.type==='uscita') { bgMap[d.companyId] = (bgMap[d.companyId]||0) + parseFloat(d.amount); }});
+            const lbl = Object.keys(bgMap).map(id => getCompanyName(id));
+            const vals = Object.values(bgMap);
+            window.doughnutChart.data.labels = lbl;
+            window.doughnutChart.data.datasets[0].data = vals;
+            window.doughnutChart.update();
+        }
+
+        window.saveToFirebase = async function(node, data) {
+            try {
+                if(data.id) await window.rtdb.set(window.rtdb.ref(window.db, `${node}/${data.id}`), data);
+                else { const ref = window.rtdb.push(window.rtdb.ref(window.db, node)); await window.rtdb.set(ref, data); }
+            } catch(e) { alert("Errore: " + e.message); }
+        }
+        window.deleteData = async function(node, id) {
+            if(confirm("Eliminare elemento?")) await window.rtdb.remove(window.rtdb.ref(window.db, `${node}/${id}`));
+        }
+
+        window.openCrmUser = function(uid) {
+            const user = window.state.horizonUsers.find(u => u.uid === uid);
+            if(!user) return;
+            document.getElementById('crm-target-uid').value = uid;
+            document.getElementById('crm-target-piva').value = user.piva || user.cf;
+            document.getElementById('crm-modal-name').innerText = user.nome || user.ragioneSociale || 'Utente';
+            document.getElementById('crm-modal-piva').innerText = user.piva || user.cf || '-';
+            document.getElementById('crm-modal-credit').innerText = `€ ${user.auraCredit || 0}`;
+            
+            const trs = window.state.ordini.filter(o => o.clienteId === uid).map(o => `<tr><td>${o.servizioNome || '-'}</td><td>${new Date(o.id).toLocaleDateString()}</td><td><span class="badge" style="background:#f1f5f9; color:#333;">${o.stato}</span></td></tr>`).join('');
+            document.getElementById('crm-services-tbody').innerHTML = trs || '<tr><td colspan="3" style="text-align:center;">Nessun servizio registrato.</td></tr>';
+            
             openModal('modal-crm-user');
         }
 
-        window.filterCrmTable = function() {
-            const input = document.getElementById("crm-search-input").value.toUpperCase();
-            const tr = document.getElementById("table-clienti-crm").getElementsByTagName("tr");
-            for (let i = 1; i < tr.length; i++) {
-                let td = tr[i].getElementsByTagName("td");
-                let match = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j] && td[j].innerText.toUpperCase().indexOf(input) > -1) match = true;
-                }
-                tr[i].style.display = match ? "" : "none";
-            }
+        window.modificaCreditoAura = async function() {
+            const uid = document.getElementById('crm-target-uid').value;
+            const amnt = parseFloat(document.getElementById('crm-modifica-credit-amount').value);
+            if(!uid || isNaN(amnt)) return alert("Inserisci un importo valido");
+
+            try {
+                const userRef = window.rtdb.ref(window.dbHorizonId, `users/${uid}`);
+                const snap = await window.rtdb.get(userRef);
+                let creditoAttuale = 0;
+                if(snap.exists() && snap.val().auraCredit) creditoAttuale = parseFloat(snap.val().auraCredit);
+
+                const nuovoCredito = creditoAttuale + amnt;
+                await window.rtdb.update(userRef, { auraCredit: nuovoCredito });
+                
+                document.getElementById('crm-modal-credit').innerText = `€ ${nuovoCredito.toFixed(2)}`;
+                document.getElementById('crm-modifica-credit-amount').value = '';
+                alert(`Credito modificato. Nuovo saldo: € ${nuovoCredito.toFixed(2)}`);
+            } catch(e) { alert("Errore modifica credito: " + e.message); }
         }
-        
+
+        window.filterCrmTable = function() {
+            const input = document.getElementById('crm-search-input').value.toLowerCase();
+            const trs = document.querySelectorAll('#table-clienti-crm tbody tr');
+            trs.forEach(tr => {
+                const text = tr.innerText.toLowerCase();
+                tr.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        // --- FUNZIONI MANCANTI RIPRISTINATE ---
+
+        window.apriNuovoOrdine = function() {
+            document.getElementById('ordine-id').value = '';
+            openModal('modal-ordine');
+            aggiornaModuloOrdine();
+        }
+
+        window.aggiornaModuloOrdine = function() {
+            const tipo = document.getElementById('ordine-tipo-cliente').value;
+            document.getElementById('campi-azienda').style.display = tipo === 'Azienda' ? 'block' : 'none';
+            document.getElementById('campi-privato').style.display = tipo === 'Privato' ? 'block' : 'none';
+        }
+
+        window.saveOrdine = async function() {
+            const tipo = document.getElementById('ordine-tipo-cliente').value;
+            const clienteId = document.getElementById('ordine-cliente').value;
+            const note = document.getElementById('ordine-note').value;
+            const importo = document.getElementById('ordine-importo').value;
+
+            if(!importo) return alert("Inserisci un importo");
+
+            let ordine = {
+                id: Date.now(),
+                tipoCliente: tipo,
+                clienteId: clienteId,
+                note: note,
+                importo: parseFloat(importo),
+                stato: 'Nuovo'
+            };
+
+            const u = state.horizonUsers.find(x => x.uid === clienteId);
+            ordine.clienteNome = u ? (u.nome || u.ragioneSociale) : 'Sconosciuto';
+
+            await saveToFirebase('ordini', ordine);
+            closeModal('modal-ordine');
+        }
+
+        window.scalaAuraCredit = async function() {
+            const uid = document.getElementById('crm-target-uid').value;
+            const desc = document.getElementById('crm-inv-desc').value;
+            const amount = parseFloat(document.getElementById('crm-inv-amount').value);
+
+            if(!uid || isNaN(amount) || amount <= 0) return alert("Inserisci un importo valido da scalare.");
+
+            try {
+                const userRef = window.rtdb.ref(window.dbHorizonId, `users/${uid}`);
+                const snap = await window.rtdb.get(userRef);
+                let creditoAttuale = 0;
+                if(snap.exists() && snap.val().auraCredit) creditoAttuale = parseFloat(snap.val().auraCredit);
+
+                if(creditoAttuale < amount) return alert("Credito insufficiente per questa operazione.");
+
+                const nuovoCredito = creditoAttuale - amount;
+                await window.rtdb.update(userRef, { auraCredit: nuovoCredito });
+
+                await saveToFirebase('documents', {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString(),
+                    title: desc || 'Addebito Aura Credit',
+                    companyId: 1, 
+                    amount: amount,
+                    type: 'entrata',
+                    fileUrl: '#'
+                });
+
+                document.getElementById('crm-modal-credit').innerText = `€ ${nuovoCredito.toFixed(2)}`;
+                document.getElementById('crm-inv-desc').value = '';
+                document.getElementById('crm-inv-amount').value = '';
+                alert(`Fattura emessa e credito scalato. Nuovo saldo: € ${nuovoCredito.toFixed(2)}`);
+            } catch(e) { alert("Errore scalata credito: " + e.message); }
+        }
+
+        window.saveTask = async function() {
+            const title = document.getElementById('task-title').value;
+            const staff = document.getElementById('task-staff').value;
+            const prio = document.getElementById('task-prio').value;
+            const status = document.getElementById('task-status').value;
+            if(!title) return alert("Inserisci titolo");
+            await saveToFirebase('tasks', { id: Date.now(), title, staffId: staff, priority: prio, status });
+            closeModal('modal-task');
+        }
+
+        window.saveTimbratura = async function() {
+            const staff = document.getElementById('timb-staff').value;
+            const type = document.getElementById('timb-type').value;
+            const time = document.getElementById('timb-time').value;
+            if(!time) return alert("Inserisci orario");
+            await saveToFirebase('time_entries', { id: Date.now(), staffId: staff, type, timestamp: time, companyId: 1, device: 'Manuale', status: 'Forzata' });
+            closeModal('modal-timbratura');
+        }
+
+        window.saveBadge = async function() {
+            const staff = document.getElementById('badge-staff').value;
+            const code = document.getElementById('badge-code').value;
+            if(!code) return alert("Inserisci codice PIN");
+            await saveToFirebase('badges', { id: Date.now(), staffId: staff, pin: code, createdAt: new Date().toLocaleDateString(), status: 'Attivo' });
+            closeModal('modal-badge');
+        }
+
+        window.openCloudFolder = function(folderId) {
+            currentCloudFolder = folderId;
+            document.getElementById('btn-cloud-upload').style.display = folderId ? 'flex' : 'none';
+            document.getElementById('btn-cloud-folder').style.display = folderId ? 'none' : 'flex';
+            renderCloudSystem();
+        }
+
+        window.saveCloudFolder = async function() {
+            const name = document.getElementById('cloud-folder-name').value;
+            if(!name) return alert("Inserisci nome cartella");
+            await saveToFirebase('cloud_folders', { id: Date.now(), name });
+            closeModal('modal-cloud-folder');
+        }
+
+        window.saveCloudFile = async function() {
+            const name = document.getElementById('cloud-file-name').value;
+            if(!name) return alert("Inserisci nome file");
+            await saveToFirebase('cloud_files', { id: Date.now(), name, folderId: currentCloudFolder, url: '#' });
+            closeModal('modal-cloud-file');
+        }
+
+        window.renderCloudSystem = function() {
+            const container = document.getElementById('cloud-container');
+            const breadcrumbActive = document.getElementById('cloud-breadcrumb-active');
+            if(!container) return;
+
+            let html = '';
+            if(!currentCloudFolder) {
+                breadcrumbActive.innerText = '';
+                html = state.cloud_folders.map(f => `
+                    <div class="cloud-item" onclick="openCloudFolder(${f.id})">
+                        <button class="cloud-action-btn" onclick="event.stopPropagation(); deleteData('cloud_folders', ${f.id})"><i class="ph ph-trash"></i></button>
+                        <i class="ph-fill ph-folder cloud-icon cloud-folder-icon"></i>
+                        <div class="cloud-title">${f.name}</div>
+                    </div>
+                `).join('');
+            } else {
+                const folder = state.cloud_folders.find(f => f.id === currentCloudFolder);
+                breadcrumbActive.innerText = folder ? `/ ${folder.name}` : '';
+                const files = state.cloud_files.filter(file => file.folderId === currentCloudFolder);
+                html = files.map(file => `
+                    <div class="cloud-item">
+                        <button class="cloud-action-btn" onclick="deleteData('cloud_files', ${file.id})"><i class="ph ph-trash"></i></button>
+                        <i class="ph-fill ph-file cloud-icon cloud-file-icon"></i>
+                        <div class="cloud-title">${file.name}</div>
+                    </div>
+                `).join('');
+                if(!html) html = '<div style="grid-column: 1 / -1; text-align:center; padding: 20px; font-size:12px; color:var(--text-light);">Cartella vuota</div>';
+            }
+            container.innerHTML = html;
+        }
+
     </script>
 </body>
 </html>
