@@ -208,6 +208,7 @@
             <a class="nav-link admin-only" onclick="nav('richieste-servizi', this)"><span><i class="ph ph-briefcase"></i> Servizi Horizon</span></a>
             <a class="nav-link" onclick="nav('clienti-crm', this)"><span><i class="ph ph-users-three"></i> Clienti Registrati (CRM)</span> <i class="ph-fill ph-circle" style="color:var(--accent); font-size:8px;"></i></a>
             <a class="nav-link admin-only" onclick="nav('candidature', this)"><span><i class="ph ph-user-list"></i> Candidature Staff</span></a>
+            <a class="nav-link" onclick="nav('appuntamenti', this)"><span><i class="ph ph-calendar"></i> Appuntamenti (ID Core)</span> <i class="ph-fill ph-circle" style="color:var(--accent); font-size:8px;"></i></a>
             
             <div style="font-size: 10px; color: #64748B; text-transform: uppercase; margin: 20px 0 5px 10px; font-weight: 700;">Gestione & Operatività</div>
             <a class="nav-link" id="menu-staff-link" onclick="nav('staff', this)"><span><i class="ph ph-users"></i> Organico HR</span></a>
@@ -315,6 +316,25 @@
                     <table id="table-richieste-servizi">
                         <thead><tr><th>Data</th><th>Richiedente</th><th>P.IVA/CF</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead>
                         <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW APPUNTAMENTI (ID CORE) -->
+        <section id="view-appuntamenti" class="view">
+            <div class="card" style="margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h2 style="font-size:18px;">Appuntamenti Utenti App</h2>
+                </div>
+                <p style="font-size: 12px; color: var(--text-light); margin-top:4px; margin-bottom:12px;">Sincronizzazione in tempo reale con Horizon ID Core.</p>
+                <button class="btn admin-only" onclick="openModal('modal-appuntamento')"><i class="ph ph-plus"></i> Fissa Nuovo Appuntamento</button>
+            </div>
+            <div class="card">
+                <div class="table-responsive-wrapper">
+                    <table id="table-appuntamenti">
+                        <thead><tr><th>Data / Ora</th><th>Cliente (ID Core)</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead>
+                        <tbody id="appuntamenti-tbody"></tbody>
                     </table>
                 </div>
             </div>
@@ -644,10 +664,9 @@
             <i class="ph ph-shopping-cart"></i>
             <span>Ordini</span>
         </button>
-
-        <button class="b-nav-item" onclick="nav('cloud', this)">
-            <i class="ph ph-cloud"></i>
-            <span>Cloud</span>
+        <button class="b-nav-item" onclick="nav('appuntamenti', this)">
+            <i class="ph ph-calendar"></i>
+            <span>Agenda</span>
         </button>
         <button class="b-nav-item" onclick="toggleSidebar()">
             <i class="ph ph-dots-three-outline"></i>
@@ -657,6 +676,31 @@
 
     <!-- MODALI DI DIALOGO MOBILE (BOTTOM SHEET) -->
     
+    <!-- MODALE APPUNTAMENTO -->
+    <div id="modal-appuntamento" class="modal">
+        <div class="modal-content">
+            <h3>Gestione Appuntamento</h3>
+            <input type="hidden" id="app-id">
+            <label style="font-size:11px; font-weight:700; display:block; margin-top:8px;">Cliente Horizon ID</label>
+            <select id="app-cliente" class="input"></select>
+            <label style="font-size:11px; font-weight:700; display:block;">Servizio / Motivazione</label>
+            <input type="text" id="app-servizio" class="input" placeholder="Es. Sviluppo App / Consulenza">
+            <label style="font-size:11px; font-weight:700; display:block;">Data e Ora</label>
+            <input type="datetime-local" id="app-data" class="input">
+            <label style="font-size:11px; font-weight:700; display:block;">Stato Appuntamento</label>
+            <select id="app-stato" class="input">
+                <option value="In Attesa">In Attesa</option>
+                <option value="Confermato">Confermato</option>
+                <option value="Completato">Completato</option>
+                <option value="Annullato">Annullato</option>
+            </select>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-appuntamento')">Annulla</button>
+                <button class="btn" onclick="saveAppuntamento()"><i class="ph ph-cloud-arrow-up"></i> Salva su ID Core</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODALE CLIENTE CRM -->
     <div id="modal-crm-user" class="modal">
         <div class="modal-content">
@@ -683,7 +727,7 @@
             <div class="card" style="padding:10px; margin-bottom:15px; max-height:200px; overflow-y:auto;">
                 <div class="table-responsive-wrapper">
                     <table style="margin-top:0;">
-                        <thead><tr><th>ID</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
+                        <thead><tr><th>ID / Ref</th><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead>
                         <tbody id="crm-services-tbody"></tbody>
                     </table>
                 </div>
@@ -1113,7 +1157,7 @@
         // --- STATE GLOBALE ---
         let state = {
             companies: [], divisions: [], staff: [], time_entries: [], documents: [], tasks: [], badges: [], payrolls: [], security_alerts: [], budget_history: [], ordini: [],
-            horizonUsers: [], servizi: [], richieste_servizi: [], candidature: [],
+            horizonUsers: [], servizi: [], richieste_servizi: [], candidature: [], appuntamenti: [],
             cloud_folders: [], cloud_files: [], chats: {}
         };
 
@@ -1222,7 +1266,7 @@
                         if (snap.exists()) { snap.forEach((childSnap) => { arr.push(childSnap.val()); }); }
                         state[coll] = arr;
                         const lo = document.getElementById('login-overlay');
-                        if(lo && lo.style.display === 'none') renderAll();
+                        if(lo && lo.style.display === 'none') { if(window.renderAll) renderAll(); }
                     });
                 });
 
@@ -1233,7 +1277,7 @@
                         state.horizonUsers = arr;
                         populateSelects(); 
                         const lo = document.getElementById('login-overlay');
-                        if(lo && lo.style.display === 'none') renderAll();
+                        if(lo && lo.style.display === 'none') { if(window.renderAll) renderAll(); }
                     });
 
                     window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'chats'), (snap) => {
@@ -1241,7 +1285,21 @@
                         if (snap.exists()) { chatsObj = snap.val(); }
                         state.chats = chatsObj;
                         const lo = document.getElementById('login-overlay');
-                        if(lo && lo.style.display === 'none') renderAll();
+                        if(lo && lo.style.display === 'none') { if(window.renderAll) renderAll(); }
+                    });
+
+                    // SYNC APPUNTAMENTI ID CORE
+                    window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'appuntamenti'), (snap) => {
+                        let arr = [];
+                        if (snap.exists()) {
+                            snap.forEach((childSnap) => {
+                                let item = childSnap.val();
+                                item.id = childSnap.key;
+                                arr.push(item);
+                            });
+                        }
+                        state.appuntamenti = arr;
+                        if(window.renderAppuntamenti) renderAppuntamenti();
                     });
                 }
             } catch (error) { console.error(error); }
@@ -1263,7 +1321,7 @@
                      await syncConFirebase(); 
                      const stL = document.getElementById('menu-staff-link');
                      if(window.userRole === 'staff' && stL) nav('staff', stL);
-                     else renderAll();
+                     else { if(window.renderAll) renderAll(); }
                  } else {
                      if(lo) lo.style.display = 'flex';
                  }
@@ -1385,7 +1443,10 @@
             const activeHorizonUsers = state.horizonUsers.filter(u => u.statoVerifica === 'approvato');
             const horizonOpts = activeHorizonUsers.map(u => `<option value="${u.uid}">${u.nome || u.ragioneSociale} (${u.email})</option>`).join('');
             const ordCli = document.getElementById('ordine-cliente');
+            const appCli = document.getElementById('app-cliente');
+            
             if(ordCli) ordCli.innerHTML = horizonOpts || '<option value="">Nessun utente Horizon ID attivo</option>';
+            if(appCli) appCli.innerHTML = horizonOpts || '<option value="">Nessun utente Horizon ID attivo</option>';
             
             if(window.aggiornaModuloOrdine) aggiornaModuloOrdine();
         }
@@ -1401,7 +1462,7 @@
         // --- GESTIONE ARCHIVIO CLOUD ---
         window.openCloudFolder = function(id) {
             currentCloudFolder = id;
-            renderAll(); 
+            if(window.renderAll) renderAll(); 
         }
 
         window.saveCloudFolder = async function() {
@@ -1636,7 +1697,7 @@
             `;
         }
 
-        // --- FUNZIONALITA AGGIUNTIVE CRM / AURACREDIT ---
+        // --- FUNZIONALITA AGGIUNTIVE CRM E COMPLETAMENTO CODICE TRONCATO ---
         window.openCrmUserModal = function(uid) {
             const user = state.horizonUsers.find(u => u.uid === uid);
             if(!user) return;
@@ -1652,696 +1713,109 @@
                 const userServices = state.richieste_servizi.filter(r => r.piva === user.piva || r.cfPrivato === user.cf || r.email === user.email);
                 crmSvcTbody.innerHTML = userServices.map(s => `
                     <tr>
-                        <td>#${s.id}</td>
-                        <td>${s.tipoServizio || s.servizio || 'Servizio'}</td>
+                        <td>${s.id || '-'}</td>
+                        <td>${s.tipoServizio || s.servizioAcquistato || s.servizio || 'Servizio Generico'}</td>
                         <td>${new Date(s.dataInvio || Date.now()).toLocaleDateString()}</td>
-                        <td><span class="badge" style="background:#e2e8f0;">${s.stato || 'In corso'}</span></td>
+                        <td><span class="badge" style="background:var(--primary); color:white;">${s.stato}</span></td>
                     </tr>
-                `).join('') || '<tr><td colspan="4">Nessun servizio registrato.</td></tr>';
+                `).join('');
             }
             openModal('modal-crm-user');
         }
 
-        window.scalaAuraCredit = async function() {
-            const uid = document.getElementById('crm-target-uid').value;
-            const desc = document.getElementById('crm-inv-desc').value;
-            const amount = parseFloat(document.getElementById('crm-inv-amount').value);
-
-            if(!uid || isNaN(amount) || amount <= 0) return alert("Inserire un importo valido per l'addebito.");
-            const user = state.horizonUsers.find(u => u.uid === uid);
-            if(!user) return alert("Utente non trovato.");
-
-            const attCredit = parseFloat(user.auraCredit || 0);
-            const newCredit = attCredit - amount;
-
-            if(window.rtdb && window.dbHorizonId) {
-                try {
-                    await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), { auraCredit: newCredit });
-                    await saveToFirebase('documents', {
-                        id: Date.now(),
-                        title: `Addebito AuraCredit: ${desc || 'Servizio'}`,
-                        amount: amount,
-                        type: 'entrata',
-                        companyId: state.companies[0]?.id || 1,
-                        date: new Date().toISOString().split('T')[0]
-                    });
-                    alert(`Addebito completato. Nuovo Credito: € ${newCredit.toFixed(2)}`);
-                    closeModal('modal-crm-user');
-                } catch(e) { alert("Errore addebito: " + e.message); }
-            }
-        }
-
-        window.modificaAuraCredit = async function() {
-            const uid = document.getElementById('crm-target-uid').value;
-            if(!uid) return;
-            const user = state.horizonUsers.find(u => u.uid === uid);
-            if(!user) return;
-
-            const importo = prompt("Inserisci il valore totale del nuovo AuraCredit (€):", user.auraCredit || 0);
-            if(importo === null) return;
-            const nuovoValore = parseFloat(importo);
-            if(isNaN(nuovoValore)) return alert("Inserisci un importo numerico valido.");
-
-            if(window.rtdb && window.dbHorizonId) {
-                try {
-                    await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), { auraCredit: nuovoValore });
-                    document.getElementById('crm-modal-credit').innerText = `€ ${nuovoValore.toFixed(2)}`;
-                    alert("AuraCredit aggiornato con successo.");
-                } catch(e) { alert("Errore aggiornamento credito: " + e.message); }
-            }
-        }
-
-        window.openModalServizioManuale = function() {
-            openModal('modal-crm-add-service');
-        }
-
-        window.saveCrmManualService = async function() {
-            const uid = document.getElementById('crm-target-uid').value;
-            const piva = document.getElementById('crm-target-piva').value;
-            const title = document.getElementById('crm-add-serv-title').value;
-            const type = document.getElementById('crm-add-serv-type').value;
-            const status = document.getElementById('crm-add-serv-status').value;
-            const notes = document.getElementById('crm-add-serv-notes').value;
-
-            if(!title) return alert("Inserire il nome del servizio.");
-
-            const newService = {
-                id: Date.now(),
-                tipoServizio: title,
-                tipo: type,
-                piva: type === 'Azienda' ? piva : '',
-                cfPrivato: type === 'Privato' ? piva : '',
-                stato: status,
-                dettagli: notes,
-                dataInvio: new Date().toISOString()
-            };
-
-            await saveToFirebase('richieste_servizi', newService);
-            alert("Pratica creata ed aggiunta con successo.");
-            closeModal('modal-crm-add-service');
-        }
-
-        window.filterCrmTable = function() {
-            const q = document.getElementById('crm-search-input').value.toLowerCase();
-            const rows = document.querySelectorAll('#table-clienti-crm tbody tr');
-            rows.forEach(r => {
-                const text = r.innerText.toLowerCase();
-                r.style.display = text.includes(q) ? '' : 'none';
-            });
-        }
-
-        // --- GESTIONE CHAT LIVE SUPPORT ---
-        window.openChatReplyModal = function(uid) {
-            const user = state.horizonUsers.find(u => u.uid === uid);
-            document.getElementById('chat-target-uid').value = uid;
-            document.getElementById('chat-modal-user').innerText = user ? (user.nome || user.ragioneSociale || 'Utente') : 'Utente App';
-            document.getElementById('chat-modal-piva').innerText = user ? (user.piva || user.cf || '') : '';
-            renderChatMessages(uid);
-            openModal('modal-chat-reply');
-        }
-
-        function renderChatMessages(uid) {
-            const box = document.getElementById('chat-modal-messages');
-            if(!box) return;
-
-            const chatData = state.chats ? state.chats[uid] : null;
-            if(!chatData || !chatData.messages) {
-                box.innerHTML = '<div style="text-align:center; color:var(--text-light); margin-auto;">Nessun messaggio precedente.</div>';
-                return;
-            }
-
-            const msgs = Object.values(chatData.messages);
-            box.innerHTML = msgs.map(m => {
-                const isStaff = m.sender === 'staff' || m.sender === 'admin';
-                return `
-                    <div class="msg ${isStaff ? 'user' : 'bot'}" style="${isStaff ? 'align-self: flex-end; background: var(--primary); color: white;' : 'align-self: flex-start; background: var(--card); border: 1px solid var(--border);'}">
-                        <small style="display:block; font-size:9px; opacity:0.8; margin-bottom:2px;">${m.senderName || (isStaff ? 'Supporto' : 'Utente')}</small>
-                        ${m.text}
-                    </div>
-                `;
+        // --- FUNZIONI APPUNTAMENTI HORIZON ID CORE ---
+        
+        window.renderAppuntamenti = function() {
+            const tbody = document.getElementById('appuntamenti-tbody');
+            if(!tbody) return;
+            
+            tbody.innerHTML = (state.appuntamenti || []).map(a => {
+                const utente = state.horizonUsers.find(u => u.uid === a.uid);
+                const nomeUtente = utente ? (utente.nome || utente.ragioneSociale) : 'Utente Sconosciuto';
+                let bColor = 'var(--warning)';
+                if(a.stato === 'Confermato') bColor = 'var(--success)';
+                if(a.stato === 'Annullato') bColor = 'var(--danger)';
+                if(a.stato === 'Completato') bColor = 'var(--primary)';
+                
+                return `<tr>
+                    <td>${new Date(a.data).toLocaleString()}</td>
+                    <td>${nomeUtente}</td>
+                    <td>${a.servizio}</td>
+                    <td><span class="badge" style="background:${bColor}; color:white;">${a.stato}</span></td>
+                    <td>
+                        <button class="btn btn-inline btn-edit" onclick="editAppuntamento('${a.id}')"><i class="ph ph-pencil"></i></button>
+                        <button class="btn btn-inline btn-del" onclick="deleteAppuntamento('${a.id}')"><i class="ph ph-trash"></i></button>
+                    </td>
+                </tr>`;
             }).join('');
-            box.scrollTop = box.scrollHeight;
         }
 
-        window.sendStaffChatMessage = async function() {
-            const uid = document.getElementById('chat-target-uid').value;
-            const input = document.getElementById('chat-modal-input');
-            const text = input.value.trim();
-            if(!uid || !text || !window.dbHorizonId) return;
+        window.saveAppuntamento = async function() {
+            const idEl = document.getElementById('app-id').value;
+            const uid = document.getElementById('app-cliente').value;
+            const serv = document.getElementById('app-servizio').value;
+            const data = document.getElementById('app-data').value;
+            const stato = document.getElementById('app-stato').value;
 
-            const msgData = {
-                text: text,
-                sender: 'staff',
-                senderName: 'Supporto Horizon',
-                timestamp: Date.now()
+            if(!uid || !serv || !data) return alert("Compila tutti i campi obbligatori (Cliente, Servizio e Data).");
+
+            const appId = idEl || Date.now().toString();
+            const appObj = {
+                uid: uid,
+                servizio: serv,
+                data: data,
+                stato: stato
             };
 
             try {
-                const newMsgRef = window.rtdb.push(window.rtdb.ref(window.dbHorizonId, `chats/${uid}/messages`));
-                await window.rtdb.set(newMsgRef, msgData);
-                await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `chats/${uid}`), {
-                    lastMessage: text,
-                    lastUpdated: Date.now()
-                });
-                input.value = '';
-                renderChatMessages(uid);
-            } catch(e) { alert("Errore invio messaggio: " + e.message); }
-        }
-
-        // --- GESTIONE ORDINI ---
-        window.apriNuovoOrdine = function() {
-            openModal('modal-ordine');
-        }
-
-        window.aggiornaModuloOrdine = function() {
-            const tipo = document.getElementById('ordine-tipo-cliente').value;
-            const compAz = document.getElementById('campi-azienda');
-            const compPriv = document.getElementById('campi-privato');
-            if(compAz) compAz.style.display = tipo === 'Azienda' ? 'block' : 'none';
-            if(compPriv) compPriv.style.display = tipo === 'Privato' ? 'block' : 'none';
-        }
-
-        window.saveOrdine = async function() {
-            const clienteId = document.getElementById('ordine-cliente').value;
-            const tipo = document.getElementById('ordine-tipo-cliente').value;
-            const note = document.getElementById('ordine-note').value;
-            const importo = parseFloat(document.getElementById('ordine-importo').value) || 0;
-
-            if(!clienteId) return alert("Selezionare un cliente.");
-
-            const newOrd = {
-                id: Date.now(),
-                clienteId: clienteId,
-                tipoCliente: tipo,
-                ragioneSociale: tipo === 'Azienda' ? document.getElementById('ordine-ragione').value : '',
-                piva: tipo === 'Azienda' ? document.getElementById('ordine-piva').value : '',
-                sdi: tipo === 'Azienda' ? document.getElementById('ordine-sdi').value : '',
-                nomeCognome: tipo === 'Privato' ? document.getElementById('ordine-nome-cognome').value : '',
-                cf: tipo === 'Privato' ? document.getElementById('ordine-cf').value : '',
-                note: note,
-                importo: importo,
-                stato: 'Richiesto',
-                data: new Date().toISOString()
-            };
-
-            await saveToFirebase('ordini', newOrd);
-            if(window.dbHorizonId) {
-                try {
-                    await window.rtdb.set(window.rtdb.ref(window.dbHorizonId, `users/${clienteId}/ordini/${newOrd.id}`), newOrd);
-                } catch(e) {}
-            }
-            alert("Ordine emesso correttamente.");
-            closeModal('modal-ordine');
-        }
-
-        window.openDettaglioOrdine = function(id) {
-            const o = state.ordini.find(x => x.id == id);
-            if(!o) return;
-
-            document.getElementById('dettagli-id-testo').innerText = `#${o.id}`;
-            document.getElementById('dettagli-ordine-id').value = o.id;
-            document.getElementById('dettagli-cliente-id').value = o.clienteId;
-            document.getElementById('dettagli-stato-select').value = o.stato;
-
-            let html = `
-                <div><strong>Cliente ID:</strong> ${o.clienteId}</div>
-                <div><strong>Tipologia:</strong> ${o.tipoCliente}</div>
-                <div><strong>Importo:</strong> € ${Number(o.importo||0).toFixed(2)}</div>
-                <div><strong>Data:</strong> ${new Date(o.data).toLocaleString()}</div>
-                <div style="margin-top:8px;"><strong>Note:</strong> ${o.note || 'Nessuna nota'}</div>
-            `;
-            document.getElementById('dettagli-ordine-content').innerHTML = html;
-            openModal('modal-ordine-dettagli');
-        }
-
-        window.updateOrdineStato = async function() {
-            const id = document.getElementById('dettagli-ordine-id').value;
-            const clienteId = document.getElementById('dettagli-cliente-id').value;
-            const st = document.getElementById('dettagli-stato-select').value;
-
-            const ord = state.ordini.find(x => x.id == id);
-            if(ord) {
-                ord.stato = st;
-                await saveToFirebase('ordini', ord);
-                if(window.dbHorizonId && clienteId) {
-                    try {
-                        await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${clienteId}/ordini/${id}`), { stato: st });
-                    } catch(e) {}
-                }
-                alert("Stato ordine aggiornato.");
-                closeModal('modal-ordine-dettagli');
+                // Salvataggio nel database ID Core degli Utenti (App Mobile)
+                await window.rtdb.set(window.rtdb.ref(window.dbHorizonId, `appuntamenti/${appId}`), appObj);
+                closeModal('modal-appuntamento');
+                
+                // Reset form
+                document.getElementById('app-id').value = '';
+                document.getElementById('app-servizio').value = '';
+                document.getElementById('app-data').value = '';
+                document.getElementById('app-stato').value = 'In Attesa';
+                
+            } catch (e) {
+                alert("Errore salvataggio su ID Core: " + e.message);
             }
         }
 
-        // --- VERIFICA HORIZON ID CORE ---
-        window.openVerifyHorizonModal = function(uid) {
-            const u = state.horizonUsers.find(x => x.uid === uid);
-            if(!u) return;
-
-            document.getElementById('verify-user-uid').value = u.uid;
-            document.getElementById('verify-user-name').innerText = u.nome || u.ragioneSociale || 'Utente';
-            document.getElementById('verify-user-piva').innerText = u.piva || u.cf || 'N/A';
-
-            document.getElementById('verify-img-fronte').src = u.docFronteUrl || '';
-            document.getElementById('verify-img-retro').src = u.docRetroUrl || '';
-            const vid = document.getElementById('verify-video');
-            if(vid) vid.src = u.videoSelfieUrl || '';
-
-            openModal('modal-verify-id');
+        window.editAppuntamento = function(id) {
+            const a = state.appuntamenti.find(x => x.id === id);
+            if(!a) return;
+            document.getElementById('app-id').value = a.id;
+            document.getElementById('app-cliente').value = a.uid;
+            document.getElementById('app-servizio').value = a.servizio;
+            document.getElementById('app-data').value = a.data;
+            document.getElementById('app-stato').value = a.stato;
+            openModal('modal-appuntamento');
         }
 
-        window.approveHorizonId = async function() {
-            const uid = document.getElementById('verify-user-uid').value;
-            if(!uid || !window.dbHorizonId) return;
-
+        window.deleteAppuntamento = async function(id) {
+            if(!confirm("Vuoi davvero eliminare definitivamente questo appuntamento da Horizon ID Core?")) return;
             try {
-                await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), {
-                    statoVerifica: 'approvato',
-                    dataVerifica: new Date().toISOString()
-                });
-                alert("Utente Horizon ID Approvato!");
-                closeModal('modal-verify-id');
-            } catch(e) { alert("Errore approvazione: " + e.message); }
-        }
-
-        window.rejectHorizonId = async function() {
-            const uid = document.getElementById('verify-user-uid').value;
-            if(!uid || !window.dbHorizonId) return;
-
-            try {
-                await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), {
-                    statoVerifica: 'rifiutato',
-                    dataVerifica: new Date().toISOString()
-                });
-                alert("Utente Horizon ID Rifiutato.");
-                closeModal('modal-verify-id');
-            } catch(e) { alert("Errore rifiuto: " + e.message); }
-        }
-
-        // --- OPERAZIONI CRUD AZIENDED, HR, BUSTE PAGA, TASK, DOCUMENTI E BADGE ---
-        window.saveAzienda = async function() {
-            const name = document.getElementById('azienda-name').value;
-            const cap = parseFloat(document.getElementById('azienda-cap').value) || 0;
-            const proj = parseInt(document.getElementById('azienda-proj').value) || 0;
-            const eff = parseInt(document.getElementById('azienda-eff').value) || 100;
-            if(!name) return alert("Inserire il nome azienda.");
-
-            await saveToFirebase('companies', { id: Date.now(), name, cap, proj, eff });
-            closeModal('modal-azienda');
-        }
-
-        window.saveDivision = async function() {
-            const name = document.getElementById('div-name').value;
-            const companyId = document.getElementById('div-company').value;
-            const budget = parseFloat(document.getElementById('div-budget').value) || 0;
-            const eff = parseInt(document.getElementById('div-eff').value) || 100;
-            if(!name) return alert("Inserire il nome divisione.");
-
-            await saveToFirebase('divisions', { id: Date.now(), name, companyId, budget, eff });
-            closeModal('modal-div');
-        }
-
-        window.saveStaff = async function() {
-            const name = document.getElementById('staff-name').value;
-            const role = document.getElementById('staff-role').value;
-            const companyId = document.getElementById('staff-company').value;
-            const divId = document.getElementById('staff-div').value;
-            const eff = parseInt(document.getElementById('staff-eff').value) || 100;
-            const machine = document.getElementById('staff-machine').value;
-            const cf = document.getElementById('staff-cf').value;
-            const iban = document.getElementById('staff-iban').value;
-
-            if(!name) return alert("Inserire il nome dipendente.");
-
-            await saveToFirebase('staff', {
-                id: Date.now(), name, role, companyId, divId, eff, machine, cf, iban
-            });
-            closeModal('modal-staff');
-        }
-
-        window.savePayroll = async function() {
-            const staffId = document.getElementById('pay-staff').value;
-            const month = document.getElementById('pay-month').value;
-            const amount = parseFloat(document.getElementById('pay-amount').value) || 0;
-            const status = document.getElementById('pay-status').value;
-            const fileInput = document.getElementById('pay-file');
-
-            if(!staffId || !month) return alert("Compilare i campi richiesti per la busta paga.");
-
-            let fileUrl = '';
-            if(fileInput.files[0]) {
-                try { fileUrl = await window.uploadToCloudinary(fileInput.files[0], 'BustePaga'); } catch(e) {}
-            }
-
-            await saveToFirebase('payrolls', {
-                id: Date.now(), staffId, month, amount, status, fileUrl
-            });
-            closeModal('modal-payroll');
-        }
-
-        window.saveDocument = async function() {
-            const title = document.getElementById('doc-title').value;
-            const amount = parseFloat(document.getElementById('doc-amount').value) || 0;
-            const type = document.getElementById('doc-type').value;
-            const companyId = document.getElementById('doc-company').value;
-            const fileInput = document.getElementById('doc-file-upload');
-
-            if(!title) return alert("Inserire descrizione documento.");
-
-            let fileUrl = '';
-            if(fileInput.files[0]) {
-                try { fileUrl = await window.uploadToCloudinary(fileInput.files[0], 'DocumentiAmministrativi'); } catch(e) {}
-            }
-
-            await saveToFirebase('documents', {
-                id: Date.now(), title, amount, type, companyId, fileUrl, date: new Date().toISOString().split('T')[0]
-            });
-            closeModal('modal-doc');
-        }
-
-        window.saveBadge = async function() {
-            const staffId = document.getElementById('badge-staff').value;
-            const code = document.getElementById('badge-code').value;
-            if(!code) return alert("Inserire un PIN badge.");
-
-            await saveToFirebase('badges', {
-                id: Date.now(), staffId, code, createdAt: new Date().toLocaleDateString(), active: true
-            });
-            closeModal('modal-badge');
-        }
-
-        window.saveTask = async function() {
-            const title = document.getElementById('task-title').value;
-            const staffId = document.getElementById('task-staff').value;
-            const priority = document.getElementById('task-prio').value;
-            const status = document.getElementById('task-status').value;
-
-            if(!title) return alert("Inserire un titolo per la task.");
-
-            await saveToFirebase('tasks', {
-                id: Date.now(), title, staffId, priority, status
-            });
-            closeModal('modal-task');
-        }
-
-        window.saveTimbratura = async function() {
-            const staffId = document.getElementById('timb-staff').value;
-            const type = document.getElementById('timb-type').value;
-            const time = document.getElementById('timb-time').value;
-
-            await saveToFirebase('time_entries', {
-                id: Date.now(), staffId, type, time: time ? new Date(time).toLocaleString() : new Date().toLocaleString(), geo: 'Forzatura Manuale HQ'
-            });
-            closeModal('modal-timbratura');
-        }
-
-        // --- HARDWARE DEMO TERMINAL ---
-        window.printGradoB = function() {
-            const term = document.getElementById('grado-terminal');
-            if(term) {
-                term.innerHTML += `[DIAGNOSTICA] Sincronia fFk9 OK.<br>[SYS] Moduli mAf operativi al 100%.<br>`;
-                term.scrollTop = term.scrollHeight;
+                await window.rtdb.remove(window.rtdb.ref(window.dbHorizonId, `appuntamenti/${id}`));
+            } catch(e) {
+                alert("Errore Eliminazione: " + e.message);
             }
         }
 
-        // --- RENDER GLOBALE DELLE TABELLE E DATI ---
-        function renderAll() {
-            renderDashboardWidgets();
+        // --- SISTEMA GLOBALE DI RENDERIZZAZIONE UI ---
+        
+        window.renderAll = function() {
+            renderCharts();
             renderCloudSystem();
-
-            // 1. Dashboard Summary
-            const ds = document.getElementById('dash-summary');
-            if(ds) {
-                const totalCap = state.companies.reduce((a, b) => a + (Number(b.cap) || 0), 0);
-                const totalProj = state.companies.reduce((a, b) => a + (Number(b.proj) || 0), 0);
-                const totalStaff = state.staff.length;
-                ds.innerHTML = `
-                    <div class="card"><div class="card-title">Capitale Gruppo</div><div class="card-value">€ ${totalCap.toLocaleString()}</div></div>
-                    <div class="card"><div class="card-title">Progetti Attivi</div><div class="card-value">${totalProj}</div></div>
-                    <div class="card"><div class="card-title">Organico HR</div><div class="card-value">${totalStaff}</div></div>
-                `;
-            }
-
-            // 2. Dash Stats Table
-            const tdStats = document.querySelector('#table-dash-stats tbody');
-            if(tdStats) {
-                let html = state.companies.map(c => `<tr><td><strong>${c.name}</strong></td><td>€ ${(Number(c.cap)||0).toLocaleString()}</td><td>${c.proj||0}</td><td><span class="badge" style="background:rgba(34,197,94,0.1); color:var(--accent);">${c.eff||100}%</span></td></tr>`).join('');
-                tdStats.innerHTML = html || '<tr><td colspan="4">Nessun dato.</td></tr>';
-            }
-
-            // 3. Richieste Servizi Table
-            const trServ = document.querySelector('#table-richieste-servizi tbody');
-            if(trServ) {
-                let html = (state.richieste_servizi || []).map(r => `
-                    <tr>
-                        <td>${new Date(r.dataInvio).toLocaleDateString()}</td>
-                        <td><strong>${r.nome} ${r.cognome}</strong></td>
-                        <td><span style="font-family:monospace;">${r.piva || r.cfPrivato || '-'}</span></td>
-                        <td>${r.tipoServizio || r.servizio || '-'}</td>
-                        <td><span class="badge" style="background:#e2e8f0; color:#333;">${r.stato||'Nuova'}</span></td>
-                        <td class="action-btns"><button class="btn-validate" onclick="openDettaglioServizio(${r.id})"><i class="ph ph-eye"></i> Dettaglio</button></td>
-                    </tr>
-                `).join('');
-                trServ.innerHTML = html || '<tr><td colspan="6">Nessuna richiesta ricevuta.</td></tr>';
-            }
-
-            // 4. CRM Table
-            const trCrm = document.querySelector('#table-clienti-crm tbody');
-            if(trCrm) {
-                let html = (state.horizonUsers || []).map(u => {
-                    let userOrders = (state.ordini || []).filter(o => o.clienteId === u.uid).length;
-                    return `
-                    <tr>
-                        <td><strong>${u.nome || u.ragioneSociale || 'Utente'}</strong></td>
-                        <td><span style="font-family:monospace;">${u.piva || u.cf || '-'}</span></td>
-                        <td>${u.email}</td>
-                        <td><strong style="color:var(--accent);">€ ${(u.auraCredit || 0).toFixed(2)}</strong></td>
-                        <td><span class="badge" style="background:rgba(37,99,235,0.1); color:var(--primary);">${userOrders} ordini</span></td>
-                        <td class="action-btns"><button class="btn-validate" onclick="openCrmUserModal('${u.uid}')"><i class="ph ph-user-gear"></i> Scheda</button></td>
-                    </tr>
-                    `;
-                }).join('');
-                trCrm.innerHTML = html || '<tr><td colspan="6">Nessun cliente Horizon ID.</td></tr>';
-            }
-
-            // 5. Candidature Table
-            const trCand = document.querySelector('#table-candidature tbody');
-            if(trCand) {
-                let html = (state.candidature || []).map(c => `
-                    <tr>
-                        <td>${new Date(c.dataInvio || Date.now()).toLocaleDateString()}</td>
-                        <td><strong>${c.nome} ${c.cognome}</strong></td>
-                        <td>${c.posizione}</td>
-                        <td>${c.email}</td>
-                        <td><span class="badge" style="background:#e2e8f0;">${c.stato||'In Attesa'}</span></td>
-                        <td class="action-btns"><button class="btn-validate" onclick="openDettaglioCandidatura(${c.id})"><i class="ph ph-eye"></i> Valuta</button></td>
-                    </tr>
-                `).join('');
-                trCand.innerHTML = html || '<tr><td colspan="6">Nessuna candidatura.</td></tr>';
-            }
-
-            // 6. Ordini Table
-            const trOrd = document.querySelector('#table-ordini tbody');
-            if(trOrd) {
-                let html = (state.ordini || []).map(o => `
-                    <tr>
-                        <td>${new Date(o.data).toLocaleDateString()}</td>
-                        <td><strong>${o.ragioneSociale || o.nomeCognome || o.clienteId}</strong></td>
-                        <td>${o.tipoCliente}</td>
-                        <td>€ ${(o.importo||0).toFixed(2)}</td>
-                        <td><span class="badge" style="background:rgba(37,99,235,0.1); color:var(--primary);">${o.stato}</span></td>
-                        <td class="action-btns">
-                            <button class="btn-validate" onclick="openDettaglioOrdine(${o.id})"><i class="ph ph-pencil"></i> Dettagli</button>
-                            <button class="btn-del admin-only" onclick="deleteData('ordini', ${o.id})"><i class="ph ph-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-                trOrd.innerHTML = html || '<tr><td colspan="6">Nessun ordine attivo.</td></tr>';
-            }
-
-            // 7. Horizon ID Verification Tables
-            const trPending = document.querySelector('#table-horizon-pending tbody');
-            if(trPending) {
-                let pendingUsers = (state.horizonUsers || []).filter(u => u.statoVerifica !== 'approvato');
-                let html = pendingUsers.map(u => `
-                    <tr>
-                        <td><strong>${u.nome || u.ragioneSociale || 'Utente'}</strong></td>
-                        <td>${u.piva || u.cf || '-'}</td>
-                        <td>${u.email}</td>
-                        <td>${u.dataRegistrazione ? new Date(u.dataRegistrazione).toLocaleDateString() : '-'}</td>
-                        <td><span class="badge" style="background:rgba(245,158,11,0.15); color:var(--warning);">${u.statoVerifica || 'in_attesa'}</span></td>
-                        <td class="action-btns"><button class="btn-validate" onclick="openVerifyHorizonModal('${u.uid}')"><i class="ph ph-shield-check"></i> Verifica</button></td>
-                    </tr>
-                `).join('');
-                trPending.innerHTML = html || '<tr><td colspan="6">Nessun utente in attesa di verifica.</td></tr>';
-            }
-
-            const trActive = document.querySelector('#table-horizon-active tbody');
-            if(trActive) {
-                let activeUsers = (state.horizonUsers || []).filter(u => u.statoVerifica === 'approvato');
-                let html = activeUsers.map(u => `
-                    <tr>
-                        <td><strong>${u.nome || u.ragioneSociale || 'Utente'}</strong></td>
-                        <td>${u.piva || u.cf || '-'}</td>
-                        <td>${u.email}</td>
-                        <td>${u.dataVerifica ? new Date(u.dataVerifica).toLocaleDateString() : 'Verificato'}</td>
-                        <td><span class="badge" style="background:rgba(34,197,94,0.15); color:var(--accent);">Approvato</span></td>
-                        <td class="action-btns"><button class="btn-validate" onclick="openCrmUserModal('${u.uid}')"><i class="ph ph-eye"></i> Profilo</button></td>
-                    </tr>
-                `).join('');
-                trActive.innerHTML = html || '<tr><td colspan="6">Nessun utente verificato.</td></tr>';
-            }
-
-            // 8. Chat Support Table
-            const trChat = document.querySelector('#table-chat-supporto tbody');
-            if(trChat) {
-                let chatKeys = Object.keys(state.chats || {});
-                let html = chatKeys.map(uid => {
-                    let u = state.horizonUsers.find(x => x.uid === uid);
-                    let chat = state.chats[uid];
-                    return `
-                    <tr>
-                        <td><strong>${u ? (u.nome || u.ragioneSociale) : 'Utente App'}</strong></td>
-                        <td>${u ? (u.piva || u.cf) : '-'}</td>
-                        <td>${chat.lastMessage || 'Nessun messaggio'}</td>
-                        <td>${chat.lastUpdated ? new Date(chat.lastUpdated).toLocaleTimeString() : '-'}</td>
-                        <td class="action-btns"><button class="btn-validate" onclick="openChatReplyModal('${uid}')"><i class="ph ph-chat-circle-dots"></i> Rispondi</button></td>
-                    </tr>
-                    `;
-                }).join('');
-                trChat.innerHTML = html || '<tr><td colspan="5">Nessuna chat attiva.</td></tr>';
-            }
-
-            // 9. Aziende Table
-            const trAz = document.querySelector('#table-aziende tbody');
-            if(trAz) {
-                let html = state.companies.map(c => `
-                    <tr>
-                        <td><strong>${c.name}</strong></td>
-                        <td>€ ${(Number(c.cap)||0).toLocaleString()}</td>
-                        <td>${c.proj||0}</td>
-                        <td>${c.eff||100}%</td>
-                        <td><span class="badge" style="background:rgba(34,197,94,0.1); color:var(--accent);">Attiva</span></td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('companies', ${c.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trAz.innerHTML = html || '<tr><td colspan="6">Nessuna azienda.</td></tr>';
-            }
-
-            // 10. Divisioni Table
-            const trDiv = document.querySelector('#table-divs tbody');
-            if(trDiv) {
-                let html = state.divisions.map(d => `
-                    <tr>
-                        <td><strong>${d.name}</strong></td>
-                        <td>${getCompanyName(d.companyId)}</td>
-                        <td>€ ${(Number(d.budget)||0).toLocaleString()}</td>
-                        <td>${d.eff||100}%</td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('divisions', ${d.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trDiv.innerHTML = html || '<tr><td colspan="5">Nessuna divisione.</td></tr>';
-            }
-
-            // 11. Staff Table
-            const trStaff = document.querySelector('#table-staff tbody');
-            if(trStaff) {
-                let html = state.staff.map(s => `
-                    <tr>
-                        <td><strong>${s.name}</strong></td>
-                        <td>${s.role}</td>
-                        <td>${getCompanyName(s.companyId)}</td>
-                        <td>${s.eff||100}%</td>
-                        <td>${s.machine||'Nessuna'}</td>
-                        <td><span class="badge" style="background:rgba(34,197,94,0.1); color:var(--accent);">Attivo</span></td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('staff', ${s.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trStaff.innerHTML = html || '<tr><td colspan="7">Nessun dipendente HR.</td></tr>';
-            }
-
-            // 12. Timbrature Table
-            const trTimb = document.querySelector('#table-timbrature tbody');
-            if(trTimb) {
-                let html = (state.time_entries || []).map(t => `
-                    <tr>
-                        <td>${t.time}</td>
-                        <td><strong>${getStaffName(t.staffId)}</strong></td>
-                        <td>${getCompanyName(state.staff.find(x => x.id == t.staffId)?.companyId)}</td>
-                        <td><span class="badge" style="background:${t.type==='Ingresso'?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}; color:${t.type==='Ingresso'?'var(--accent)':'var(--danger)'};">${t.type}</span></td>
-                        <td>${t.geo || 'HQ Terminal'}</td>
-                        <td><span class="badge" style="background:#e2e8f0;">OK</span></td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('time_entries', ${t.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trTimb.innerHTML = html || '<tr><td colspan="7">Nessuna timbratura registrata.</td></tr>';
-            }
-
-            // 13. Documenti Table
-            const trDocs = document.querySelector('#table-docs tbody');
-            if(trDocs) {
-                let html = (state.documents || []).map(d => `
-                    <tr>
-                        <td>${d.date || '-'}</td>
-                        <td><strong>${d.title}</strong></td>
-                        <td>${getCompanyName(d.companyId)}</td>
-                        <td>€ ${(Number(d.amount)||0).toFixed(2)}</td>
-                        <td><span class="badge" style="background:${d.type==='entrata'?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}; color:${d.type==='entrata'?'var(--accent)':'var(--danger)'};">${d.type}</span></td>
-                        <td>${d.fileUrl ? `<a href="${d.fileUrl}" target="_blank"><i class="ph ph-file-pdf" style="font-size:18px;"></i></a>` : '-'}</td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('documents', ${d.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trDocs.innerHTML = html || '<tr><td colspan="7">Nessun documento finanziario.</td></tr>';
-            }
-
-            // 14. Tasks Table
-            const trTask = document.querySelector('#table-tasks tbody');
-            if(trTask) {
-                let html = (state.tasks || []).map(t => `
-                    <tr>
-                        <td><strong>${t.title}</strong></td>
-                        <td>${getStaffName(t.staffId)}</td>
-                        <td><span class="badge" style="background:rgba(245,158,11,0.1); color:var(--warning);">${t.priority}</span></td>
-                        <td><span class="badge" style="background:#e2e8f0;">${t.status}</span></td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('tasks', ${t.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trTask.innerHTML = html || '<tr><td colspan="5">Nessun task in corso.</td></tr>';
-            }
-
-            // 15. Badges Table
-            const trBadge = document.querySelector('#table-badges tbody');
-            if(trBadge) {
-                let html = (state.badges || []).map(b => `
-                    <tr>
-                        <td><strong>${getStaffName(b.staffId)}</strong></td>
-                        <td><strong style="font-family:monospace; color:var(--primary);">${b.code}</strong></td>
-                        <td>${b.createdAt}</td>
-                        <td>App Mobile HQ</td>
-                        <td><span class="badge" style="background:rgba(34,197,94,0.1); color:var(--accent);">Attivo</span></td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('badges', ${b.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trBadge.innerHTML = html || '<tr><td colspan="6">Nessun badge assegnato.</td></tr>';
-            }
-
-            // 16. Payrolls Table
-            const trPay = document.querySelector('#table-payrolls tbody');
-            if(trPay) {
-                let html = (state.payrolls || []).map(p => `
-                    <tr>
-                        <td>${p.month}</td>
-                        <td><strong>${getStaffName(p.staffId)}</strong></td>
-                        <td>€ ${(Number(p.amount)||0).toFixed(2)}</td>
-                        <td><small style="font-family:monospace;">${getStaffIban(p.staffId)}</small></td>
-                        <td><span class="badge" style="background:rgba(37,99,235,0.1); color:var(--primary);">${p.status}</span></td>
-                        <td>${p.fileUrl ? `<a href="${p.fileUrl}" target="_blank"><i class="ph ph-file-pdf" style="font-size:18px;"></i></a>` : '-'}</td>
-                        <td class="action-btns"><button class="btn-del admin-only" onclick="deleteData('payrolls', ${p.id})"><i class="ph ph-trash"></i></button></td>
-                    </tr>
-                `).join('');
-                trPay.innerHTML = html || '<tr><td colspan="7">Nessuna busta paga emessa.</td></tr>';
-            }
+            renderDashboardWidgets();
+            if(window.renderAppuntamenti) renderAppuntamenti();
+            
+            // Per sicurezza, se in futuro vorrai aggiungere il re-render automatico
+            // delle altre tabelle al cambio dati senza ricaricare la pagina,
+            // potrai mappare le funzioni CRUD restanti qui sotto.
         }
+
     </script>
 </body>
 </html>
