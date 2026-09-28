@@ -461,6 +461,19 @@
     </nav>
 
     <!-- MODALI -->
+    <!-- MODALE DETTAGLIO ORDINE -->
+    <div id="modal-dettaglio-ordine" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; color:var(--primary);"><i class="ph-fill ph-shopping-cart"></i> Dettaglio Ordine</h3>
+            <div id="dettaglio-ordine-body" style="font-size:13px; display:flex; flex-direction:column; gap:10px;">
+                <!-- Popolato da JS -->
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-dettaglio-ordine')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
     <!-- NUOVO MODALE AGENDA -->
     <div id="modal-appuntamento" class="modal">
         <div class="modal-content">
@@ -914,7 +927,71 @@
             });
         }
 
-        // --- FUNZIONI MANCANTI RIPRISTINATE ---
+        // --- FUNZIONE APERTURA DETTAGLIO ORDINE ---
+        window.openOrdineDettagli = function(id) {
+            const ordine = window.state.ordini.find(o => o.id == id);
+            if (!ordine) return alert("Ordine non trovato.");
+
+            // Ricerca utente da Horizon Users CRM se associato
+            const cliente = window.state.horizonUsers.find(u => u.uid === ordine.clienteId);
+
+            const nomeCliente = cliente ? (cliente.nome || cliente.ragioneSociale || cliente.email) : (ordine.clienteNome || ordine.ragioneSociale || ordine.nomeCognome || 'N/D');
+            const email = cliente?.email || ordine.email || 'Non specificata';
+            const telefono = cliente?.tel || cliente?.telefono || ordine.tel || ordine.telefono || 'Non specificato';
+            const pivaCf = cliente?.piva || cliente?.cf || ordine.piva || ordine.cf || 'Non specificato';
+            const servizio = ordine.servizioNome || 'N/D';
+            const importo = ordine.importo !== undefined ? `€ ${ordine.importo}` : 'N/D';
+            const stato = ordine.stato || 'Nuovo';
+            const note = ordine.note || 'Nessuna nota presente';
+            const dataOrdine = ordine.id ? new Date(ordine.id).toLocaleString() : 'N/D';
+
+            const body = document.getElementById('dettaglio-ordine-body');
+            if (body) {
+                body.innerHTML = `
+                    <div style="background:var(--bg); padding:12px; border-radius:8px; border:1px solid var(--border);">
+                        <div style="font-weight:bold; color:var(--primary); font-size:15px; margin-bottom:6px;">${nomeCliente}</div>
+                        <div style="color:var(--text-light); font-size:12px; margin-bottom:4px;"><i class="ph-fill ph-identification-badge"></i> P.IVA / CF: <strong>${pivaCf}</strong></div>
+                        <div style="color:var(--text-light); font-size:12px; margin-bottom:4px;"><i class="ph-fill ph-envelope"></i> Email: <a href="mailto:${email}" style="color:var(--primary); font-weight:600;">${email}</a></div>
+                        <div style="color:var(--text-light); font-size:12px;"><i class="ph-fill ph-phone"></i> Telefono: <a href="tel:${telefono}" style="color:var(--primary); font-weight:600;">${telefono}</a></div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">SERVIZIO</div>
+                            <div style="font-weight:600; margin-top:2px;">${servizio}</div>
+                        </div>
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">IMPORTO</div>
+                            <div style="font-weight:700; color:var(--success); margin-top:2px;">${importo}</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">STATO</div>
+                            <div style="margin-top:2px;"><span class="badge" style="background:#e2e8f0; color:#333;">${stato}</span></div>
+                        </div>
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">DATA ORDINE</div>
+                            <div style="font-size:12px; margin-top:2px;">${dataOrdine}</div>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                        <div style="font-size:11px; color:var(--text-light); font-weight:bold; margin-bottom:4px;">NOTE ORDINE</div>
+                        <div style="font-size:12px; white-space:pre-wrap;">${note}</div>
+                    </div>
+
+                    ${telefono !== 'Non specificato' ? `
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <a href="tel:${telefono}" class="btn btn-sm" style="background:var(--primary); text-decoration:none; text-align:center; flex:1;"><i class="ph-fill ph-phone-call"></i> Chiama Clienti</a>
+                            <a href="https://wa.me/${telefono.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-sm" style="background:var(--accent); text-decoration:none; text-align:center; flex:1;"><i class="ph-fill ph-whatsapp-logo"></i> WhatsApp</a>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            openModal('modal-dettaglio-ordine');
+        }
 
         window.apriNuovoOrdine = function() {
             document.getElementById('ordine-id').value = '';
@@ -931,6 +1008,7 @@
         window.saveOrdine = async function() {
             const tipo = document.getElementById('ordine-tipo-cliente').value;
             const clienteId = document.getElementById('ordine-cliente').value;
+            const servizioId = document.getElementById('ordine-servizio').value;
             const note = document.getElementById('ordine-note').value;
             const importo = document.getElementById('ordine-importo').value;
 
@@ -940,13 +1018,33 @@
                 id: Date.now(),
                 tipoCliente: tipo,
                 clienteId: clienteId,
+                servizioId: servizioId,
                 note: note,
                 importo: parseFloat(importo),
                 stato: 'Nuovo'
             };
 
+            const s = state.servizi_catalogo.find(x => x.id == servizioId);
+            ordine.servizioNome = s ? s.nome : '';
+
             const u = state.horizonUsers.find(x => x.uid === clienteId);
-            ordine.clienteNome = u ? (u.nome || u.ragioneSociale) : 'Sconosciuto';
+            if (u) {
+                ordine.clienteNome = u.nome || u.ragioneSociale || 'Sconosciuto';
+                ordine.email = u.email || '';
+                ordine.tel = u.tel || u.telefono || '';
+                ordine.piva = u.piva || u.cf || '';
+            } else {
+                if (tipo === 'Azienda') {
+                    ordine.ragioneSociale = document.getElementById('ordine-ragione').value;
+                    ordine.piva = document.getElementById('ordine-piva').value;
+                    ordine.sdi = document.getElementById('ordine-sdi').value;
+                    ordine.clienteNome = ordine.ragioneSociale || 'Azienda';
+                } else {
+                    ordine.nomeCognome = document.getElementById('ordine-nome-cognome').value;
+                    ordine.cf = document.getElementById('ordine-cf').value;
+                    ordine.clienteNome = ordine.nomeCognome || 'Privato';
+                }
+            }
 
             await saveToFirebase('ordini', ordine);
             closeModal('modal-ordine');
