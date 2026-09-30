@@ -2,568 +2,1331 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP Management System - S.B. Global Horizon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2563EB">
+    <title>Horizon Global ERP</title>
     
-    <!-- Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    
-    <!-- Phosphor Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
-        :root {
-            --bg: #0b0f19;
-            --surface: #131b2e;
-            --surface-hover: #1c2842;
-            --border: rgba(255, 255, 255, 0.08);
-            --primary: #00e5ff;
-            --primary-dark: #00a8bc;
-            --secondary: #8b5cf6;
-            --accent: #ff007f;
-            --text-main: #f8fafc;
-            --text-light: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --transition: all 0.25s ease;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        aside {
-            width: 260px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0; bottom: 0; left: 0;
-            z-index: 100;
-        }
-
-        .brand {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .brand-icon {
-            width: 36px; height: 36px;
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--primary); font-size: 20px;
-        }
-        .brand-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: 1px;
-        }
-        .brand-title span { color: var(--primary); }
-
-        .nav-menu {
-            list-style: none;
-            padding: 20px 12px;
-            display: flex; flex-direction: column; gap: 6px;
-        }
-        .nav-item a {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-        .nav-item a:hover, .nav-item.active a {
-            background: rgba(0, 229, 255, 0.08);
-            color: var(--primary);
-        }
-
-        /* --- MAIN LAYOUT --- */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 30px 40px;
-            max-width: calc(100vw - 260px);
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-        .page-title h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-        }
-        .page-title p { color: var(--text-light); font-size: 14px; margin-top: 4px; }
-
-        .user-profile {
-            display: flex; align-items: center; gap: 12px;
-            background: var(--surface);
-            padding: 8px 16px;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-        }
-        .avatar {
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: #000;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 14px;
-        }
-
-        /* --- KPI STATS --- */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-        .kpi-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .kpi-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-light);
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .kpi-value {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        /* --- TABELLA DATO --- */
-        .card-table {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .table-header {
-            padding: 20px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-        .table-header h3 { font-size: 18px; font-weight: 600; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
-        }
-        th {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 14px 24px;
-            color: var(--text-light);
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border);
-        }
-        td {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-main);
-            vertical-align: middle;
-        }
-        tr:hover td { background: var(--surface-hover); }
-
-        /* BADGE E BOTTONI */
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
-        .btn-edit { background: rgba(0, 229, 255, 0.15); color: var(--primary); }
-        .btn-edit:hover { background: var(--primary); color: #000; }
-        .btn-del { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .btn-del:hover { background: var(--danger); color: #fff; }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 20px;
-        }
-        .modal-overlay.active { display: flex; }
-
-        .modal {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            width: 100%; max-width: 650px;
-            max-height: 90vh; overflow-y: auto;
-            padding: 28px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
-        }
-        .modal-title { font-size: 20px; font-weight: 700; font-family: 'Space Grotesk'; }
-        .close-modal { background: none; border: none; color: var(--text-light); font-size: 22px; cursor: pointer; }
-        .close-modal:hover { color: #fff; }
-
-        .modal-body { display: flex; flex-direction: column; gap: 16px; }
-
-        /* RESPONSIVE */
-        @media (max-width: 900px) {
-            aside { width: 70px; }
-            .brand-title, .nav-item span { display: none; }
-            main { margin-left: 70px; max-width: calc(100vw - 70px); padding: 20px; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- SIDEBAR -->
-    <aside>
-        <div class="brand">
-            <div class="brand-icon"><i class="ph-bold ph-planet"></i></div>
-            <div class="brand-title">S.B. <span>ERP</span></div>
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item active"><a href="#"><i class="ph-bold ph-squares-four"></i> <span>Dashboard</span></a></li>
-            <li class="nav-item"><a href="#ordini"><i class="ph-bold ph-shopping-cart-simple"></i> <span>Ordini FWA</span></a></li>
-        </ul>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main>
-        <header>
-            <div class="page-title">
-                <h1>Pannello Gestionale</h1>
-                <p>Monitoraggio attivazioni e rete Orion FWA in tempo reale.</p>
-            </div>
-            <div class="user-profile">
-                <div class="avatar">SB</div>
-                <span style="font-size: 13px; font-weight: 600;">Admin Horizon</span>
-            </div>
-        </header>
-
-        <!-- KPI CARDS -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-header"><span>Totale Ordini</span><i class="ph-bold ph-receipt" style="color:var(--primary);"></i></div>
-                <div class="kpi-value" id="kpi-totale">0</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-header"><span>Attivazioni Attive</span><i class="ph-bold ph-check-circle" style="color:var(--success);"></i></div>
-                <div class="kpi-value" id="kpi-attivi">0</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-header"><span>In Lavorazione</span><i class="ph-bold ph-clock" style="color:var(--warning);"></i></div>
-                <div class="kpi-value" id="kpi-lavorazione">0</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-header"><span>Ricavo Mensile Stima</span><i class="ph-bold ph-currency-eur" style="color:var(--accent);"></i></div>
-                <div class="kpi-value" id="kpi-ricavo">€0,00</div>
-            </div>
-        </div>
-
-        <!-- TABELLA ORDINI -->
-        <div id="ordini" class="card-table">
-            <div class="table-header">
-                <h3>Richieste di Attivazione Orion FWA</h3>
-                <span id="sync-status" class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);"><i class="ph-bold ph-wifi-high"></i> Sincronizzato con Firebase</span>
-            </div>
-            <div style="overflow-x: auto;">
-                <table id="table-ordini">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Cliente</th>
-                            <th>Servizio</th>
-                            <th>Importo</th>
-                            <th>Stato</th>
-                            <th>Azione</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="6" style="text-align:center; color:var(--text-light); padding:30px;">Caricamento ordini in corso...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <!-- MODAL DETTAGLIO ORDINE -->
-    <div id="modal-dettaglio-ordine" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Scheda Dettagliata Ordine</div>
-                <button class="close-modal" onclick="closeModal('modal-dettaglio-ordine')">&times;</button>
-            </div>
-            <div class="modal-body" id="dettaglio-ordine-body">
-                <!-- Contenuto dinamico inserito da JS -->
-            </div>
-            <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:15px;">
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-sm" style="background:var(--success); color:#fff;" onclick="aggiornaStatoSelezionato('Attivo')">Segna Come Attivo</button>
-                    <button class="btn btn-sm" style="background:var(--warning); color:#fff;" onclick="aggiornaStatoSelezionato('In Lavorazione')">In Lavorazione</button>
-                </div>
-                <button class="btn btn-sm btn-edit" onclick="closeModal('modal-dettaglio-ordine')">Chiudi</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- FIREBASE INITIALIZATION AND LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, child, onValue, remove, update, push } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
 
+        // SERVER 1: HORIZON GLS (ERP CENTRALE)
         const firebaseConfig = {
             apiKey: "AIzaSyBJjhL9-d-2QMKDYviV7KfYhUOHWDAoasU",
             authDomain: "horizongls.firebaseapp.com",
             databaseURL: "https://horizongls-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "horizongls",
+            storageBucket: "horizongls.firebasestorage.app",
+            messagingSenderId: "611544552805",
+            appId: "1:611544552805:web:88fb0e35e59fb5bf543d8c"
         };
-
+        
+        // SERVER 2: HORIZON ID CORE (APP UTENTI)
+        const horizonIdConfig = {
+            apiKey: "AIzaSyD8_itwMJwjLSftJaFJ6ztQN-B6WSBORoo",
+            authDomain: "horizon-id-core.firebaseapp.com",
+            databaseURL: "https://horizon-id-core-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "horizon-id-core",
+            storageBucket: "horizon-id-core.firebasestorage.app",
+            messagingSenderId: "366693750800",
+            appId: "1:366693750800:web:20b54d0d2180d30fa7d295"
+        };
+        
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const appHorizonId = initializeApp(horizonIdConfig, "horizonIdApp"); 
+        
+        window.auth = getAuth(app);
+        window.authHorizonId = getAuth(appHorizonId); 
+        window.db = getDatabase(app); 
+        window.dbHorizonId = getDatabase(appHorizonId); 
+        window.storage = getStorage(app);
 
-        // Stato Globale dell'applicazione
+        window.rtdb = { ref, set, get, child, onValue, remove, update, push };
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563EB; --primary-dark: #1E40AF; --secondary: #0F172A;
+            --accent: #22C55E; --success: #22C55E; --warning: #F59E0B; --danger: #EF4444;
+            --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A; --text-light: #64748B;
+            --border: #E2E8F0; --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --sys-font: 'Inter', sans-serif;
+            --bottom-nav-height: 70px;
+        }
+
+        body.hw-mode {
+            --bg: #03060a; --card: rgba(10, 15, 25, 0.85); --text: #b8f2ff; --text-light: #4a758c;
+            --border: rgba(0, 229, 255, 0.2); --primary: #00e5ff; --secondary: #0a1018;
+            --sys-font: 'Rajdhani', sans-serif; background: radial-gradient(circle at top right, #09121f, var(--bg));
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--sys-font); transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* Login Overlay */
+        #login-overlay { position: fixed; inset: 0; background: #0F172A; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: white; padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .login-tabs { display: flex; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+        .login-tabs button { flex: 1; padding: 12px; border: none; font-weight: bold; cursor: pointer; background: #f1f5f9; color: #64748B; }
+        .login-tabs button.active { background: var(--primary); color: white; }
+        .login-box input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 16px; }
+        .btn-login { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
+
+        /* Topbar Mobile */
+        .topbar { height: 60px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 10; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .topbar .logo-text { font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .topbar-right-panel { display: flex; align-items: center; gap: 15px; }
+        .topbar button { color: white; }
+
+        /* Main View Area */
+        .main { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: var(--bottom-nav-height); position: relative; width: 100%; background: var(--bg); }
+        .view { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-nav-height); background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); text-decoration: none; font-size: 10px; font-weight: 600; gap: 4px; cursor: pointer; height: 100%; padding-top: 5px; }
+        .nav-item i { font-size: 24px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { font-weight: 700; }
+
+        /* Menu Grid (For all other functions) */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        .menu-btn { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px 5px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text); font-size: 11px; font-weight: 600; box-shadow: var(--shadow); cursor: pointer; }
+        .menu-btn i { font-size: 28px; color: var(--primary); }
+        .menu-section-title { font-size: 12px; color: var(--text-light); text-transform: uppercase; font-weight: 700; margin: 25px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+
+        /* Mobile Typography & Layout */
+        h2 { font-size: 20px; margin-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+        .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 15px; box-shadow: var(--shadow); margin-bottom: 15px; }
+        .card-title { font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; margin-bottom: 8px; }
+        .card-value { font-size: 24px; font-weight: 700; color: var(--text); }
+        
+        /* Dashboard specific */
+        .dash-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .dash-widget { background: var(--primary); color: white; padding: 15px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .dash-widget i { font-size: 24px; opacity: 0.8; margin-bottom: 10px; }
+        .dash-widget .val { font-size: 22px; font-weight: 700; }
+        .dash-widget .label { font-size: 11px; opacity: 0.9; }
+
+        .quick-actions { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
+        .quick-actions::-webkit-scrollbar { display: none; }
+        .quick-btn { flex: 0 0 auto; background: var(--card); border: 1px solid var(--border); padding: 10px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow); white-space: nowrap; }
+        .quick-btn i { color: var(--primary); font-size: 16px; }
+
+        /* Tables & Lists Mobile */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; background: var(--card); }
+        th { text-align: left; padding: 12px; color: var(--text-light); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; background: #f8fafc; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); white-space: nowrap; }
+        
+        /* Mobile List Cards */
+        .list-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; box-shadow: var(--shadow); }
+        .list-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
+        .list-card-title { font-weight: 700; font-size: 14px; color: var(--primary); }
+        .list-card-meta { font-size: 11px; color: var(--text-light); }
+        
+        .action-btns button { padding: 8px; border:none; border-radius: 6px; cursor:pointer; margin-right:5px; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-edit { background: var(--warning); color: #fff;}
+        .btn-del { background: var(--danger); color: #fff;}
+        .btn-validate { background: var(--accent); color: #fff; }
+
+        .btn { padding: 12px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; width: 100%; margin-bottom: 10px;}
+        .btn-sm { width: auto; padding: 8px 12px; font-size: 12px; margin-bottom: 0; }
+        .input { width: 100%; padding: 12px; margin: 5px 0 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 14px; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+
+        /* Modals Mobile */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: flex-end; padding: 0; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); border: none; color: var(--text); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* Utils & Specifics */
+        .ai-chat { display: flex; flex-direction: column; height: 400px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+        .ai-msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.4; }
+        .msg.bot { background: white; border: 1px solid var(--border); align-self: flex-start; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; }
+        .ai-input { display: flex; padding: 10px; border-top: 1px solid var(--border); background: var(--card); gap: 10px; }
+        .ai-input input { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 10px; outline: none; margin: 0; }
+        .ai-input .btn { width: auto; margin: 0; }
+
+        .cloud-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 140px; position: relative;}
+        .cloud-icon { font-size: 40px; margin-bottom: 5px; }
+        .cloud-folder-icon { color: #F59E0B; }
+        .cloud-file-icon { color: var(--primary); }
+        .cloud-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; word-break: break-all; }
+        .cloud-action-btn { position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+
+        .hw-panel { border: 1px solid var(--primary); padding: 15px; background: rgba(0,0,0,0.4); border-radius: 8px; box-shadow: inset 0 0 20px rgba(0,229,255,0.05); }
+        .hw-title { color: var(--primary); font-size: 14px; text-transform: uppercase; border-bottom: 1px solid rgba(0,229,255,0.3); padding-bottom: 5px; margin-bottom: 10px; }
+        
+        #current-user-name, #current-user-role { display: none; }
+        
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2 style="color: var(--primary); margin-bottom: 20px;"><i class="ph-fill ph-shield-check"></i> Horizon Global</h2>
+            <div class="login-tabs">
+                <button id="btn-tab-admin" class="active" onclick="switchLoginMode('admin')">Admin</button>
+                <button id="btn-tab-staff" onclick="switchLoginMode('staff')">Staff</button>
+            </div>
+            <p id="login-desc" style="font-size: 13px; color: #666; margin-bottom: 20px;">Accesso Riservato Direzione (direzione@horizonglobal.com)</p>
+            <input type="email" id="login-user" placeholder="Email Utente">
+            <input type="password" id="login-pass" placeholder="Password Firebase">
+            <button id="btn-login-action" class="btn-login" onclick="attemptLogin('admin')">Effettua Login</button>
+        </div>
+    </div>
+
+    <!-- Topbar PWA -->
+    <header class="topbar">
+        <div class="logo-text">
+            <i class="ph-fill ph-globe-hemisphere-east"></i> HORIZON OS
+        </div>
+        <div class="topbar-right-panel">
+            <div style="position: relative;" class="admin-only">
+                <button onclick="toggleNotifiche()" style="background:none; border:none; font-size:24px; cursor:pointer;">
+                    <i class="ph ph-bell"></i>
+                    <span id="bell-badge" style="display:none; position:absolute; top:-2px; right:-4px; background:var(--danger); color:white; font-size:10px; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</span>
+                </button>
+                <div id="notif-panel" style="display:none; position:absolute; top:40px; right:0; width:300px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:12px; z-index:100; max-height:300px; overflow-y:auto; padding:15px; color:var(--text);">
+                    <h4 style="font-size:14px; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px; color:var(--danger);"><i class="ph-fill ph-shield-warning"></i> Avvisi Sicurezza</h4>
+                    <div id="notif-list" style="font-size:12px; color:var(--text-light);">Nessun allarme registrato.</div>
+                </div>
+            </div>
+            <div id="current-user-avatar" style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.2); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">DG</div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main">
+        
+        <!-- DASHBOARD (Mobile Redesign) -->
+        <section id="view-dash" class="view active admin-only">
+            
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="nav('agenda'); openModal('modal-appuntamento')"><i class="ph-fill ph-calendar-plus"></i> Nuovo Appuntamento</button>
+                <button class="quick-btn" onclick="nav('ordini'); apriNuovoOrdine()"><i class="ph-fill ph-shopping-cart"></i> Nuovo Ordine</button>
+                <button class="quick-btn" onclick="nav('horizon-id')"><i class="ph-fill ph-identification-badge"></i> Verifica Utenti</button>
+            </div>
+
+            <div class="dash-widgets" id="dash-summary">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Widget Appuntamenti in primo piano -->
+            <div class="card" style="padding: 10px;">
+                <div class="flex-between" style="margin-bottom: 10px;">
+                    <div class="card-title" style="margin:0;"><i class="ph-fill ph-calendar"></i> Prossimi Appuntamenti</div>
+                    <button class="btn btn-sm" style="margin:0;" onclick="nav('agenda')">Vedi Tutti</button>
+                </div>
+                <div id="dash-appuntamenti-list" style="font-size: 13px; color: var(--text-light);">Caricamento...</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Distribuzione Budget</div>
+                <div style="position: relative; height: 200px; width: 100%;"><canvas id="budgetDoughnutChart"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Trend Storico Budget</div>
+                <div style="position: relative; height: 200px; width: 100%;"><canvas id="budgetHistoryChart"></canvas></div>
+            </div>
+        </section>
+
+        <!-- AGENDA -->
+        <section id="view-agenda" class="view">
+            <div class="flex-between">
+                <div>
+                    <h2>Agenda Appuntamenti</h2>
+                    <p style="font-size: 11px; color: var(--text-light);">Prenotazioni CRM e contatti manuali.</p>
+                </div>
+                <button class="btn btn-sm" onclick="openModal('modal-appuntamento')"><i class="ph ph-plus"></i> Aggiungi</button>
+            </div>
+            <div id="agenda-list-container">
+                <!-- Generato da JS -->
+            </div>
+        </section>
+
+        <!-- ORDINI -->
+        <section id="view-ordini" class="view">
+            <div class="flex-between">
+                <div>
+                    <h2>Ordini Servizi</h2>
+                    <p style="font-size: 11px; color: var(--text-light);">In sync con App Cliente.</p>
+                </div>
+                <div style="display:flex; gap:5px; width: 100%;">
+                    <button class="btn btn-sm admin-only" style="background:var(--secondary); flex:1;" onclick="openModal('modal-servizio')"><i class="ph ph-list"></i> Catalogo</button>
+                    <button class="btn btn-sm admin-only" style="flex:1;" onclick="apriNuovoOrdine()"><i class="ph ph-plus"></i> Nuovo Ordine</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="table-ordini">
+                    <thead><tr><th>Data</th><th>Cliente</th><th>Servizio</th><th>Importo</th><th>Stato</th><th>Azioni</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- CLIENTI CRM -->
+        <section id="view-clienti-crm" class="view">
+            <div class="flex-between">
+                <div>
+                    <h2>Clienti CRM</h2>
+                    <p style="font-size: 11px; color: var(--text-light);">Utenti registrati Horizon ID.</p>
+                </div>
+            </div>
+            <input type="text" id="crm-search-input" class="input" placeholder="Cerca Nome, P.IVA o Email..." onkeyup="filterCrmTable()">
+            <div class="table-responsive">
+                <table id="table-clienti-crm">
+                    <thead><tr><th>Anagrafica</th><th>CF / P.IVA</th><th>Email</th><th>Saldo</th><th>Pratiche</th><th>Azioni</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MENU (Tutte le altre funzioni) -->
+        <section id="view-menu" class="view">
+            <h2>Menu Globale</h2>
+            
+            <div class="menu-section-title admin-only">Ricezione Esterna</div>
+            <div class="menu-grid admin-only">
+                <div class="menu-btn" onclick="nav('richieste-servizi')"><i class="ph ph-briefcase"></i> Richieste S.</div>
+                <div class="menu-btn" onclick="nav('candidature')"><i class="ph ph-user-list"></i> Candidature</div>
+                <div class="menu-btn" onclick="nav('horizon-id')"><i class="ph ph-identification-badge"></i> Verifica ID</div>
+                <div class="menu-btn" onclick="nav('chat-supporto')"><i class="ph ph-chats-teardrop"></i> Supporto</div>
+            </div>
+
+            <div class="menu-section-title">Gestione & Operatività</div>
+            <div class="menu-grid">
+                <div class="menu-btn" id="menu-staff-link" onclick="nav('staff')"><i class="ph ph-users"></i> Organico HR</div>
+                <div class="menu-btn" onclick="nav('timbrature')"><i class="ph ph-clock"></i> Timbrature</div>
+                <div class="menu-btn admin-only" onclick="nav('payrolls')"><i class="ph ph-money"></i> Paghe</div>
+                <div class="menu-btn admin-only" onclick="nav('badges')"><i class="ph ph-identification-card"></i> Badge App</div>
+                <div class="menu-btn" onclick="nav('docs')"><i class="ph ph-files"></i> Finanza</div>
+                <div class="menu-btn" onclick="nav('cloud')"><i class="ph ph-cloud"></i> Cloud</div>
+                <div class="menu-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Ticket</div>
+            </div>
+
+            <div class="menu-section-title admin-only">Gruppo & Sistema</div>
+            <div class="menu-grid admin-only">
+                <div class="menu-btn" onclick="nav('aziende')"><i class="ph ph-buildings"></i> Aziende</div>
+                <div class="menu-btn" onclick="nav('divs')"><i class="ph ph-tree-structure"></i> Divisioni</div>
+                <div class="menu-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> Settings</div>
+            </div>
+
+            <div class="menu-section-title admin-only" id="nav-group-hw" style="display:none;">Infrastruttura & AI</div>
+            <div class="menu-grid admin-only">
+                <div class="menu-btn" onclick="nav('ai')"><i class="ph ph-sparkle"></i> AI Predittiva</div>
+                <div class="menu-btn" onclick="nav('macchina')"><i class="ph ph-cpu"></i> Grado mAf</div>
+                <div class="menu-btn" onclick="nav('eolo')"><i class="ph ph-broadcast"></i> Eolo fFk9</div>
+            </div>
+            
+            <button class="btn" onclick="esciDalSistema()" style="background: var(--danger); margin-top: 30px;"><i class="ph ph-sign-out"></i> Esci dal Sistema</button>
+        </section>
+
+        <!-- ALTRE VISTE -->
+        <section id="view-richieste-servizi" class="view admin-only">
+            <h2>Richieste Servizi (Sito)</h2>
+            <div class="table-responsive"><table id="table-richieste-servizi"><thead><tr><th>Data</th><th>Richiedente</th><th>Rag. Sociale</th><th>Servizio</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+        
+        <section id="view-candidature" class="view admin-only">
+            <h2>Candidature HR</h2>
+            <div class="table-responsive"><table id="table-candidature"><thead><tr><th>Data</th><th>Candidato</th><th>Posizione</th><th>Recapito</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-horizon-id" class="view admin-only">
+            <h2>Verifica Horizon ID</h2>
+            <h3 style="font-size: 14px; margin-top:10px; color:var(--warning);">In Attesa</h3>
+            <div class="table-responsive" style="margin-bottom: 20px;"><table id="table-horizon-pending"><thead><tr><th>Utente</th><th>P.IVA/CF</th><th>Email</th><th>Data</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            <h3 style="font-size: 14px; color:var(--success);">Attivi</h3>
+            <div class="table-responsive"><table id="table-horizon-active"><thead><tr><th>Utente</th><th>P.IVA/CF</th><th>Email</th><th>Data</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-chat-supporto" class="view">
+            <h2>Supporto Chat</h2>
+            <div class="table-responsive"><table id="table-chat-supporto"><thead><tr><th>Utente ID</th><th>P.IVA/CF</th><th>Ultimo Msg</th><th>Data/Ora</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-aziende" class="view admin-only">
+            <div class="flex-between"><h2>Gruppo Societario</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-azienda')"><i class="ph ph-plus"></i> Azienda</button></div>
+            <div class="table-responsive"><table id="table-aziende"><thead><tr><th>Azienda</th><th>Capitale</th><th>Progetti</th><th>Efficienza</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-divs" class="view admin-only">
+            <div class="flex-between"><h2>Divisioni</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-div')"><i class="ph ph-plus"></i> Divisione</button></div>
+            <div class="table-responsive"><table id="table-divs"><thead><tr><th>Divisione</th><th>Azienda</th><th>Budget</th><th>Efficienza</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-badges" class="view admin-only">
+            <div class="flex-between"><h2>Badge</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-badge')"><i class="ph ph-plus"></i> Genera</button></div>
+            <div class="table-responsive"><table id="table-badges"><thead><tr><th>Dipendente</th><th>PIN</th><th>Creazione</th><th>ID Disp.</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-payrolls" class="view admin-only">
+            <div class="flex-between"><h2>Paghe</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-payroll')"><i class="ph ph-plus"></i> Emetti Busta</button></div>
+            <div class="table-responsive"><table id="table-payrolls"><thead><tr><th>Periodo</th><th>Dipendente</th><th>Importo</th><th>IBAN</th><th>Stato</th><th>Doc</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-staff" class="view">
+            <div class="flex-between"><div><h2 id="staff-page-title">Organico HR</h2></div><button class="btn btn-sm admin-only" id="btn-new-staff" onclick="openModal('modal-staff')"><i class="ph ph-plus"></i> Dipendente</button></div>
+            <div class="table-responsive admin-only" id="staff-admin-view"><table id="table-staff"><thead><tr><th>Nome</th><th>Ruolo</th><th>Azienda</th><th>Efficienza</th><th>Accesso</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+            <div id="staff-user-view" style="display:none; width: 100%;"></div>
+        </section>
+
+        <section id="view-timbrature" class="view">
+            <div class="flex-between"><h2>Timbrature</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-timbratura')"><i class="ph ph-plus"></i> Forza</button></div>
+            <div class="table-responsive"><table id="table-timbrature"><thead><tr><th>Timestamp</th><th>Dipendente</th><th>Azienda</th><th>Tipo</th><th>Dispositivo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="view-docs" class="view">
+            <div class="flex-between"><h2>Finanza & Uploads</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-doc')"><i class="ph ph-plus"></i> Doc</button></div>
+            <div class="grid admin-only" id="finance-summary"></div>
+            <div class="table-responsive"><table id="table-docs"><thead><tr><th>Data</th><th>Descrizione</th><th>Azienda</th><th>Importo</th><th>Tipo</th><th>File</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+        
+        <section id="view-cloud" class="view">
+            <div class="flex-between">
+                <div><h2>Archivio Cloud</h2><div id="cloud-breadcrumb" style="font-size: 11px; color: var(--primary); font-weight: 500; margin-top:5px; cursor:pointer;"><span onclick="openCloudFolder(null)"><i class="ph-fill ph-house"></i> Root</span> <span id="cloud-breadcrumb-active"></span></div></div>
+                <div class="admin-only" style="display:flex; gap:5px;">
+                    <button class="btn btn-sm" id="btn-cloud-folder" onclick="openModal('modal-cloud-folder')"><i class="ph ph-folder-plus"></i> Cartella</button>
+                    <button class="btn btn-sm" id="btn-cloud-upload" onclick="openModal('modal-cloud-file')" style="display:none;"><i class="ph ph-upload-simple"></i> Upload</button>
+                </div>
+            </div>
+            <div id="cloud-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"></div>
+        </section>
+
+        <section id="view-tasks" class="view">
+            <div class="flex-between"><h2>Task & Ticketing</h2><button class="btn btn-sm admin-only" onclick="openModal('modal-task')"><i class="ph ph-plus"></i> Nuovo</button></div>
+            <div class="table-responsive"><table id="table-tasks"><thead><tr><th>Titolo Task</th><th>Assegnato a</th><th>Priorità</th><th>Stato</th><th>Azioni</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <!-- VISTE AI E HARDWARE -->
+        <section id="view-ai" class="view admin-only">
+            <h2>AI Predittiva</h2>
+            <div class="ai-chat">
+                <div class="ai-msgs" id="chat-box"><div class="msg bot"><strong>Gemini AI:</strong> Ciao Admin. Sono connesso. Come posso aiutarti?</div></div>
+                <div class="ai-input admin-only">
+                    <input type="text" id="ai-text" placeholder="Scrivi richiesta...">
+                    <button class="btn" onclick="sendAiPrompt()"><i class="ph ph-paper-plane-right"></i></button>
+                </div>
+            </div>
+        </section>
+        <section id="view-macchina" class="view">
+            <h2 style="color: var(--primary); font-family: 'Rajdhani'; font-size: 16px;">TERMINALE GRADO mAf</h2>
+            <div class="hw-panel">
+                <div class="hw-title">Console Grado B (Root Access)</div>
+                <div class="terminal" id="grado-terminal" style="background: #010204; color: #00ff66; font-family: monospace; padding: 10px; height: 150px; overflow-y: auto; border: 1px solid #1a2b3c; font-size: 12px;">[SYS] Accesso effettuato al Mainframe Centrale.<br></div>
+                <button class="btn admin-only" style="margin-top:10px; background:#00e5ff; color:#000;" onclick="printGradoB()">Override Diagnostica</button>
+            </div>
+        </section>
+        <section id="view-eolo" class="view">
+            <h2 style="color: var(--primary); font-family: 'Rajdhani'; font-size: 16px;">RADIOTERRA EOLO fFk9</h2>
+            <div class="hw-panel" style="text-align:center;">
+                <div class="hw-title">Potenza TX</div>
+                <div style="font-size: 32px; font-family: monospace; color:#00e5ff; font-weight:bold;" id="eolo-pwr">14.2 kW</div>
+                <input type="range" min="10" max="50" value="14" style="width:100%; margin-top:15px;" class="admin-only" oninput="document.getElementById('eolo-pwr').innerText = this.value + '.2 kW'">
+            </div>
+        </section>
+        <section id="view-settings" class="view admin-only">
+            <h2>Settings Globali ERP</h2>
+            <div class="card"><label style="font-size:12px; font-weight:600;">Nome Azienda</label><input type="text" class="input" value="Horizon Global ERP" disabled><button class="btn" onclick="alert('Salvate.')">Salva Impostazioni</button></div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation Bar PWA -->
+    <nav class="bottom-nav">
+        <a class="nav-item active admin-only" onclick="nav('dash', this)" id="nav-dash"><i class="ph ph-chart-pie"></i><span>Dash</span></a>
+        <a class="nav-item" onclick="nav('agenda', this)" id="nav-agenda"><i class="ph ph-calendar"></i><span>Agenda</span></a>
+        <a class="nav-item" onclick="nav('clienti-crm', this)" id="nav-crm"><i class="ph ph-users-three"></i><span>CRM</span></a>
+        <a class="nav-item" onclick="nav('ordini', this)" id="nav-ordini"><i class="ph ph-shopping-cart"></i><span>Ordini</span></a>
+        <a class="nav-item" onclick="nav('menu', this)" id="nav-menu"><i class="ph ph-list"></i><span>Menu</span></a>
+    </nav>
+
+    <!-- MODALI -->
+    <!-- MODALE DETTAGLIO ORDINE -->
+    <div id="modal-dettaglio-ordine" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; color:var(--primary);"><i class="ph-fill ph-shopping-cart"></i> Dettaglio Ordine</h3>
+            <div id="dettaglio-ordine-body" style="font-size:13px; display:flex; flex-direction:column; gap:10px;">
+                <!-- Popolato da JS -->
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-dettaglio-ordine')">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUOVO MODALE AGENDA -->
+    <div id="modal-appuntamento" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px;">Nuovo Appuntamento</h3>
+            <label style="font-size:12px; font-weight:600; display:block;">Tipo Contatto</label>
+            <select id="agenda-tipo" class="input" onchange="toggleAgendaTipo()">
+                <option value="registrato">Cliente Registrato (CRM)</option>
+                <option value="manuale">Aggiungi Manualmente</option>
+            </select>
+            
+            <div id="agenda-div-registrato">
+                <label style="font-size:12px; font-weight:600; display:block;">Seleziona Cliente</label>
+                <select id="agenda-cliente" class="input"></select>
+            </div>
+            
+            <div id="agenda-div-manuale" style="display:none; background:rgba(37,99,235,0.05); padding:10px; border-radius:8px; border:1px solid rgba(37,99,235,0.2); margin-bottom:15px;">
+                <label style="font-size:11px; font-weight:bold;">Nome / Azienda</label>
+                <input type="text" id="agenda-nome-manuale" class="input" style="margin-bottom:5px;" placeholder="Nome Contatto">
+                <label style="font-size:11px; font-weight:bold;">Telefono</label>
+                <input type="text" id="agenda-tel-manuale" class="input" style="margin-bottom:0;" placeholder="Recapito">
+            </div>
+
+            <label style="font-size:12px; font-weight:600; display:block;">Data e Ora</label>
+            <input type="datetime-local" id="agenda-data" class="input">
+            
+            <label style="font-size:12px; font-weight:600; display:block;">Note Intervento / Incontro</label>
+            <textarea id="agenda-note" class="input" style="min-height:60px;" placeholder="Dettagli..."></textarea>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-appuntamento')">Annulla</button>
+                <button class="btn" onclick="saveAppuntamento()">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE CRM MODIFICATO -->
+    <div id="modal-crm-user" class="modal">
+        <div class="modal-content">
+            <div style="border-bottom:1px solid var(--border); padding-bottom:15px; margin-bottom:15px;">
+                <h3 id="crm-modal-name" style="font-size:18px; color:var(--text);">Nome Cliente</h3>
+                <p style="font-size:11px; color:var(--text-light); margin-top:2px;">CF/P.IVA: <strong id="crm-modal-piva"></strong></p>
+                <div style="margin-top:10px; background: rgba(34, 197, 94, 0.1); padding:10px; border-radius:8px; border: 1px solid var(--accent); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:var(--text-light); font-weight:bold; text-transform:uppercase;">Saldo AuraCredit</span>
+                    <span id="crm-modal-credit" style="font-size:20px; font-weight:800; color:var(--accent);">€ 0.00</span>
+                </div>
+            </div>
+            <input type="hidden" id="crm-target-uid">
+            <input type="hidden" id="crm-target-piva">
+
+            <!-- Modifica Credito Manuale -->
+            <div style="background:#f8fafc; border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:15px;">
+                <h4 style="color:var(--primary); margin-bottom:10px; font-size:13px;"><i class="ph-fill ph-wallet"></i> Aggiorna Credito Aura (Modifica Rapida)</h4>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="crm-modifica-credit-amount" class="input" style="margin:0; flex:1;" placeholder="Importo (+/-)">
+                    <button class="btn" style="width:auto; margin:0;" onclick="modificaCreditoAura()"><i class="ph ph-arrows-clockwise"></i> Imposta</button>
+                </div>
+            </div>
+
+            <div style="background:rgba(34, 197, 94, 0.05); border:1px solid var(--accent); padding:15px; border-radius:12px; margin-bottom:15px;">
+                <h4 style="color:var(--accent); margin-bottom:10px; font-size:13px;"><i class="ph-fill ph-receipt"></i> Emetti Fattura & Scala AuraCredit</h4>
+                <input type="text" id="crm-inv-desc" class="input" placeholder="Descrizione Fattura">
+                <input type="number" id="crm-inv-amount" class="input" placeholder="Importo da Scalare (€)">
+                <button class="btn" style="background:var(--accent);" onclick="scalaAuraCredit()"><i class="ph ph-check-circle"></i> Esegui Addebito</button>
+            </div>
+            
+            <div class="flex-between">
+                <h4 style="font-size:13px; color:var(--primary);">Servizi e Pratiche</h4>
+                <button class="btn btn-sm" style="width:auto;" onclick="openModal('modal-crm-add-service')"><i class="ph ph-plus"></i></button>
+            </div>
+            <div class="table-responsive" style="max-height:150px; margin-bottom: 15px;"><table style="min-width: 400px;"><thead><tr><th>Servizio</th><th>Data</th><th>Stato</th></tr></thead><tbody id="crm-services-tbody"></tbody></table></div>
+
+            <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-crm-user')">Chiudi Scheda</button>
+        </div>
+    </div>
+
+    <!-- Modali Ausiliari -->
+    <div id="modal-crm-add-service" class="modal"><div class="modal-content"><h3 style="margin-bottom:10px;">Nuovo Servizio Manuale</h3><input type="text" id="crm-add-serv-title" class="input" placeholder="Es. Sito Web Custom"><select id="crm-add-serv-type" class="input"><option value="Azienda">Azienda</option><option value="Privato">Privato</option></select><select id="crm-add-serv-status" class="input"><option value="raccolta">In Raccolta</option><option value="in corso">In Lavorazione</option><option value="approvata">Attiva</option></select><textarea id="crm-add-serv-notes" class="input" placeholder="Note..."></textarea><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-crm-add-service')">Annulla</button><button class="btn" onclick="saveCrmManualService()">Crea</button></div></div></div>
+    
+    <div id="modal-servizio" class="modal"><div class="modal-content"><h3>Nuovo Servizio a Catalogo</h3><input type="hidden" id="servizio-id"><input type="text" id="servizio-nome" class="input" placeholder="Nome Servizio"><select id="servizio-target" class="input"><option value="Aziende">Solo Aziende</option><option value="Cittadini">Solo Privati</option><option value="Entrambi">Entrambi</option></select><textarea id="servizio-desc" class="input" placeholder="Descrizione..."></textarea><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-servizio')">Annulla</button><button class="btn" onclick="saveServizio()">Salva</button></div></div></div>
+    
+    <div id="modal-ordine" class="modal"><div class="modal-content"><h3>Nuovo Ordine Horizon</h3><input type="hidden" id="ordine-id"><select id="ordine-tipo-cliente" class="input" onchange="aggiornaModuloOrdine()"><option value="Azienda">Azienda</option><option value="Privato">Privato</option></select><select id="ordine-cliente" class="input"></select><select id="ordine-servizio" class="input"></select><div id="campi-azienda" style="background:rgba(37,99,235,0.05); padding:10px; border-radius:8px; margin-bottom:15px;"><input type="text" id="ordine-ragione" class="input" placeholder="Ragione Sociale"><input type="text" id="ordine-piva" class="input" placeholder="P.IVA"><input type="text" id="ordine-sdi" class="input" placeholder="SDI"></div><div id="campi-privato" style="display:none; background:rgba(34,197,94,0.05); padding:10px; border-radius:8px; margin-bottom:15px;"><input type="text" id="ordine-nome-cognome" class="input" placeholder="Nome Cognome"><input type="text" id="ordine-cf" class="input" placeholder="CF"></div><textarea id="ordine-note" class="input" placeholder="Note..."></textarea><input type="number" id="ordine-importo" class="input" placeholder="Importo (€)"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-ordine')">Annulla</button><button class="btn" onclick="saveOrdine()">Registra</button></div></div></div>
+
+    <div id="modal-chat-reply" class="modal"><div class="modal-content"><h3>Chat Live: <span id="chat-modal-user" style="color:var(--primary);"></span></h3><input type="hidden" id="chat-target-uid"><div id="chat-modal-messages" style="height:250px; overflow-y:auto; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div><div style="display:flex; gap:10px;"><input type="text" id="chat-modal-input" class="input" style="margin:0; flex:1;" placeholder="Rispondi..."><button class="btn" style="width:auto; margin:0;" onclick="sendStaffChatMessage()"><i class="ph ph-paper-plane-right"></i></button></div><button class="btn" style="background:#e2e8f0; color:#333; margin-top:15px;" onclick="closeModal('modal-chat-reply')">Chiudi</button></div></div>
+
+    <div id="modal-verify-id" class="modal"><div class="modal-content"><h3>Verifica Biometria: <span id="verify-user-name"></span></h3><input type="hidden" id="verify-user-uid"><div style="margin-bottom:15px;"><img id="verify-img-fronte" style="width:100%; height:120px; object-fit:contain; background:#f1f5f9; margin-bottom:5px;"><img id="verify-img-retro" style="width:100%; height:120px; object-fit:contain; background:#f1f5f9; margin-bottom:5px;"><video id="verify-video" controls style="width:100%; height:120px; background:#000;"></video></div><div style="display:flex; gap:5px;"><button class="btn btn-sm" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-verify-id')">Annulla</button><button class="btn btn-sm" style="background:var(--danger);" onclick="rejectHorizonId()">Rifiuta</button><button class="btn btn-sm" style="background:var(--success);" onclick="approveHorizonId()">Approva</button></div></div></div>
+
+    <div id="modal-doc" class="modal"><div class="modal-content"><h3 id="doc-modal-title">Documento / Fattura</h3><input type="hidden" id="doc-id"><input type="text" id="doc-title" class="input" placeholder="Descrizione"><input type="number" id="doc-amount" class="input" placeholder="Importo"><select id="doc-type" class="input"><option value="entrata">Incasso</option><option value="uscita">Spesa</option></select><select id="doc-company" class="input"></select><input type="file" id="doc-file-upload" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-doc')">Annulla</button><button class="btn" onclick="saveDocument()">Salva</button></div></div></div>
+    
+    <div id="modal-cloud-folder" class="modal"><div class="modal-content"><h3>Nuova Cartella Cloud</h3><input type="text" id="cloud-folder-name" class="input" placeholder="Nome"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-folder')">Annulla</button><button class="btn" onclick="saveCloudFolder()">Crea</button></div></div></div>
+    <div id="modal-cloud-file" class="modal"><div class="modal-content"><h3>Upload File</h3><input type="text" id="cloud-file-name" class="input" placeholder="Nome File"><input type="file" id="cloud-file-data" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-cloud-file')">Annulla</button><button class="btn" onclick="saveCloudFile()">Carica</button></div></div></div>
+
+    <div id="modal-task" class="modal"><div class="modal-content"><h3>Nuovo Ticket/Task</h3><input type="text" id="task-title" class="input" placeholder="Titolo"><select id="task-staff" class="input"></select><select id="task-prio" class="input"><option>Bassa</option><option>Media</option><option>Alta</option></select><select id="task-status" class="input"><option>Aperto</option><option>In Corso</option><option>Chiuso</option></select><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-task')">Annulla</button><button class="btn" onclick="saveTask()">Crea</button></div></div></div>
+    
+    <div id="modal-badge" class="modal"><div class="modal-content"><h3>Assegna Badge RFID</h3><select id="badge-staff" class="input"></select><input type="text" id="badge-code" class="input" placeholder="PIN/Codice Badge"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-badge')">Annulla</button><button class="btn" onclick="saveBadge()">Assegna</button></div></div></div>
+    
+    <div id="modal-timbratura" class="modal"><div class="modal-content"><h3>Forza Timbratura</h3><select id="timb-staff" class="input"></select><select id="timb-type" class="input"><option value="Entrata">Entrata</option><option value="Uscita">Uscita</option></select><input type="datetime-local" id="timb-time" class="input"><div style="display:flex; gap:10px;"><button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal('modal-timbratura')">Annulla</button><button class="btn" onclick="saveTimbratura()">Registra</button></div></div></div>
+
+    <script type="module">
         window.state = {
-            ordini: [],
-            selectedOrderKey: null
+            staff: [], companies: [], divisions: [], tasks: [], time_entries: [], documents: [],
+            badges: [], cloud_folders: [], cloud_files: [], payrolls: [],
+            ordini: [], servizi_catalogo: [], richieste_servizi: [], candidature: [],
+            horizonUsers: [], appuntamenti: []
         };
+        
+        window.currentUser = null;
+        window.currentUserRole = 'staff';
+        window.currentCloudFolder = null;
 
-        // Modal Handlers
-        window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
-        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
-
-        // Sincronizzazione Realtime da Firebase
-        const ordiniRef = ref(db, 'ordini');
-        onValue(ordiniRef, (snapshot) => {
-            const data = snapshot.val();
-            const list = [];
-            if(data) {
-                Object.keys(data).forEach(key => {
-                    list.push({ firebaseKey: key, ...data[key] });
-                });
+        // Auto autenticazione all'avvio
+        window.onAuthStateChanged(window.auth, (user) => {
+            if (user) {
+                window.currentUser = user;
+                document.getElementById('login-overlay').style.display = 'none';
+                applyPermissions();
+                initCharts();
+                fetchData();
+                fetchHorizonIdData();
+                renderAll();
+            } else {
+                document.getElementById('login-overlay').style.display = 'flex';
             }
-            // Ordina per più recenti
-            list.reverse();
-            window.state.ordini = list;
-
-            renderKPI();
-            renderOrdiniTable();
-        }, (error) => {
-            console.error("Errore lettura Firebase:", error);
-            document.getElementById('sync-status').innerHTML = `<i class="ph-bold ph-warning"></i> Offline`;
-            document.getElementById('sync-status').style.background = 'rgba(239, 68, 68, 0.15)';
-            document.getElementById('sync-status').style.color = 'var(--danger)';
         });
 
-        // Calcolo KPI
-        function renderKPI() {
-            const ordini = window.state.ordini;
-            document.getElementById('kpi-totale').innerText = ordini.length;
-
-            const attivi = ordini.filter(o => o.stato === 'Attivo').length;
-            const lavorazione = ordini.filter(o => o.stato === 'In Lavorazione' || o.stato === 'Nuovo').length;
-            
-            document.getElementById('kpi-attivi').innerText = attivi;
-            document.getElementById('kpi-lavorazione').innerText = lavorazione;
-
-            const ricavo = ordini.reduce((acc, curr) => acc + (parseFloat(curr.importo) || 29.90), 0);
-            document.getElementById('kpi-ricavo').innerText = `€${ricavo.toFixed(2)}`;
+        window.toggleAgendaTipo = function() {
+            const val = document.getElementById('agenda-tipo').value;
+            document.getElementById('agenda-div-registrato').style.display = val === 'registrato' ? 'block' : 'none';
+            document.getElementById('agenda-div-manuale').style.display = val === 'manuale' ? 'block' : 'none';
         }
 
-        // Render Tabella Ordini
-        function renderOrdiniTable() {
-            const tbOrdini = document.querySelector('#table-ordini tbody');
-            if(!tbOrdini) return;
+        window.saveAppuntamento = async function() {
+            const tipo = document.getElementById('agenda-tipo').value;
+            const data = document.getElementById('agenda-data').value;
+            const note = document.getElementById('agenda-note').value;
+            if(!data) return alert("Inserisci Data/Ora");
 
-            if(window.state.ordini.length === 0) {
-                tbOrdini.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-light); padding:30px;">Nessun ordine presente nel database.</td></tr>`;
-                return;
+            let payload = { id: Date.now(), tipo, data, note, stato: 'Confermato' };
+            if(tipo === 'registrato') {
+                const uid = document.getElementById('agenda-cliente').value;
+                const user = window.state.horizonUsers.find(u => u.uid === uid);
+                payload.clienteId = uid;
+                payload.nome = user ? (user.nome || user.ragioneSociale || user.email) : 'Sconosciuto';
+                payload.tel = user ? (user.tel || user.telefono) : '';
+            } else {
+                payload.nome = document.getElementById('agenda-nome-manuale').value;
+                payload.tel = document.getElementById('agenda-tel-manuale').value;
+                if(!payload.nome) return alert("Inserisci nome");
             }
-
-            tbOrdini.innerHTML = window.state.ordini.map((o) => {
-                const clientName = o.clienteNome || o.cliente || `${o.nome || ''} ${o.cognome || ''}`.trim() || 'N/A';
-                const serviceName = o.servizioNome || o.servizio || 'Orion FWA';
-                const amount = o.importoFormatted || (o.importo ? `€${o.importo}` : '€29,90/mese');
-                const dateStr = o.dataCreazione || (o.id ? new Date(o.id).toLocaleDateString('it-IT') : 'Oggi');
-                const orderKey = o.firebaseKey;
-
-                let badgeColor = 'background: rgba(255, 255, 255, 0.1); color: var(--text-light);';
-                if(o.stato === 'Attivo') badgeColor = 'background: rgba(16, 185, 129, 0.15); color: var(--success);';
-                else if(o.stato === 'In Lavorazione' || o.stato === 'Nuovo') badgeColor = 'background: rgba(245, 158, 11, 0.15); color: var(--warning);';
-
-                return `<tr>
-                    <td>${dateStr}</td>
-                    <td><strong>${clientName}</strong></td>
-                    <td>${serviceName}</td>
-                    <td>${amount}</td>
-                    <td><span class="badge" style="${badgeColor}">${o.stato || 'Nuovo'}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-edit" onclick="openOrdineDettagli('${orderKey}')"><i class="ph-fill ph-eye"></i> Dettagli</button>
-                        <button class="btn btn-sm btn-del" onclick="deleteData('${orderKey}')"><i class="ph-fill ph-trash"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
+            await saveToFirebase('appuntamenti', payload);
+            closeModal('modal-appuntamento');
         }
 
-        // Modal Apri Dettaglio Ordine Completo
-        window.openOrdineDettagli = function(orderKey) {
-            const ordine = window.state.ordini.find(o => o.firebaseKey === orderKey);
-            if(!ordine) {
-                alert("Ordine non trovato.");
-                return;
-            }
-
-            window.state.selectedOrderKey = orderKey;
-            const body = document.getElementById('dettaglio-ordine-body');
+        function renderAgenda() {
+            const container = document.getElementById('agenda-list-container');
+            const dashList = document.getElementById('dash-appuntamenti-list');
             
-            const clientName = ordine.clienteNome || ordine.cliente || `${ordine.nome || ''} ${ordine.cognome || ''}`.trim() || 'N/A';
-            const cfPiva = ordine.cf || ordine.ragioneSociale || 'Non specificato';
-            const email = ordine.email || 'Non specificata';
-            const tel = ordine.telefono || ordine.tel || 'Non specificato';
+            const events = [...window.state.appuntamenti].sort((a,b) => new Date(a.data) - new Date(b.data));
             
-            // Ricostruzione indirizzo completo
-            let address = ordine.indirizzoCompleto;
-            if(!address && ordine.indirizzo) {
-                address = `${ordine.indirizzo}, ${ordine.citta || ''} (${ordine.provincia || ''}) ${ordine.cap || ''}`;
-            }
-            if(!address) address = 'N/A';
-
-            const service = ordine.servizioNome || ordine.servizio || 'Orion FWA';
-            const speed = ordine.velocita || 'Fino a 1 Gbps';
-            const amount = ordine.importoFormatted || (ordine.importo ? `€${ordine.importo}` : '€29,90/mese');
-            const date = ordine.dataCreazione || (ordine.id ? new Date(ordine.id).toLocaleString('it-IT') : 'N/A');
-
-            body.innerHTML = `
-                <div style="background:var(--bg); padding:16px; border-radius:12px; border:1px solid var(--border);">
-                    <div style="font-size:11px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Anagrafica Cliente</div>
-                    <div style="font-size:18px; font-weight:700; color:var(--primary); margin-top:2px;">${clientName}</div>
-                    <div style="font-size:13px; color:var(--text-light); margin-top:4px;">C.F. / P.IVA: <strong style="color:#fff;">${cfPiva}</strong></div>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
-                        <div style="font-size:11px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Email</div>
-                        <div style="font-size:13px; font-weight:600; text-overflow:ellipsis; overflow:hidden;">${email}</div>
-                    </div>
-                    <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
-                        <div style="font-size:11px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Telefono</div>
-                        <div style="font-size:13px; font-weight:600;">${tel}</div>
-                    </div>
-                </div>
-
-                <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
-                    <div style="font-size:11px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Indirizzo di Attivazione</div>
-                    <div style="font-size:14px; font-weight:600; color:#fff; margin-top:2px;">
-                        <i class="ph-fill ph-map-pin" style="color:var(--primary);"></i> ${address}
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
-                        <div style="font-size:11px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Profilo Servizio</div>
-                        <div style="font-size:14px; font-weight:700; color:var(--primary);">${service}</div>
-                        <div style="font-size:12px; color:var(--text-light);">${speed}</div>
-                    </div>
-                    <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
-                        <div style="font-size:11px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Canone Configurato</div>
-                        <div style="font-size:16px; font-weight:800; color:var(--accent);">${amount}</div>
-                    </div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; background:var(--bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-size:12px;">
-                    <span style="color:var(--text-light);">Data Invio: <strong>${date}</strong></span>
-                    <span style="color:var(--text-light);">Stato Corrente: <strong style="color:var(--primary);">${ordine.stato || 'Nuovo'}</strong></span>
-                </div>
-            `;
-
-            window.openModal('modal-dettaglio-ordine');
-        };
-
-        // Cambia Stato dell'ordine selezionato
-        window.aggiornaStatoSelezionato = async function(nuovoStato) {
-            const key = window.state.selectedOrderKey;
-            if(!key) return;
-
-            try {
-                await update(ref(db, `ordini/${key}`), { stato: nuovoStato });
-                window.closeModal('modal-dettaglio-ordine');
-            } catch(e) {
-                alert("Errore durante l'aggiornamento dello stato.");
-            }
-        };
-
-        // Elimina Ordine
-        window.deleteData = async function(key) {
-            if(confirm("Sei sicuro di voler eliminare questa richiesta di attivazione?")) {
-                try {
-                    await remove(ref(db, `ordini/${key}`));
-                } catch(e) {
-                    alert("Errore durante la cancellazione.");
+            if(container) {
+                if(events.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--text-light); font-size:12px;">Nessun appuntamento in agenda.</div>`;
+                } else {
+                    container.innerHTML = events.map(e => `
+                        <div class="list-card">
+                            <div class="list-card-header">
+                                <div>
+                                    <div class="list-card-title">${e.nome || 'Appuntamento'}</div>
+                                    <div class="list-card-meta">${new Date(e.data).toLocaleString()} - ${(e.tipo || '').toUpperCase()}</div>
+                                </div>
+                                <div class="action-btns">
+                                    <button class="btn-del" onclick="deleteData('appuntamenti', ${e.id})"><i class="ph-fill ph-trash"></i></button>
+                                </div>
+                            </div>
+                            ${e.tel ? `<div style="font-size:12px; margin-bottom:5px;"><i class="ph-fill ph-phone"></i> ${e.tel}</div>` : ''}
+                            <div style="font-size:12px;">${e.note || '-'}</div>
+                        </div>
+                    `).join('');
                 }
             }
-        };
+
+            if(dashList) {
+                const upcomings = events.filter(e => new Date(e.data) >= new Date()).slice(0,3);
+                if(upcomings.length === 0) {
+                    dashList.innerHTML = "Nessun appuntamento a breve.";
+                } else {
+                    dashList.innerHTML = upcomings.map(e => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding:8px 0;">
+                            <div>
+                                <div style="font-weight:600; color:var(--text);">${e.nome || 'Appuntamento'}</div>
+                                <div style="font-size:10px; color:var(--text-light);">${new Date(e.data).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        function initCharts() {
+            const ctxDoughnut = document.getElementById('budgetDoughnutChart');
+            if(ctxDoughnut) {
+                if (window.doughnutChart) window.doughnutChart.destroy();
+                window.doughnutChart = new Chart(ctxDoughnut, { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } } });
+            }
+            const ctxHistory = document.getElementById('budgetHistoryChart');
+            if(ctxHistory) {
+                if (window.historyChart) window.historyChart.destroy();
+                window.historyChart = new Chart(ctxHistory, { type: 'line', data: { labels: ['Gen','Feb','Mar','Apr','Mag','Giu'], datasets: [{ label: 'Liquidità', data: [0,0,0,0,0,0], borderColor: '#2563EB', tension: 0.4, fill: true, backgroundColor: 'rgba(37, 99, 235, 0.1)' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } } } });
+            }
+        }
+
+        window.openModal = function(id) { 
+            const el = document.getElementById(id);
+            if(el) el.classList.add('active'); 
+        }
+        window.closeModal = function(id) { 
+            const el = document.getElementById(id);
+            if(el) el.classList.remove('active'); 
+        }
+
+        window.nav = function(id, element) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+            const target = document.getElementById('view-'+id);
+            if(target) target.classList.add('active');
+
+            if(element && element.classList.contains('nav-item')) {
+                element.classList.add('active');
+            } else {
+                const mappedNavId = { 'dash':'nav-dash', 'agenda':'nav-agenda', 'clienti-crm':'nav-crm', 'ordini':'nav-ordini' }[id];
+                if(mappedNavId && document.getElementById(mappedNavId)) document.getElementById(mappedNavId).classList.add('active');
+                else if (document.getElementById('nav-menu')) document.getElementById('nav-menu').classList.add('active');
+            }
+            
+            if(id === 'ai') addBotMsg("Analisi predittiva pronta. Modelli caricati.");
+        }
+
+        window.switchLoginMode = function(mode) {
+            window.currentUserRole = mode;
+            document.getElementById('btn-tab-admin').classList.remove('active');
+            document.getElementById('btn-tab-staff').classList.remove('active');
+            document.getElementById('btn-tab-'+mode).classList.add('active');
+            
+            if(mode === 'admin') {
+                document.getElementById('login-desc').innerText = "Accesso Riservato Direzione";
+            } else {
+                document.getElementById('login-desc').innerText = "Accesso Dipendenti / Operatori";
+            }
+        }
+
+        window.attemptLogin = async function(role) {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            try {
+                await window.signInWithEmailAndPassword(window.auth, u, p);
+                window.currentUserRole = role; 
+                document.getElementById('login-overlay').style.display = 'none';
+                applyPermissions();
+                if(role === 'admin') nav('dash');
+                else nav('staff');
+                initCharts(); 
+                fetchData();
+                fetchHorizonIdData();
+                renderAll();
+            } catch(e) {
+                alert("Errore Login: " + e.message);
+            }
+        }
+
+        window.esciDalSistema = async function() {
+            await window.signOut(window.auth);
+            location.reload();
+        }
+
+        function applyPermissions() {
+            const isAdmin = window.currentUserRole === 'admin';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+            
+            const btnStaff = document.getElementById('btn-new-staff');
+            if(btnStaff) btnStaff.style.display = isAdmin ? 'block' : 'none';
+            
+            const tbAdmin = document.getElementById('staff-admin-view');
+            const tbUser = document.getElementById('staff-user-view');
+            if(tbAdmin && tbUser) {
+                tbAdmin.style.display = isAdmin ? 'block' : 'none';
+                tbUser.style.display = isAdmin ? 'none' : 'block';
+            }
+            
+            if(isAdmin) {
+                let d = new Date();
+                if(d.getHours() >= 23 || d.getHours() < 6) {
+                    document.body.classList.add('hw-mode');
+                    const navHw = document.getElementById('nav-group-hw');
+                    if(navHw) navHw.style.display = 'block';
+                }
+            }
+        }
+
+        function fetchData() {
+            const nodes = ['staff', 'companies', 'divisions', 'tasks', 'time_entries', 'documents', 'badges', 'cloud_folders', 'cloud_files', 'payrolls', 'ordini', 'servizi_catalogo', 'richieste_servizi', 'candidature', 'appuntamenti'];
+            nodes.forEach(node => {
+                window.rtdb.onValue(window.rtdb.ref(window.db, node), s => {
+                    const data = s.val();
+                    if (data) {
+                        window.state[node] = Object.keys(data).map(key => ({
+                            id: data[key].id || key,
+                            ...data[key]
+                        }));
+                    } else {
+                        window.state[node] = [];
+                    }
+                    renderAll();
+                    updateSelects();
+                });
+            });
+        }
+        
+        function fetchHorizonIdData() {
+            window.rtdb.onValue(window.rtdb.ref(window.dbHorizonId, 'users'), s => {
+                const data = s.val();
+                if (data) {
+                    window.state.horizonUsers = Object.keys(data).map(key => ({
+                        uid: key,
+                        ...data[key]
+                    }));
+                } else {
+                    window.state.horizonUsers = [];
+                }
+                renderAll();
+                updateSelects();
+            });
+        }
+
+        function renderAll() {
+            const lo = document.getElementById('login-overlay');
+            if(lo && window.getComputedStyle(lo).display !== 'none') return;
+
+            const dashSum = document.getElementById('dash-summary');
+            if(dashSum) {
+                dashSum.innerHTML = `
+                    <div class="dash-widget"><i class="ph-fill ph-users"></i><div class="val">${state.horizonUsers.length}</div><div class="label">Clienti ID App</div></div>
+                    <div class="dash-widget" style="background:var(--success)"><i class="ph-fill ph-briefcase"></i><div class="val">${state.ordini.length}</div><div class="label">Ordini Attivi</div></div>
+                    <div class="dash-widget" style="background:var(--warning)"><i class="ph-fill ph-envelope-simple"></i><div class="val">${state.richieste_servizi.length}</div><div class="label">Richieste Sito</div></div>
+                    <div class="dash-widget" style="background:var(--danger)"><i class="ph-fill ph-warning-circle"></i><div class="val">${state.tasks.length}</div><div class="label">Ticket Aperti</div></div>
+                `;
+            }
+
+            const tbOrdini = document.querySelector('#table-ordini tbody');
+            if(tbOrdini) tbOrdini.innerHTML = state.ordini.map(o => `<tr><td>${o.id ? new Date(o.id).toLocaleDateString() : '-'}</td><td>${o.clienteNome || 'N/A'}</td><td>${o.servizioNome || '-'}</td><td>€${o.importo || 0}</td><td><span class="badge" style="background:#f1f5f9;color:#333">${o.stato || 'Nuovo'}</span></td><td><button class="btn btn-sm btn-edit" onclick="openOrdineDettagli('${o.id}')">Apri</button><button class="btn btn-sm btn-del" onclick="deleteData('ordini', '${o.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbCrm = document.querySelector('#table-clienti-crm tbody');
+            if(tbCrm) {
+                tbCrm.innerHTML = state.horizonUsers.filter(u => u.statoVerifica === 'approvato').map(u => {
+                    return `<tr><td><strong>${u.nome || u.ragioneSociale || u.email || '-'}</strong></td><td>${u.piva || u.cf || '-'}</td><td>${u.email || '-'}</td><td><strong>€ ${u.auraCredit || 0}</strong></td><td>-</td><td><button class="btn btn-sm" onclick="openCrmUser('${u.uid}')">Gestisci Profilo</button></td></tr>`;
+                }).join('');
+            }
+
+            const tbRichieste = document.querySelector('#table-richieste-servizi tbody');
+            if(tbRichieste) tbRichieste.innerHTML = state.richieste_servizi.map(r => `<tr><td>${r.dataInvio ? new Date(r.dataInvio).toLocaleDateString() : '-'}</td><td>${r.nome || ''} ${r.cognome || ''}</td><td>${r.ragioneSociale || '-'}</td><td>${r.servizioAcquistato || r.tipoServizio || '-'}</td><td>${r.stato || 'In attesa'}</td><td><button class="btn btn-sm btn-edit" onclick="openDettaglioServizio('${r.id}')">Apri</button><button class="btn btn-sm btn-del" onclick="deleteData('richieste_servizi', '${r.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbCand = document.querySelector('#table-candidature tbody');
+            if(tbCand) tbCand.innerHTML = state.candidature.map(c => `<tr><td>${c.dataInvio ? new Date(c.dataInvio).toLocaleDateString() : '-'}</td><td>${c.nome || ''} ${c.cognome || ''}</td><td>${c.posizione || '-'}</td><td>${c.email || '-'}</td><td>${c.stato || 'In esame'}</td><td><button class="btn btn-sm btn-edit" onclick="openDettaglioCandidatura('${c.id}')">Apri</button><button class="btn btn-sm btn-del" onclick="deleteData('candidature', '${c.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbStaff = document.querySelector('#table-staff tbody');
+            if(tbStaff) tbStaff.innerHTML = state.staff.map(s => `<tr><td>${s.name || s.nome || '-'}</td><td>${s.role || s.ruolo || '-'}</td><td>${getCompanyName(s.companyId)}</td><td>${s.eff || 100}%</td><td>${s.machineAcc || 'Nessuno'}</td><td>Attivo</td><td><button class="btn btn-sm btn-del" onclick="deleteData('staff', '${s.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbDocs = document.querySelector('#table-docs tbody');
+            if(tbDocs) tbDocs.innerHTML = state.documents.map(d => `<tr><td>${d.date || '-'}</td><td>${d.title || '-'}</td><td>${getCompanyName(d.companyId)}</td><td>€ ${d.amount || 0}</td><td>${d.type || '-'}</td><td><a href="${d.fileUrl || '#'}" target="_blank" style="color:var(--primary)">Vedi File</a></td><td><button class="btn btn-sm btn-del" onclick="deleteData('documents', '${d.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbTasks = document.querySelector('#table-tasks tbody');
+            if(tbTasks) tbTasks.innerHTML = state.tasks.map(t => `<tr><td>${t.title || '-'}</td><td>${getStaffName(t.staffId)}</td><td>${t.priority || 'Normale'}</td><td><span class="badge" style="background:#f1f5f9">${t.status || 'Aperto'}</span></td><td><button class="btn btn-sm btn-del" onclick="deleteData('tasks', '${t.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbBadges = document.querySelector('#table-badges tbody');
+            if(tbBadges) tbBadges.innerHTML = state.badges.map(b => `<tr><td>${getStaffName(b.staffId)}</td><td>${b.pin || '-'}</td><td>${b.createdAt || '-'}</td><td>-</td><td>${b.status || 'Attivo'}</td><td><button class="btn btn-sm btn-del" onclick="deleteData('badges', '${b.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbTimb = document.querySelector('#table-timbrature tbody');
+            if(tbTimb) tbTimb.innerHTML = state.time_entries.map(t => `<tr><td>${t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}</td><td>${getStaffName(t.staffId)}</td><td>${getCompanyName(t.companyId)}</td><td>${t.type || 'Entrata'}</td><td>${t.device || 'Mobile'}</td><td>${t.status || 'Valida'}</td><td><button class="btn btn-sm btn-del" onclick="deleteData('time_entries', '${t.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbComp = document.querySelector('#table-aziende tbody');
+            if(tbComp) tbComp.innerHTML = state.companies.map(c => `<tr><td>${c.name || '-'}</td><td>€ ${c.capital || 0}</td><td>-</td><td>-</td><td>Attiva</td><td><button class="btn btn-sm btn-del" onclick="deleteData('companies', '${c.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbDivs = document.querySelector('#table-divs tbody');
+            if(tbDivs) tbDivs.innerHTML = state.divisions.map(d => `<tr><td>${d.name || '-'}</td><td>${getCompanyName(d.companyId)}</td><td>€ ${d.budget || 0}</td><td>-</td><td><button class="btn btn-sm btn-del" onclick="deleteData('divisions', '${d.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            const tbPay = document.querySelector('#table-payrolls tbody');
+            if(tbPay) tbPay.innerHTML = state.payrolls.map(p => `<tr><td>${p.period || '-'}</td><td>${getStaffName(p.staffId)}</td><td>€ ${p.amount || 0}</td><td>${p.iban || '-'}</td><td>${p.status || 'Emessa'}</td><td><a href="${p.fileUrl || '#'}" target="_blank">Apri</a></td><td><button class="btn btn-sm btn-del" onclick="deleteData('payrolls', '${p.id}')"><i class="ph-fill ph-trash"></i></button></td></tr>`).join('');
+
+            renderHorizonIdTables();
+            renderAgenda();
+            if(typeof window.renderCloudSystem === 'function') window.renderCloudSystem();
+            renderCharts();
+        }
+
+        function renderHorizonIdTables() {
+            const pending = state.horizonUsers.filter(u => u.statoVerifica === 'inviato_documenti' || u.statoVerifica === 'in_revisione' || u.statoVerifica === 'in_attesa');
+            const active = state.horizonUsers.filter(u => u.statoVerifica === 'approvato');
+            
+            const tbP = document.querySelector('#table-horizon-pending tbody');
+            if(tbP) tbP.innerHTML = pending.map(u => `<tr><td>${u.nome || u.ragioneSociale || u.email || '-'}</td><td>${u.piva || u.cf || '-'}</td><td>${u.email || '-'}</td><td>-</td><td>${u.statoVerifica}</td><td><button class="btn btn-sm btn-validate" onclick="openVerifyId('${u.uid}')">Verifica</button></td></tr>`).join('');
+            
+            const tbA = document.querySelector('#table-horizon-active tbody');
+            if(tbA) tbA.innerHTML = active.map(u => `<tr><td>${u.nome || u.ragioneSociale || u.email || '-'}</td><td>${u.piva || u.cf || '-'}</td><td>${u.email || '-'}</td><td>-</td><td>${u.statoVerifica}</td><td>-</td></tr>`).join('');
+        }
+
+        function updateSelects() {
+            populateSelect('agenda-cliente', state.horizonUsers.map(u => ({id: u.uid, name: u.nome || u.ragioneSociale || u.email})));
+            populateSelect('ordine-cliente', state.horizonUsers.map(u => ({id: u.uid, name: u.nome || u.ragioneSociale || u.email})));
+            populateSelect('ordine-servizio', state.servizi_catalogo.map(s => ({id: s.id, name: s.nome})));
+            
+            populateSelect('doc-company', state.companies);
+            populateSelect('task-staff', state.staff);
+            populateSelect('badge-staff', state.staff);
+            populateSelect('timb-staff', state.staff);
+        }
+        
+        function populateSelect(id, data) {
+            const el = document.getElementById(id);
+            if(el) {
+                const val = el.value;
+                el.innerHTML = '<option value="">- Seleziona -</option>' + data.map(i => `<option value="${i.id}">${i.name || i.title || i.id}</option>`).join('');
+                el.value = val;
+            }
+        }
+
+        function getCompanyName(id) { const c = state.companies.find(x => x.id == id); return c ? (c.name || c.nome) : '-'; }
+        function getStaffName(id) { const s = state.staff.find(x => x.id == id); return s ? (s.name || s.nome) : '-'; }
+        
+        function renderCharts() {
+            if(!window.doughnutChart) return;
+            const bgMap = {};
+            state.documents.forEach(d => { if(d.type==='uscita') { bgMap[d.companyId] = (bgMap[d.companyId]||0) + parseFloat(d.amount || 0); }});
+            const lbl = Object.keys(bgMap).map(id => getCompanyName(id));
+            const vals = Object.values(bgMap);
+            window.doughnutChart.data.labels = lbl;
+            window.doughnutChart.data.datasets[0].data = vals;
+            window.doughnutChart.update();
+        }
+
+        window.saveToFirebase = async function(node, data) {
+            try {
+                if(data.id) await window.rtdb.set(window.rtdb.ref(window.db, `${node}/${data.id}`), data);
+                else { const ref = window.rtdb.push(window.rtdb.ref(window.db, node)); await window.rtdb.set(ref, data); }
+            } catch(e) { alert("Errore: " + e.message); }
+        }
+        window.deleteData = async function(node, id) {
+            if(confirm("Eliminare elemento?")) await window.rtdb.remove(window.rtdb.ref(window.db, `${node}/${id}`));
+        }
+
+        window.openCrmUser = function(uid) {
+            const user = window.state.horizonUsers.find(u => u.uid === uid);
+            if(!user) return;
+            document.getElementById('crm-target-uid').value = uid;
+            document.getElementById('crm-target-piva').value = user.piva || user.cf || '';
+            document.getElementById('crm-modal-name').innerText = user.nome || user.ragioneSociale || user.email || 'Utente';
+            document.getElementById('crm-modal-piva').innerText = user.piva || user.cf || '-';
+            document.getElementById('crm-modal-credit').innerText = `€ ${user.auraCredit || 0}`;
+            
+            const trs = window.state.ordini.filter(o => o.clienteId === uid).map(o => `<tr><td>${o.servizioNome || '-'}</td><td>${o.id ? new Date(o.id).toLocaleDateString() : '-'}</td><td><span class="badge" style="background:#f1f5f9; color:#333;">${o.stato || 'In corso'}</span></td></tr>`).join('');
+            document.getElementById('crm-services-tbody').innerHTML = trs || '<tr><td colspan="3" style="text-align:center;">Nessun servizio registrato.</td></tr>';
+            
+            openModal('modal-crm-user');
+        }
+
+        window.modificaCreditoAura = async function() {
+            const uid = document.getElementById('crm-target-uid').value;
+            const amnt = parseFloat(document.getElementById('crm-modifica-credit-amount').value);
+            if(!uid || isNaN(amnt)) return alert("Inserisci un importo valido");
+
+            try {
+                const userRef = window.rtdb.ref(window.dbHorizonId, `users/${uid}`);
+                const snap = await window.rtdb.get(userRef);
+                let creditoAttuale = 0;
+                if(snap.exists() && snap.val().auraCredit) creditoAttuale = parseFloat(snap.val().auraCredit);
+
+                const nuovoCredito = creditoAttuale + amnt;
+                await window.rtdb.update(userRef, { auraCredit: nuovoCredito });
+                
+                document.getElementById('crm-modal-credit').innerText = `€ ${nuovoCredito.toFixed(2)}`;
+                document.getElementById('crm-modifica-credit-amount').value = '';
+                alert(`Credito modificato. Nuovo saldo: € ${nuovoCredito.toFixed(2)}`);
+            } catch(e) { alert("Errore modifica credito: " + e.message); }
+        }
+
+        window.filterCrmTable = function() {
+            const input = document.getElementById('crm-search-input').value.toLowerCase();
+            const trs = document.querySelectorAll('#table-clienti-crm tbody tr');
+            trs.forEach(tr => {
+                const text = tr.innerText.toLowerCase();
+                tr.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        window.openOrdineDettagli = function(id) {
+            const ordine = window.state.ordini.find(o => o.id == id);
+            if (!ordine) return alert("Ordine non trovato.");
+
+            const cliente = window.state.horizonUsers.find(u => u.uid === ordine.clienteId);
+
+            const nomeCliente = cliente ? (cliente.nome || cliente.ragioneSociale || cliente.email) : (ordine.clienteNome || ordine.ragioneSociale || ordine.nomeCognome || 'N/D');
+            const email = cliente?.email || ordine.email || 'Non specificata';
+            const telefono = cliente?.tel || cliente?.telefono || ordine.tel || ordine.telefono || 'Non specificato';
+            const pivaCf = cliente?.piva || cliente?.cf || ordine.piva || ordine.cf || 'Non specificato';
+            const servizio = ordine.servizioNome || 'N/D';
+            const importo = ordine.importo !== undefined ? `€ ${ordine.importo}` : 'N/D';
+            const stato = ordine.stato || 'Nuovo';
+            const note = ordine.note || 'Nessuna nota presente';
+            const dataOrdine = ordine.id ? new Date(ordine.id).toLocaleString() : 'N/D';
+
+            const body = document.getElementById('dettaglio-ordine-body');
+            if (body) {
+                body.innerHTML = `
+                    <div style="background:var(--bg); padding:12px; border-radius:8px; border:1px solid var(--border);">
+                        <div style="font-weight:bold; color:var(--primary); font-size:15px; margin-bottom:6px;">${nomeCliente}</div>
+                        <div style="color:var(--text-light); font-size:12px; margin-bottom:4px;"><i class="ph-fill ph-identification-badge"></i> P.IVA / CF: <strong>${pivaCf}</strong></div>
+                        <div style="color:var(--text-light); font-size:12px; margin-bottom:4px;"><i class="ph-fill ph-envelope"></i> Email: <a href="mailto:${email}" style="color:var(--primary); font-weight:600;">${email}</a></div>
+                        <div style="color:var(--text-light); font-size:12px;"><i class="ph-fill ph-phone"></i> Telefono: <a href="tel:${telefono}" style="color:var(--primary); font-weight:600;">${telefono}</a></div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">SERVIZIO</div>
+                            <div style="font-weight:600; margin-top:2px;">${servizio}</div>
+                        </div>
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">IMPORTO</div>
+                            <div style="font-weight:700; color:var(--success); margin-top:2px;">${importo}</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">STATO</div>
+                            <div style="margin-top:2px;"><span class="badge" style="background:#e2e8f0; color:#333;">${stato}</span></div>
+                        </div>
+                        <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                            <div style="font-size:11px; color:var(--text-light); font-weight:bold;">DATA ORDINE</div>
+                            <div style="font-size:12px; margin-top:2px;">${dataOrdine}</div>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                        <div style="font-size:11px; color:var(--text-light); font-weight:bold; margin-bottom:4px;">NOTE ORDINE</div>
+                        <div style="font-size:12px; white-space:pre-wrap;">${note}</div>
+                    </div>
+
+                    ${telefono !== 'Non specificato' ? `
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <a href="tel:${telefono}" class="btn btn-sm" style="background:var(--primary); text-decoration:none; text-align:center; flex:1;"><i class="ph-fill ph-phone-call"></i> Chiama Clienti</a>
+                            <a href="https://wa.me/${telefono.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-sm" style="background:var(--accent); text-decoration:none; text-align:center; flex:1;"><i class="ph-fill ph-whatsapp-logo"></i> WhatsApp</a>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            openModal('modal-dettaglio-ordine');
+        }
+
+        window.apriNuovoOrdine = function() {
+            document.getElementById('ordine-id').value = '';
+            openModal('modal-ordine');
+            aggiornaModuloOrdine();
+        }
+
+        window.aggiornaModuloOrdine = function() {
+            const tipo = document.getElementById('ordine-tipo-cliente').value;
+            document.getElementById('campi-azienda').style.display = tipo === 'Azienda' ? 'block' : 'none';
+            document.getElementById('campi-privato').style.display = tipo === 'Privato' ? 'block' : 'none';
+        }
+
+        window.saveOrdine = async function() {
+            const tipo = document.getElementById('ordine-tipo-cliente').value;
+            const clienteId = document.getElementById('ordine-cliente').value;
+            const servizioId = document.getElementById('ordine-servizio').value;
+            const note = document.getElementById('ordine-note').value;
+            const importo = document.getElementById('ordine-importo').value;
+
+            if(!importo) return alert("Inserisci un importo");
+
+            let ordine = {
+                id: Date.now(),
+                tipoCliente: tipo,
+                clienteId: clienteId,
+                servizioId: servizioId,
+                note: note,
+                importo: parseFloat(importo),
+                stato: 'Nuovo'
+            };
+
+            const s = state.servizi_catalogo.find(x => x.id == servizioId);
+            ordine.servizioNome = s ? s.nome : '';
+
+            const u = state.horizonUsers.find(x => x.uid === clienteId);
+            if (u) {
+                ordine.clienteNome = u.nome || u.ragioneSociale || u.email || 'Sconosciuto';
+                ordine.email = u.email || '';
+                ordine.tel = u.tel || u.telefono || '';
+                ordine.piva = u.piva || u.cf || '';
+            } else {
+                if (tipo === 'Azienda') {
+                    ordine.ragioneSociale = document.getElementById('ordine-ragione').value;
+                    ordine.piva = document.getElementById('ordine-piva').value;
+                    ordine.sdi = document.getElementById('ordine-sdi').value;
+                    ordine.clienteNome = ordine.ragioneSociale || 'Azienda';
+                } else {
+                    ordine.nomeCognome = document.getElementById('ordine-nome-cognome').value;
+                    ordine.cf = document.getElementById('ordine-cf').value;
+                    ordine.clienteNome = ordine.nomeCognome || 'Privato';
+                }
+            }
+
+            await saveToFirebase('ordini', ordine);
+            closeModal('modal-ordine');
+        }
+
+        window.scalaAuraCredit = async function() {
+            const uid = document.getElementById('crm-target-uid').value;
+            const desc = document.getElementById('crm-inv-desc').value;
+            const amount = parseFloat(document.getElementById('crm-inv-amount').value);
+
+            if(!uid || isNaN(amount) || amount <= 0) return alert("Inserisci un importo valido da scalare.");
+
+            try {
+                const userRef = window.rtdb.ref(window.dbHorizonId, `users/${uid}`);
+                const snap = await window.rtdb.get(userRef);
+                let creditoAttuale = 0;
+                if(snap.exists() && snap.val().auraCredit) creditoAttuale = parseFloat(snap.val().auraCredit);
+
+                if(creditoAttuale < amount) return alert("Credito insufficiente per questa operazione.");
+
+                const nuovoCredito = creditoAttuale - amount;
+                await window.rtdb.update(userRef, { auraCredit: nuovoCredito });
+
+                await saveToFirebase('documents', {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString(),
+                    title: desc || 'Addebito Aura Credit',
+                    companyId: 1, 
+                    amount: amount,
+                    type: 'entrata',
+                    fileUrl: '#'
+                });
+
+                document.getElementById('crm-modal-credit').innerText = `€ ${nuovoCredito.toFixed(2)}`;
+                document.getElementById('crm-inv-desc').value = '';
+                document.getElementById('crm-inv-amount').value = '';
+                alert(`Fattura emessa e credito scalato. Nuovo saldo: € ${nuovoCredito.toFixed(2)}`);
+            } catch(e) { alert("Errore scalata credito: " + e.message); }
+        }
+
+        window.saveTask = async function() {
+            const title = document.getElementById('task-title').value;
+            const staff = document.getElementById('task-staff').value;
+            const prio = document.getElementById('task-prio').value;
+            const status = document.getElementById('task-status').value;
+            if(!title) return alert("Inserisci titolo");
+            await saveToFirebase('tasks', { id: Date.now(), title, staffId: staff, priority: prio, status });
+            closeModal('modal-task');
+        }
+
+        window.saveTimbratura = async function() {
+            const staff = document.getElementById('timb-staff').value;
+            const type = document.getElementById('timb-type').value;
+            const time = document.getElementById('timb-time').value;
+            if(!time) return alert("Inserisci orario");
+            await saveToFirebase('time_entries', { id: Date.now(), staffId: staff, type, timestamp: time, companyId: 1, device: 'Manuale', status: 'Forzata' });
+            closeModal('modal-timbratura');
+        }
+
+        window.saveBadge = async function() {
+            const staff = document.getElementById('badge-staff').value;
+            const code = document.getElementById('badge-code').value;
+            if(!code) return alert("Inserisci codice PIN");
+            await saveToFirebase('badges', { id: Date.now(), staffId: staff, pin: code, createdAt: new Date().toLocaleDateString(), status: 'Attivo' });
+            closeModal('modal-badge');
+        }
+
+        window.openCloudFolder = function(folderId) {
+            currentCloudFolder = folderId;
+            document.getElementById('btn-cloud-upload').style.display = folderId ? 'flex' : 'none';
+            document.getElementById('btn-cloud-folder').style.display = folderId ? 'none' : 'flex';
+            renderCloudSystem();
+        }
+
+        window.saveCloudFolder = async function() {
+            const name = document.getElementById('cloud-folder-name').value;
+            if(!name) return alert("Inserisci nome cartella");
+            await saveToFirebase('cloud_folders', { id: Date.now(), name });
+            closeModal('modal-cloud-folder');
+        }
+
+        window.saveCloudFile = async function() {
+            const name = document.getElementById('cloud-file-name').value;
+            if(!name) return alert("Inserisci nome file");
+            await saveToFirebase('cloud_files', { id: Date.now(), name, folderId: currentCloudFolder, url: '#' });
+            closeModal('modal-cloud-file');
+        }
+
+        window.renderCloudSystem = function() {
+            const container = document.getElementById('cloud-container');
+            const breadcrumbActive = document.getElementById('cloud-breadcrumb-active');
+            if(!container) return;
+
+            let html = '';
+            if(!currentCloudFolder) {
+                if(breadcrumbActive) breadcrumbActive.innerText = '';
+                html = state.cloud_folders.map(f => `
+                    <div class="cloud-item" onclick="openCloudFolder(${f.id})">
+                        <button class="cloud-action-btn" onclick="event.stopPropagation(); deleteData('cloud_folders', ${f.id})"><i class="ph ph-trash"></i></button>
+                        <i class="ph-fill ph-folder cloud-icon cloud-folder-icon"></i>
+                        <div class="cloud-title">${f.name}</div>
+                    </div>
+                `).join('');
+            } else {
+                const folder = state.cloud_folders.find(f => f.id === currentCloudFolder);
+                if(breadcrumbActive) breadcrumbActive.innerText = folder ? `/ ${folder.name}` : '';
+                const files = state.cloud_files.filter(file => file.folderId === currentCloudFolder);
+                html = files.map(file => `
+                    <div class="cloud-item">
+                        <button class="cloud-action-btn" onclick="deleteData('cloud_files', ${file.id})"><i class="ph ph-trash"></i></button>
+                        <i class="ph-fill ph-file cloud-icon cloud-file-icon"></i>
+                        <div class="cloud-title">${file.name}</div>
+                    </div>
+                `).join('');
+                if(!html) html = '<div style="grid-column: 1 / -1; text-align:center; padding: 20px; font-size:12px; color:var(--text-light);">Cartella vuota</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // Helpers UI ed Eventi Extra
+        window.toggleNotifiche = function() {
+            const panel = document.getElementById('notif-panel');
+            if(panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        window.sendAiPrompt = function() {
+            const input = document.getElementById('ai-text');
+            const box = document.getElementById('chat-box');
+            if (!input || !input.value.trim()) return;
+            const msg = input.value.trim();
+            box.innerHTML += `<div class="msg user">${msg}</div>`;
+            input.value = '';
+            setTimeout(() => {
+                box.innerHTML += `<div class="msg bot"><strong>Gemini AI:</strong> Elaborazione completata per: "${msg}".</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 500);
+        }
+
+        function addBotMsg(msg) {
+            const box = document.getElementById('chat-box');
+            if (box) {
+                box.innerHTML += `<div class="msg bot"><strong>Gemini AI:</strong> ${msg}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
+        window.printGradoB = function() {
+            const term = document.getElementById('grado-terminal');
+            if (term) {
+                term.innerHTML += `[SYS] Diagnostic Override Executed at ${new Date().toLocaleTimeString()}<br>[SYS] All systems optimal.<br>`;
+                term.scrollTop = term.scrollHeight;
+            }
+        }
+
+        window.openVerifyId = function(uid) {
+            const user = window.state.horizonUsers.find(u => u.uid === uid);
+            if (!user) return alert("Utente non trovato");
+            document.getElementById('verify-user-uid').value = uid;
+            document.getElementById('verify-user-name').innerText = user.nome || user.ragioneSociale || user.email || 'Utente';
+            
+            const imgFronte = document.getElementById('verify-img-fronte');
+            const imgRetro = document.getElementById('verify-img-retro');
+            const video = document.getElementById('verify-video');
+            
+            if (imgFronte) imgFronte.src = user.docFronteUrl || '';
+            if (imgRetro) imgRetro.src = user.docRetroUrl || '';
+            if (video) video.src = user.videoUrl || '';
+
+            openModal('modal-verify-id');
+        }
+
+        window.approveHorizonId = async function() {
+            const uid = document.getElementById('verify-user-uid').value;
+            if (!uid) return;
+            try {
+                await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), { statoVerifica: 'approvato' });
+                closeModal('modal-verify-id');
+                alert("Utente approvato con successo.");
+            } catch(e) { alert("Errore: " + e.message); }
+        }
+
+        window.rejectHorizonId = async function() {
+            const uid = document.getElementById('verify-user-uid').value;
+            if (!uid) return;
+            try {
+                await window.rtdb.update(window.rtdb.ref(window.dbHorizonId, `users/${uid}`), { statoVerifica: 'rifiutato' });
+                closeModal('modal-verify-id');
+                alert("Utente rifiutato.");
+            } catch(e) { alert("Errore: " + e.message); }
+        }
+
+        window.openDettaglioServizio = function(id) {
+            const item = window.state.richieste_servizi.find(r => r.id == id);
+            if (item) alert(`Richiesta Servizio:\nDa: ${item.nome || ''} ${item.cognome || ''}\nEmail: ${item.email || '-'}\nTelefono: ${item.telefono || '-'}\nNote: ${item.note || '-'}`);
+        }
+
+        window.openDettaglioCandidatura = function(id) {
+            const item = window.state.candidature.find(c => c.id == id);
+            if (item) alert(`Candidatura HR:\nCandidato: ${item.nome || ''} ${item.cognome || ''}\nPosizione: ${item.posizione || '-'}\nEmail: ${item.email || '-'}\nNote: ${item.note || '-'}`);
+        }
+
+        window.saveServizio = async function() {
+            const nome = document.getElementById('servizio-nome').value;
+            const target = document.getElementById('servizio-target').value;
+            const desc = document.getElementById('servizio-desc').value;
+            if (!nome) return alert("Inserisci nome servizio");
+            await saveToFirebase('servizi_catalogo', { id: Date.now(), nome, target, desc });
+            closeModal('modal-servizio');
+        }
+
+        window.saveDocument = async function() {
+            const title = document.getElementById('doc-title').value;
+            const amount = document.getElementById('doc-amount').value;
+            const type = document.getElementById('doc-type').value;
+            const companyId = document.getElementById('doc-company').value;
+            if (!title || !amount) return alert("Compila i campi obbligatori");
+            await saveToFirebase('documents', {
+                id: Date.now(),
+                date: new Date().toLocaleDateString(),
+                title,
+                amount: parseFloat(amount),
+                type,
+                companyId,
+                fileUrl: '#'
+            });
+            closeModal('modal-doc');
+        }
+
+        window.saveCrmManualService = async function() {
+            const uid = document.getElementById('crm-target-uid').value;
+            const title = document.getElementById('crm-add-serv-title').value;
+            const type = document.getElementById('crm-add-serv-type').value;
+            const status = document.getElementById('crm-add-serv-status').value;
+            const notes = document.getElementById('crm-add-serv-notes').value;
+            if (!title) return alert("Inserisci titolo servizio");
+            await saveToFirebase('ordini', {
+                id: Date.now(),
+                clienteId: uid,
+                servizioNome: title,
+                tipoCliente: type,
+                stato: status,
+                note: notes,
+                importo: 0
+            });
+            closeModal('modal-crm-add-service');
+        }
     </script>
 </body>
 </html>
