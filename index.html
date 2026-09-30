@@ -219,7 +219,7 @@
     <main class="main">
         
         <!-- DASHBOARD (Mobile Redesign) -->
-        <section id="view-dash" class="view active admin-only">
+        <section id="view-dash" class="view admin-only">
             
             <div class="quick-actions">
                 <button class="quick-btn" onclick="nav('agenda'); openModal('modal-appuntamento')"><i class="ph-fill ph-calendar-plus"></i> Nuovo Appuntamento</button>
@@ -453,7 +453,7 @@
 
     <!-- Bottom Navigation Bar PWA -->
     <nav class="bottom-nav">
-        <a class="nav-item active admin-only" onclick="nav('dash', this)" id="nav-dash"><i class="ph ph-chart-pie"></i><span>Dash</span></a>
+        <a class="nav-item admin-only" onclick="nav('dash', this)" id="nav-dash"><i class="ph ph-chart-pie"></i><span>Dash</span></a>
         <a class="nav-item" onclick="nav('agenda', this)" id="nav-agenda"><i class="ph ph-calendar"></i><span>Agenda</span></a>
         <a class="nav-item" onclick="nav('clienti-crm', this)" id="nav-crm"><i class="ph ph-users-three"></i><span>CRM</span></a>
         <a class="nav-item" onclick="nav('ordini', this)" id="nav-ordini"><i class="ph ph-shopping-cart"></i><span>Ordini</span></a>
@@ -583,12 +583,26 @@
         window.currentUserRole = 'staff';
         window.currentCloudFolder = null;
 
-        // Auto autenticazione all'avvio
+        // Auto autenticazione all'avvio CORRETTA
         window.onAuthStateChanged(window.auth, (user) => {
             if (user) {
                 window.currentUser = user;
+                
+                // Mantiene i privilegi di amministratore al refresh se l'email corrisponde
+                if (user.email && (user.email.includes('direzione') || user.email.includes('admin'))) {
+                    window.currentUserRole = 'admin';
+                }
+                
                 document.getElementById('login-overlay').style.display = 'none';
                 applyPermissions();
+                
+                // Avvia la navigazione corretta per far apparire la schermata all'avvio
+                if(window.currentUserRole === 'admin') {
+                    nav('dash');
+                } else {
+                    nav('staff');
+                }
+
                 initCharts();
                 fetchData();
                 fetchHorizonIdData();
